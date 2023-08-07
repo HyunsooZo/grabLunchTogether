@@ -9,10 +9,7 @@ import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.token.TokenDto;
-import com.grablunchtogether.dto.user.UserDto;
-import com.grablunchtogether.dto.user.UserInformationEditInput;
-import com.grablunchtogether.dto.user.UserLoginInput;
-import com.grablunchtogether.dto.user.UserSignUpInput;
+import com.grablunchtogether.dto.user.*;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import lombok.RequiredArgsConstructor;
@@ -112,6 +109,32 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return ServiceResult.success("고객정보 수정 완료");
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult changeUserPassword(Long userId,
+                                            UserChangePasswordInput userChangePasswordInput) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UserInfoNotFoundException("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.")
+        );
+
+        String existingPassword = userChangePasswordInput.getUserExistingPassword();
+
+        if (!PasswordUtility.isPasswordMatch(existingPassword, user.getUserPassword())) {
+            throw new InvalidLoginException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        //새로 입력된 비밀번호 암호화
+        String encryptedPassword =
+                PasswordUtility.getEncryptPassword(userChangePasswordInput.getUserNewPassword());
+
+        user.setUserPassword(encryptedPassword);
+
+        userRepository.save(user);
+
+        return ServiceResult.success("고객 정보 수정 완료");
     }
 
     @Override

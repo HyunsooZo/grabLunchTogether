@@ -4,10 +4,7 @@ import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.UserDto;
-import com.grablunchtogether.dto.user.UserInformationEditInput;
-import com.grablunchtogether.dto.user.UserLoginInput;
-import com.grablunchtogether.dto.user.UserSignUpInput;
+import com.grablunchtogether.dto.user.*;
 import com.grablunchtogether.service.user.UserService;
 import com.grablunchtogether.service.user.externalApi.GeocodeApiService;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +67,7 @@ public class UserController {
     public ResponseEntity<?> editUserInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Valid @RequestBody UserInformationEditInput userInformationEditInput,
-                                Errors errors) {
+            Errors errors) {
 
         ResponseEntity<?> responseErrorList = errorValidation(errors);
         if (responseErrorList != null) {
@@ -87,6 +84,25 @@ public class UserController {
         ServiceResult result = userService.editUserInformation(
                 userDto.getId(), userInformationEditInput, coordinate
         );
+
+        return ResponseResult.result(result);
+    }
+
+    @PatchMapping("/change/password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody UserChangePasswordInput userChangePasswordInput,
+            Errors errors) {
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                userService.changeUserPassword(userDto.getId(), userChangePasswordInput);
 
         return ResponseResult.result(result);
     }
