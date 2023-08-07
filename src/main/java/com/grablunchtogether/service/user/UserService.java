@@ -23,4 +23,7 @@ public interface UserService {
 
     //토큰넘겨서 UserDto 가져오기
     UserDto tokenValidation(String token);
+
+    //내 주변의 사용자들 목록 가져오기
+    ServiceResult findUserAround(double latitude, double longitude, double kilometer);
 }
