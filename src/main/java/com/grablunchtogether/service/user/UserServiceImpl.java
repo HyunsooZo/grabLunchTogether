@@ -2,6 +2,7 @@ package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.common.exception.InvalidLoginException;
 import com.grablunchtogether.common.exception.InvalidTokenException;
+import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
@@ -9,6 +10,7 @@ import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.dto.user.UserInformationEditInput;
 import com.grablunchtogether.dto.user.UserLoginInput;
 import com.grablunchtogether.dto.user.UserSignUpInput;
 import com.grablunchtogether.repository.UserRepository;
@@ -80,6 +82,36 @@ public class UserServiceImpl implements UserService {
                         .subject(user.getUserName())
                         .issuer(user.getUserEmail())
                         .build()));
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult editUserInformation(Long userId,
+                                             UserInformationEditInput userInformationEditInput,
+                                             GeocodeDto coordinate) {
+
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UserInfoNotFoundException("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.")
+        );
+
+        String existingPassword = userInformationEditInput.getUserPassword();
+
+        if (!PasswordUtility.isPasswordMatch(existingPassword, user.getUserPassword())) {
+            throw new InvalidLoginException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        //입력된 휴대폰 번호에 특수문자 또는 공백이 포함되어있을 수 있으므로 숫자제외한 문자 삭제
+        String userPhoneNumber =
+                userInformationEditInput.getUserPhoneNumber().replaceAll("\\D", "");
+
+        user.setUserPhoneNumber(userPhoneNumber);
+        user.setCompany(userInformationEditInput.getCompany());
+        user.setLatitude(coordinate.getLatitude());
+        user.setLongitude(coordinate.getLongitude());
+
+        userRepository.save(user);
+
+        return ServiceResult.success("고객정보 수정 완료");
     }
 
     @Override
