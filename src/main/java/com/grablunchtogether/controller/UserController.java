@@ -4,20 +4,17 @@ import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.UserLoginInput;
-import com.grablunchtogether.dto.user.UserSignUpInput;
+import com.grablunchtogether.dto.user.*;
 import com.grablunchtogether.service.user.UserService;
 import com.grablunchtogether.service.user.externalApi.GeocodeApiService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -62,6 +59,50 @@ public class UserController {
         }
 
         ServiceResult result = userService.login(userLoginInput);
+
+        return ResponseResult.result(result);
+    }
+
+    @PatchMapping("/edit/information")
+    public ResponseEntity<?> editUserInformation(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody UserInformationEditInput userInformationEditInput,
+            Errors errors) {
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        //수정된 주소의 좌표 다시 가져오기
+        GeocodeDto coordinate = geocodeApiService.getCoordinate(
+                userInformationEditInput.getAddress(), userInformationEditInput.getStreetNumber()
+        );
+
+        ServiceResult result = userService.editUserInformation(
+                userDto.getId(), userInformationEditInput, coordinate
+        );
+
+        return ResponseResult.result(result);
+    }
+
+    @PatchMapping("/change/password")
+    public ResponseEntity<?> changePassword(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody UserChangePasswordInput userChangePasswordInput,
+            Errors errors) {
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                userService.changeUserPassword(userDto.getId(), userChangePasswordInput);
 
         return ResponseResult.result(result);
     }
