@@ -1,12 +1,14 @@
 package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.common.exception.InvalidLoginException;
+import com.grablunchtogether.common.exception.InvalidTokenException;
 import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.dto.user.UserLoginInput;
 import com.grablunchtogether.dto.user.UserSignUpInput;
 import com.grablunchtogether.repository.UserRepository;
@@ -78,5 +80,25 @@ public class UserServiceImpl implements UserService {
                         .subject(user.getUserName())
                         .issuer(user.getUserEmail())
                         .build()));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserDto tokenValidation(String token) {
+        try {
+            // issuer 가져오기
+            String email = jwtTokenProvider.getIssuer(token);
+
+            // 추출한 issuer 로 사용자 조회
+            User user = userRepository.findByUserEmail(email).orElseThrow(() ->
+                    new InvalidTokenException("사용자가 존재하지 않습니다.")
+            );
+
+            return UserDto.of(user);
+
+        } catch (Exception e) {
+            // 토큰 검증 또는 사용자 조회 중 예외 발생 시
+            throw new InvalidTokenException("토큰이 만료되었거나 유효하지 않습니다. 다시 로그인해주세요.");
+        }
     }
 }
