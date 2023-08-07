@@ -1,9 +1,6 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
-import com.grablunchtogether.common.exception.InvalidTokenException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
-import com.grablunchtogether.common.exception.UserSignUpException;
+import com.grablunchtogether.common.exception.*;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
@@ -17,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -155,5 +154,25 @@ public class UserServiceImpl implements UserService {
             // 토큰 검증 또는 사용자 조회 중 예외 발생 시
             throw new InvalidTokenException("토큰이 만료되었거나 유효하지 않습니다. 다시 로그인해주세요.");
         }
+    }
+
+    //설정한 거리 이내 회원 목록 가져오기
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceResult findUserAround(double latitude, double longitude, double kilometer) {
+        List<Object[]> userList =
+                userRepository.getUserListByDistance(latitude, longitude, kilometer);
+
+        if (userList == null || userList.isEmpty()) {
+            throw new ContentNotFoundException("해당 조건으로 조회되는 주변회원이 없습니다.");
+        }
+
+        List<UserDistanceDto> userListResponses = new ArrayList<>();
+
+        userList.forEach(objects -> {
+            userListResponses.add(UserDistanceDto.of(objects));
+        });
+
+        return ServiceResult.success("주변회원 불러오기 성공", userListResponses);
     }
 }
