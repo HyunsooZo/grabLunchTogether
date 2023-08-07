@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.14'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'com.grabLunchTogether'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '1.8'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //jackson
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    //jwt
+    implementation 'com.auth0:java-jwt:3.18.1'
+    //mariadb
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
+    //scheduler
+    implementation 'org.springframework.boot:spring-boot-starter'
+    //jsoup
+    implementation 'org.jsoup:jsoup:1.15.3'
+    //assertJ
+    testImplementation 'org.assertj:assertj-core:3.20.2'
+    //swagger
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
