@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto;
+package com.grablunchtogether.dto.token;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
