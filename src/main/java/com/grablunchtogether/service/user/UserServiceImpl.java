@@ -1,14 +1,19 @@
 package com.grablunchtogether.service.user;
 
+import com.grablunchtogether.common.exception.InvalidLoginException;
 import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.user.UserLoginInput;
 import com.grablunchtogether.dto.user.UserSignUpInput;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +21,7 @@ import java.time.LocalDateTime;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public ServiceResult userSignUp(UserSignUpInput userSignUpInput,
@@ -49,5 +55,28 @@ public class UserServiceImpl implements UserService {
                 .build());
 
         return ServiceResult.success("회원가입 완료");
+    }
+
+    //유저 로그인
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceResult login(UserLoginInput userLoginInput) {
+
+        String email = userLoginInput.getUserEmail();
+        String password = userLoginInput.getUserPassword();
+
+        User user = userRepository.findByUserEmail(email)
+                .orElseThrow(() -> new InvalidLoginException("존재하지 않는 아이디 입니다."));
+
+        if (!PasswordUtility.isPasswordMatch(password, user.getUserPassword())) {
+            throw new InvalidLoginException("비밀번호가 일치하지 않습니다.");
+        }
+
+        return ServiceResult.success(jwtTokenProvider.issuingToken(
+                TokenDto.builder()
+                        .claim(user.getId())
+                        .subject(user.getUserName())
+                        .issuer(user.getUserEmail())
+                        .build()));
     }
 }

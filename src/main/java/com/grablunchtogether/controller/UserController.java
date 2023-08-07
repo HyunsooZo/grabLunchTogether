@@ -4,6 +4,7 @@ import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.user.UserLoginInput;
 import com.grablunchtogether.dto.user.UserSignUpInput;
 import com.grablunchtogether.service.user.UserService;
 import com.grablunchtogether.service.user.externalApi.GeocodeApiService;
@@ -47,6 +48,20 @@ public class UserController {
 
         ServiceResult result =
                 userService.userSignUp(userSignUpInput, userCoordinate);
+
+        return ResponseResult.result(result);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(
+            @Valid @RequestBody UserLoginInput userLoginInput, Errors errors) {
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        ServiceResult result = userService.login(userLoginInput);
 
         return ResponseResult.result(result);
     }
