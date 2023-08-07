@@ -7,6 +7,8 @@ import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.*;
 import com.grablunchtogether.service.user.UserService;
 import com.grablunchtogether.service.user.externalApi.GeocodeApiService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/user")
+@Api(tags = "User API", description = "사용자와 관련된 API")
 @RestController
 public class UserController {
 
@@ -30,6 +33,7 @@ public class UserController {
 
     @PostMapping("/signup")
     @Transactional
+    @ApiOperation(value = "사용자 회원가입", notes = "입력된 정보로 회원가입을 진행합니다.")
     public ResponseEntity<?> userSignUp(
             @Valid @RequestBody UserSignUpInput userSignUpInput,
             Errors errors) {
@@ -50,6 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @ApiOperation(value = "사용자 로그인", notes = "입력된 사용자 ID/PW로 로그인을 진행합니다.")
     public ResponseEntity<?> login(
             @Valid @RequestBody UserLoginInput userLoginInput, Errors errors) {
 
@@ -64,6 +69,7 @@ public class UserController {
     }
 
     @PatchMapping("/edit/information")
+    @ApiOperation(value = "사용자 정보 수정", notes = "입력된 정보로 기존사용자의 정보를 수정합니다.")
     public ResponseEntity<?> editUserInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Valid @RequestBody UserInformationEditInput userInformationEditInput,
@@ -89,6 +95,7 @@ public class UserController {
     }
 
     @PatchMapping("/change/password")
+    @ApiOperation(value = "사용자 비밀번호 변경", notes = "기존 비밀번호를 입력된 비밀번호로 변경합니다.")
     public ResponseEntity<?> changePassword(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Valid @RequestBody UserChangePasswordInput userChangePasswordInput,
