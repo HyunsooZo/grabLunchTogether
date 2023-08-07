@@ -8,7 +8,7 @@ create table user
     registered_at     datetime     null,
     user_email        varchar(255) null,
     user_name         varchar(20) null,
-    user_password     varchar(20) null,
+    user_password     varchar(255) null,
     user_phone_number varchar(20) null,
     user_rate         double       null
 );

@@ -15,10 +15,10 @@ import java.util.Collections;
 
 @Service
 public class GeocodeApiService {
-    @Value("${myapp.defaultX}")
+    @Value("${geocode.defaultX}")
     private Double defaultX;
 
-    @Value("${myapp.defaultY}")
+    @Value("${geocode.defaultY}")
     private Double defaultY;
 
     @Value("${geocode.apiKey}")

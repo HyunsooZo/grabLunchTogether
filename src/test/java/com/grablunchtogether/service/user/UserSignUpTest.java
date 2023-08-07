@@ -2,6 +2,7 @@ package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserSignUpInput;
@@ -20,12 +21,13 @@ import static org.mockito.Mockito.*;
 class UserSignUpTest {
     @Mock
     private UserRepository userRepository;
+    private JwtTokenProvider jwtTokenProvider;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository);
+        userService = new UserServiceImpl(userRepository,jwtTokenProvider);
     }
 
     @Test
