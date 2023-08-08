@@ -67,4 +67,8 @@ public class Plan {
         this.planTime = planTime;
         this.requestMessage = requestMessage;
     }
+
+    public void expired() {
+        this.planStatus = EXPIRED;
+    }
 }
