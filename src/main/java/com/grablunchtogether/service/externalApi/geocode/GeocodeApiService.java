@@ -1,4 +1,4 @@
-package com.grablunchtogether.service.user.externalApi;
+package com.grablunchtogether.service.externalApi.geocode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
