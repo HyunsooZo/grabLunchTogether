@@ -3,8 +3,11 @@ package com.grablunchtogether.controller;
 import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.dto.clovaOcr.OcrApiDto;
+import com.grablunchtogether.dto.user.UserOcrSignUpInput;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.*;
+import com.grablunchtogether.service.externalApi.clovaOcr.OcrApiService;
 import com.grablunchtogether.service.externalApi.geocode.GeocodeApiService;
 import com.grablunchtogether.service.user.UserService;
 import io.swagger.annotations.Api;
@@ -30,6 +33,7 @@ public class UserController {
 
     private final UserService userService;
     private final GeocodeApiService geocodeApiService;
+    private final OcrApiService ocrApiService;
 
     @PostMapping("/signup")
     @Transactional
@@ -110,6 +114,36 @@ public class UserController {
 
         ServiceResult result =
                 userService.changeUserPassword(userDto.getId(), userChangePasswordInput);
+
+        return ResponseResult.result(result);
+    }
+
+    @PostMapping("/signup/simple")
+    @ApiOperation(value = "명함 OCR 회원가입", notes = "명함이미지를 받아 간편회원가입을 진행합니다.")
+    public ResponseEntity<?> ocrSignUp(
+            @Valid @RequestBody UserOcrSignUpInput userOcrSignUpInput,
+            Errors errors){
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        OcrApiDto ocrData = ocrApiService.getUserInfoFromNameCard(userOcrSignUpInput.getImageName());
+
+        GeocodeDto geocodeApiResponse =
+                geocodeApiService.getCoordinate(ocrData.getAddress(), ocrData.getStreetNumber());
+
+        UserSignUpInput userSignUpInput = UserSignUpInput.builder()
+                .userEmail(ocrData.getEmail())
+                .userName(ocrData.getName())
+                .userPassword(userOcrSignUpInput.getPassword())
+                .userPhoneNumber(ocrData.getMobile())
+                .company(ocrData.getCompany())
+                .build();
+
+        ServiceResult result =
+                userService.userSignUp(userSignUpInput, geocodeApiResponse);
 
         return ResponseResult.result(result);
     }
