@@ -12,4 +12,7 @@ public interface PlanService {
 
     //내가 요청한 점심약속 리스트 가져오기
     ServiceResult getPlanListIRequested(Long id);
+
+    //요청받은 점심약속을 수락 또는 거절
+    ServiceResult approvePlan(Long id, Long planId, Character acceptCode);
 }

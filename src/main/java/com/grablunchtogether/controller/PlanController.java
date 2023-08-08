@@ -95,6 +95,22 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
+    // 점심약속 업데이트(1) - 거절 / 승낙 (상태업데이트)
+    @PatchMapping("/api/plan/accept/{planId}/{acceptCode}")
+    @ApiOperation(value = "점심약속 수락/거절 하기" , notes = "내가 받은 점심약속 수락/거절하기")
+    public ResponseEntity<?> approvePlanRequest(
+            @PathVariable Long planId,
+            @PathVariable Character acceptCode,
+            @RequestHeader("Authorization") String token) {
+
+        UserDto userDto = userService.tokenValidation(token);
+        ServiceResult result = planService.approvePlan(userDto.getId(), planId, acceptCode);
+
+        return ResponseResult.result(result);
+    }
+
+
+
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {

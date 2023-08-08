@@ -10,6 +10,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static com.grablunchtogether.common.enums.PlanStatus.ACCEPTED;
+import static com.grablunchtogether.common.enums.PlanStatus.REJECTED;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -49,5 +52,8 @@ public class Plan {
     @Column
     private LocalDateTime RegisteredAt;
 
-
+    // 수락/ 거절을 위한 메서드
+    public void approve(Character approvalCode){
+        this.planStatus = approvalCode == 'Y' ? ACCEPTED : REJECTED;
+    }
 }

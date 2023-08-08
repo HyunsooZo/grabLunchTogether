@@ -1,5 +1,6 @@
 package com.grablunchtogether.service.plan;
 
+import com.grablunchtogether.common.exception.AuthorityException;
 import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.exception.ExistingPlanException;
 import com.grablunchtogether.common.exception.UserInfoNotFoundException;
@@ -92,7 +93,7 @@ public class PlanServiceImpl implements PlanService {
         List<PlanDto> result = new ArrayList<>();
 
         List<Plan> list =
-                planRepository.findByRequesterIdAndPlanStatusNot(userId,COMPLETED);
+                planRepository.findByRequesterIdAndPlanStatusNot(userId, COMPLETED);
 
         if (list.isEmpty()) {
             throw new ContentNotFoundException("요청한 점심식사 요청이 없습니다.");
@@ -103,5 +104,25 @@ public class PlanServiceImpl implements PlanService {
         });
 
         return ServiceResult.success("목록 수신 성공", result);
+    }
+
+    //받은 요청을 수락(Y) 또는 거절(N)
+    @Override
+    @Transactional
+    public ServiceResult approvePlan(Long userId, Long planId, Character acceptCode) {
+
+        Plan plan = planRepository.findByIdAndAccepterId(planId, userId).orElseThrow(
+                () -> new ContentNotFoundException("존재하지 않는 점심약속이거나 나에게 요청된 약속이 아닙니다.")
+        );
+
+        if (!plan.getPlanStatus().equals(REQUESTED)) {
+            throw new AuthorityException("이미 수락 또는 거절/만료 된 약속입니다.");
+        }
+
+        plan.approve(acceptCode);
+
+        planRepository.save(plan);
+
+        return ServiceResult.success(acceptCode == 'Y' ? "수락이 완료되었습니다." : "거절이 완료되었습니다.");
     }
 }
