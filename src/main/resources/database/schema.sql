@@ -40,6 +40,12 @@ create table plan_history
         foreign key (plan_id) references plan (id)
 );
 
+ALTER TABLE plan_history
+    ADD COLUMN requester_id BIGINT,
+    ADD COLUMN accepter_id BIGINT,
+    ADD CONSTRAINT FK_requester_id FOREIGN KEY (requester_id) REFERENCES user (id),
+    ADD CONSTRAINT FK_accepter_id FOREIGN KEY (accepter_id) REFERENCES user (id);
+
 create table review
 (
     id             bigint       not null
