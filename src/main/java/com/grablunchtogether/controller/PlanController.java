@@ -123,6 +123,21 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
+    @PatchMapping("/api/plan/edit/{planId}")
+    @ApiOperation(value = "점심약속 수정 하기", notes = "수락된 점심약속 취소하기")
+    public ResponseEntity<?> editPlanRequest(
+            @PathVariable Long planId,
+            @RequestHeader("Authorization") String token,
+            @RequestBody PlanCreationInput planModificationInput) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                planService.editPlanRequest(userDto.getId(), planId, planModificationInput);
+
+        return ResponseResult.result(result);
+    }
+
 
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
