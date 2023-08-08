@@ -64,10 +64,24 @@ public class PlanController {
         ServiceResult result =
                 planService.createPlan(userDto.getId(), accepterId, planCreationInput);
 
-        smsApiService.sendSmsToAccepter(userDto.getId(), accepterId ,planCreationInput);
+        smsApiService.sendSmsToAccepter(userDto.getId(), accepterId, planCreationInput);
 
         return ResponseResult.result(result);
     }
+
+    // 나에게 신청된 점심약속 리스트 조회
+    @GetMapping("/received")
+    @ApiOperation(value = "받은 점심약속요청 조회하기", notes = "신청받은 모든 약속요청리스트를 조회합니다.")
+    public ResponseEntity<?> getPlanListReceived(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result = planService.getPlanListReceived(userDto.getId());
+
+        return ResponseResult.result(result);
+    }
+
 
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
