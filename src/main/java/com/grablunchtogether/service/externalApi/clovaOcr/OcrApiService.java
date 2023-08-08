@@ -3,7 +3,6 @@ package com.grablunchtogether.service.externalApi.clovaOcr;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grablunchtogether.dto.clovaOcr.NameCard;
 import com.grablunchtogether.dto.clovaOcr.OcrApiDto;
 import com.grablunchtogether.dto.clovaOcr.OcrImageElements;
 import com.grablunchtogether.dto.clovaOcr.OcrInput;
@@ -51,28 +50,21 @@ public class OcrApiService {
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             JsonNode jsonNode = objectMapper.readTree(response);
-            JsonNode resultNode = jsonNode.path("result");
+            JsonNode imageArray = jsonNode.path("images");
+            JsonNode firstImage = imageArray.get(0);
+            JsonNode nameCardObject = firstImage.path("nameCard");
 
-            NameCard nameCard = objectMapper.treeToValue(resultNode, NameCard.class);
+            String name = extractName(nameCardObject);
+            String company = extractCompany(nameCardObject);
+            String address = extractAddress(nameCardObject);
+            String streetNumber = extractStreetNumber(nameCardObject);
+            String mobile = extractMobile(nameCardObject);
+            String email = extractEmail(nameCardObject);
 
-            String name = nameCard.getName().replace(" ", "");
-            String company = nameCard.getCompany();
-
-            JsonNode addressNode = resultNode.path("address").get(0);
-            String address = addressNode.path("text").asText();
-            String[] addressArr = address.split(" ");
-            String streetNumber = addressArr[addressArr.length - 1].replaceAll("\\D", "");
-
-            JsonNode mobileNode = resultNode.path("mobile").get(0);
-            String mobile = mobileNode.path("text").asText().replaceAll("\\D", "");
-
-            JsonNode emailNode = resultNode.path("email").get(0);
-            String email = emailNode.path("text").asText();
-
-            return OcrApiDto.builder()
+            // Create OcrApiDto object using extracted values
+            OcrApiDto ocrApiDto = OcrApiDto.builder()
                     .email(email)
                     .name(name)
                     .company(company)
@@ -81,9 +73,11 @@ public class OcrApiService {
                     .streetNumber(streetNumber)
                     .build();
 
-        }catch (Exception e){
+            return ocrApiDto;
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return new OcrApiDto();
     }
 
@@ -140,5 +134,40 @@ public class OcrApiService {
         ResponseEntity<byte[]> response = restTemplate.exchange(imagePathInput, HttpMethod.GET, null, byte[].class);
         byte[] imageBytes = response.getBody();
         return Base64.getEncoder().encodeToString(imageBytes);
+    }
+
+    // JsonNode에서 이름추출
+    private String extractName(JsonNode nameCardObject) {
+        JsonNode nameArray = nameCardObject.path("result").path("name");
+        return nameArray.get(0).get("text").asText().replace(" ", "");
+    }
+
+    // JsonNode에서 회사명추출
+    private String extractCompany(JsonNode nameCardObject) {
+        JsonNode companyArray = nameCardObject.path("result").path("company");
+        return companyArray.get(0).get("text").asText();
+    }
+    // JsonNode에서 주소추출
+    private String extractAddress(JsonNode nameCardObject) {
+        JsonNode addressArray = nameCardObject.path("result").path("address");
+        String[] addressArr = addressArray.get(0).get("text").asText().split(" ");
+        return addressArr[addressArr.length - 2];
+    }
+    // JsonNode에서 주소번호 추출
+    private String extractStreetNumber(JsonNode nameCardObject) {
+        JsonNode resultNode = nameCardObject.path("result");
+        JsonNode addressArray = resultNode.path("address");
+        String[] addressArr = addressArray.get(0).get("text").asText().split(" ");
+        return addressArr[addressArr.length - 1].replaceAll("\\D", "");
+    }
+    // JsonNode에서 휴대폰번호 추출
+    private String extractMobile(JsonNode nameCardObject) {
+        JsonNode mobileArray = nameCardObject.path("result").path("mobile");
+        return mobileArray.get(0).get("text").asText().replaceAll("\\D", "");
+    }
+    // JsonNode에서 이메일 추출
+    private String extractEmail(JsonNode nameCardObject) {
+        JsonNode emailArray = nameCardObject.path("result").path("email");
+        return emailArray.get(0).get("text").asText();
     }
 }
