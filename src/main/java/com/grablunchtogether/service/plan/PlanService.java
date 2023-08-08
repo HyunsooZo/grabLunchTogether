@@ -9,4 +9,7 @@ public interface PlanService {
 
     //나에게 요청된 점심약속 리스트 가져오기
     ServiceResult getPlanListReceived(Long id);
+
+    //내가 요청한 점심약속 리스트 가져오기
+    ServiceResult getPlanListIRequested(Long id);
 }

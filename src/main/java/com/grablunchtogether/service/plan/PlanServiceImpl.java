@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.grablunchtogether.common.enums.PlanStatus.COMPLETED;
 import static com.grablunchtogether.common.enums.PlanStatus.REQUESTED;
 
 @RequiredArgsConstructor
@@ -65,6 +66,7 @@ public class PlanServiceImpl implements PlanService {
 
     //나에게 요청된 점심약속 목록가져오기
     @Override
+    @Transactional(readOnly = true)
     public ServiceResult getPlanListReceived(Long userId) {
 
         List<PlanDto> result = new ArrayList<>();
@@ -74,6 +76,26 @@ public class PlanServiceImpl implements PlanService {
 
         if (list.isEmpty()) {
             throw new ContentNotFoundException("받은 점심약속 요청이 없습니다.");
+        }
+
+        list.forEach(plan -> {
+            result.add(PlanDto.of(plan));
+        });
+
+        return ServiceResult.success("목록 수신 성공", result);
+    }
+
+    //내가 요청한 점심약속 목록 조회
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceResult getPlanListIRequested(Long userId) {
+        List<PlanDto> result = new ArrayList<>();
+
+        List<Plan> list =
+                planRepository.findByRequesterIdAndPlanStatusNot(userId,COMPLETED);
+
+        if (list.isEmpty()) {
+            throw new ContentNotFoundException("요청한 점심식사 요청이 없습니다.");
         }
 
         list.forEach(plan -> {
