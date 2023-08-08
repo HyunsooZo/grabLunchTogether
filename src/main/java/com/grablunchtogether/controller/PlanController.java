@@ -82,6 +82,18 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
+    // 내가 신청한 점심약속 리스트 조회
+    @GetMapping("/api/plan/list/requested")
+    @ApiOperation(value = "요청한 점심약속 조회하기" , notes = "내가 요청한 모든 약속리스트 조회하기")
+    public ResponseEntity<?> getPlanListIRequested(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result = planService.getPlanListIRequested(userDto.getId());
+
+        return ResponseResult.result(result);
+    }
 
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();

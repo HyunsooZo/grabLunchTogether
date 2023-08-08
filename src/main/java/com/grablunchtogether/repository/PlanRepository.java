@@ -13,4 +13,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
                                                                PlanStatus planStatus);
 
     List<Plan> findByAccepterIdAndPlanStatus(Long userId, PlanStatus planStatus);
+
+    List<Plan> findByRequesterIdAndPlanStatusNot(Long userId, PlanStatus planStatus);
 }
