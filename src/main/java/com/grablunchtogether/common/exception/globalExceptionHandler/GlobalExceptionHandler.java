@@ -50,5 +50,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> AuthorityExceptionHandler(AuthorityException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    //Exception 핸들러(이미 수락/거절/만료 된 점심약속의 상태를 변경하려고 할 경우)
+    @ExceptionHandler(PlanTimeNotMatchedException.class)
+    public ResponseEntity<String> PlanTimeNotMatchedExceptionHandler(PlanTimeNotMatchedException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 
