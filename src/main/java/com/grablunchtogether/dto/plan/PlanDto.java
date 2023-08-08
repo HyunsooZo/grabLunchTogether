@@ -18,6 +18,8 @@ public class PlanDto {
     private long id;
     private long requesterId;
     private long accepterId;
+    private String requesterEmail;
+    private String accepterEmail;
     private String planMenu;
     private String planRestaurant;
     private PlanStatus planStatus;
@@ -28,6 +30,8 @@ public class PlanDto {
                 .id(plan.getId())
                 .requesterId(plan.getRequester().getId())
                 .accepterId(plan.getAccepter().getId())
+                .requesterEmail(plan.getRequester().getUserEmail())
+                .accepterEmail(plan.getAccepter().getUserEmail())
                 .planMenu(plan.getPlanMenu())
                 .planRestaurant(plan.getPlanRestaurant())
                 .planStatus(plan.getPlanStatus())
