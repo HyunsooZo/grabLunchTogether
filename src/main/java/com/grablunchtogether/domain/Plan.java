@@ -52,10 +52,19 @@ public class Plan {
     private LocalDateTime RegisteredAt;
 
     // 수락/ 거절을 위한 메서드
-    public void approve(Character approvalCode){
+    public void approve(Character approvalCode) {
         this.planStatus = approvalCode == 'Y' ? ACCEPTED : REJECTED;
     }
-    public void cancel(){
+
+    public void cancel() {
         this.planStatus = CANCELED;
+    }
+
+    public void update(String planMenu, String planRestaurant, LocalDateTime planTime,
+                       String requestMessage) {
+        this.planMenu = planMenu;
+        this.planRestaurant = planRestaurant;
+        this.planTime = planTime;
+        this.requestMessage = requestMessage;
     }
 }

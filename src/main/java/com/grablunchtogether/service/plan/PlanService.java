@@ -18,4 +18,7 @@ public interface PlanService {
 
     //수락된 점심약속을 취소
     ServiceResult cancelPlan(Long id, Long planId);
+
+    //요청중인 상태의 점심약속을 수정
+    ServiceResult editPlanRequest(Long id, Long planId, PlanCreationInput planModificationInput);
 }

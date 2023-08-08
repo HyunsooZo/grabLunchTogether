@@ -149,4 +149,32 @@ public class PlanServiceImpl implements PlanService {
 
         return ServiceResult.success("점심약속요청이 취소되었습니다.");
     }
+
+    //내가 요청한 점심약속 수정
+    @Override
+    @Transactional
+    public ServiceResult editPlanRequest(Long userId,
+                                         Long planId,
+                                         PlanCreationInput planModificationInput) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new ContentNotFoundException("존재하지 않는 약속 신청입니다."));
+
+        if (!Objects.equals(plan.getRequester().getId(), userId)) {
+            throw new AuthorityException("내가 신청한 약속만 수정할 수 있습니다.");
+        }
+
+        if (!Objects.equals(plan.getPlanStatus(), REQUESTED)) {
+            throw new AuthorityException("요청중인 상태의 점심약속만 수정할 수 있습니다.");
+        }
+
+        plan.update(planModificationInput.getPlanMenu(),
+                planModificationInput.getPlanRestaurant(),
+                planModificationInput.getPlanTime(),
+                planModificationInput.getRequestMessage());
+
+        planRepository.save(plan);
+
+        return ServiceResult.success("점심약속 요청 수정이 완료되었습니다.");
+    }
 }
