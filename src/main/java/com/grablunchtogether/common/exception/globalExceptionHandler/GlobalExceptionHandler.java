@@ -38,5 +38,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> UserInfoNotFoundExceptionHandler(UserInfoNotFoundException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    //Exception 핸들러(동일인물에게 '요청중' 상태의 약속이 있는데 다시 약속 신청)
+    @ExceptionHandler(ExistingPlanException.class)
+    public ResponseEntity<String> ExistingPlanExceptionHandler(ExistingPlanException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 
