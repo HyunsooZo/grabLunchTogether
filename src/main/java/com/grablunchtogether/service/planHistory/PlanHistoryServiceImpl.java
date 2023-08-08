@@ -42,7 +42,16 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
             planRepository.save(plan);
         });
 
+        if(completedPlans.isEmpty()){
+            return;
+        }
+
         registerHistory(completedPlans);
+
+        completedPlans.forEach(plan -> {
+            plan.historyLoaded();
+        });
+
     }
 
     @Override

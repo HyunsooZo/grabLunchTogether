@@ -71,4 +71,8 @@ public class Plan {
     public void expired() {
         this.planStatus = EXPIRED;
     }
+
+    public void historyLoaded() {
+        this.planStatus = HISTORY_LOADED;
+    }
 }
