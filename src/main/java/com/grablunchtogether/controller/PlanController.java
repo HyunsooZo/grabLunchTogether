@@ -127,7 +127,7 @@ public class PlanController {
     @ApiOperation(value = "점심약속 수정 하기", notes = "수락된 점심약속 취소하기")
     public ResponseEntity<?> editPlanRequest(
             @PathVariable Long planId,
-            @RequestHeader("Authorization") String token,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody PlanCreationInput planModificationInput) {
 
         UserDto userDto = userService.tokenValidation(token);
@@ -138,7 +138,19 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
+    // 점심약속 삭제
+    @DeleteMapping("/api/plan/delete/{planId}")
+    @ApiOperation(value = "점심약속 삭제 하기", notes = "요청상태의 점심약속 삭제하기")
+    public ResponseEntity<?> deletePlanRequest(
+            @PathVariable Long planId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result = planService.planDeletion(userDto.getId(), planId);
+
+        return ResponseResult.result(result);
+    }
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {

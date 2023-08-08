@@ -1,9 +1,6 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.ExistingPlanException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
+import com.grablunchtogether.common.exception.*;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -176,5 +174,33 @@ public class PlanServiceImpl implements PlanService {
         planRepository.save(plan);
 
         return ServiceResult.success("점심약속 요청 수정이 완료되었습니다.");
+    }
+    //점심약속 삭제
+    @Override
+    @Transactional
+    public ServiceResult planDeletion(Long userid, Long planId) {
+        Plan plan = planRepository.findById(planId).orElseThrow(()
+                -> new ContentNotFoundException("존재하지 않는 점심약속입니다."));
+
+        if (!Objects.equals(plan.getRequester().getId(), userid)) {
+            throw new AuthorityException("본인이 요청한 점심약속 만 삭제할 수 있습니다.");
+        }
+
+        if (!Objects.equals(plan.getPlanStatus(), REQUESTED)) {
+            throw new AuthorityException("이미 수락 또는 거절된 점심약속은 삭제할 수 없습니다." +
+                    " 점심약속 취소를 진행 해주세요.");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedDateTime = LocalDateTime.now().format(formatter);
+
+        if (plan.getPlanTime().plusHours(1)
+                .isBefore(LocalDateTime.parse(formattedDateTime, formatter))) {
+            throw new PlanTimeNotMatchedException("약속시간 1시간 이전에만 삭제가 가능합니다.");
+        }
+
+        planRepository.delete(plan);
+
+        return ServiceResult.success("점심약속요청이 삭제되었습니다.");
     }
 }
