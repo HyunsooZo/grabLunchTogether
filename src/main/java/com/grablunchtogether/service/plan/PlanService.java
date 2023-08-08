@@ -15,4 +15,7 @@ public interface PlanService {
 
     //요청받은 점심약속을 수락 또는 거절
     ServiceResult approvePlan(Long id, Long planId, Character acceptCode);
+
+    //수락된 점심약속을 취소
+    ServiceResult cancelPlan(Long id, Long planId);
 }

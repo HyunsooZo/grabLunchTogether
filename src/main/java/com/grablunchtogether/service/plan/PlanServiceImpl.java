@@ -18,9 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static com.grablunchtogether.common.enums.PlanStatus.COMPLETED;
-import static com.grablunchtogether.common.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.common.enums.PlanStatus.*;
 
 @RequiredArgsConstructor
 @Service
@@ -124,5 +124,29 @@ public class PlanServiceImpl implements PlanService {
         planRepository.save(plan);
 
         return ServiceResult.success(acceptCode == 'Y' ? "수락이 완료되었습니다." : "거절이 완료되었습니다.");
+    }
+
+    // 받은 or 신청한 요청을 취소
+    @Override
+    @Transactional
+    public ServiceResult cancelPlan(Long userid, Long planId) {
+
+        Plan plan = planRepository.findById(planId).orElseThrow(()
+                -> new ContentNotFoundException("존재하지 않는 점심약속입니다."));
+
+        if (!Objects.equals(plan.getAccepter().getId(), userid) &&
+                !Objects.equals(plan.getRequester().getId(), userid)) {
+            throw new AuthorityException("본인이 요청/수신 한 점심약속 만 취소할 수 있습니다.");
+        }
+
+        if (!Objects.equals(plan.getPlanStatus(), ACCEPTED)) {
+            throw new AuthorityException("이미 취소 되었거나 취소할 수 없는상태의 점심약속입니다.");
+        }
+
+        plan.cancel();
+
+        planRepository.save(plan);
+
+        return ServiceResult.success("점심약속요청이 취소되었습니다.");
     }
 }
