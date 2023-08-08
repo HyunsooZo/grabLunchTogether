@@ -1,11 +1,13 @@
 package com.grablunchtogether.service.plan;
 
+import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.exception.ExistingPlanException;
 import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanCreationInput;
+import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.grablunchtogether.common.enums.PlanStatus.REQUESTED;
 
@@ -57,5 +61,25 @@ public class PlanServiceImpl implements PlanService {
         );
 
         return ServiceResult.success("약속이 생성되었습니다.");
+    }
+
+    //나에게 요청된 점심약속 목록가져오기
+    @Override
+    public ServiceResult getPlanListReceived(Long userId) {
+
+        List<PlanDto> result = new ArrayList<>();
+
+        List<Plan> list =
+                planRepository.findByAccepterIdAndPlanStatus(userId, REQUESTED);
+
+        if (list.isEmpty()) {
+            throw new ContentNotFoundException("받은 점심약속 요청이 없습니다.");
+        }
+
+        list.forEach(plan -> {
+            result.add(PlanDto.of(plan));
+        });
+
+        return ServiceResult.success("목록 수신 성공", result);
     }
 }
