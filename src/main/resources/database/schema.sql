@@ -77,15 +77,18 @@ create table must_eat_place
     menu           varchar(255) null
 );
 
-create table favorite_spot
+create table bookmark_spot
 (
-    id            bigint auto_increment
+    id             bigint auto_increment
         primary key,
-    menu          varchar(255) null,
-    registered_at datetime     null,
-    restaurant    varchar(255) null,
-    user_id       bigint       null,
-    constraint FKrlf4gs8a0xgnm038ve7dub8y2
+    address        varchar(255) null,
+    menu           varchar(255) null,
+    operation_hour varchar(255) null,
+    rate           varchar(255) null,
+    registered_at  datetime     null,
+    restaurant     varchar(255) null,
+    user_id        bigint       null,
+    constraint FKne4tidw6hivo2ly5ceftevund
         foreign key (user_id) references user (id)
 );
 
