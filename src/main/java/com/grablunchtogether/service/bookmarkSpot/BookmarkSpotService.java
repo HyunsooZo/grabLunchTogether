@@ -12,4 +12,7 @@ public interface BookmarkSpotService {
 
     //등록된 즐겨찾기 맛집 목록 가져오기
     ServiceResult listBookmarkSpot(Long userId);
+
+    //등록된 즐겨찾기 맛집 삭제하기
+    ServiceResult deleteBookmarkSpot(Long bookmarkSpotId, Long userId);
 }

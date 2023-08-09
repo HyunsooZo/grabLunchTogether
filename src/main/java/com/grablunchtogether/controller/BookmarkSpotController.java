@@ -75,6 +75,20 @@ public class BookmarkSpotController {
         return ResponseResult.result(result);
     }
 
+    @PostMapping("/delete/{bookmarkSpotId}")
+    @ApiOperation(value = "맛집 즐겨찾기 삭제", notes = "본인이 등록된 맛집 즐겨찾기 목록을 삭제합니다.")
+    public ResponseEntity<?> deleteBookmarkSpot(
+            @PathVariable Long bookmarkSpotId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto user = userService.tokenValidation(token);
+
+        ServiceResult result =
+                bookmarkSpotService.deleteBookmarkSpot(bookmarkSpotId,user.getId());
+
+        return ResponseResult.result(result);
+    }
+
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {

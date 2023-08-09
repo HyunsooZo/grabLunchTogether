@@ -1,5 +1,6 @@
 package com.grablunchtogether.service.bookmarkSpot;
 
+import com.grablunchtogether.common.exception.AuthorityException;
 import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -90,5 +92,24 @@ public class BookmarkSpotServiceImpl implements BookmarkSpotService {
         });
 
         return ServiceResult.success("목록가져오기 성공", result);
+    }
+
+    @Override
+    @Transactional
+    public ServiceResult deleteBookmarkSpot(Long bookmarkSpotId, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserInfoNotFoundException("고객정보를 찾을 수 없습니다."));
+
+        BookmarkSpot bookmarkSpot = bookmarkSpotRepository.findById(bookmarkSpotId)
+                .orElseThrow(() -> new ContentNotFoundException("등록되지 않은 맛집정보입니다."));
+
+        if (!Objects.equals(bookmarkSpot.getUserId(), user)) {
+            throw new AuthorityException("본인의 즐겨찾기 식당만 삭제할 수 있습니다.");
+        }
+
+        bookmarkSpotRepository.delete(bookmarkSpot);
+
+        return ServiceResult.success("즐겨찾기 맛집을 삭제했습니다.");
     }
 }
