@@ -1,6 +1,7 @@
 package com.grablunchtogether.service.mustEatPlace;
 
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
 import org.springframework.scheduling.annotation.Scheduled;
 
 public interface MustEatPlaceService {
@@ -10,4 +11,7 @@ public interface MustEatPlaceService {
 
     //도시 이름을 기반으로 맛집리스트 조회(별점순)
     ServiceResult mustEatPlaceList(String cityName);
+
+    //맛집 ID로 맛집 가져오기
+    MustEatPlaceDto getMustEatPlace(Long mustEatPlaceId);
 }

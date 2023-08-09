@@ -153,4 +153,15 @@ public class MustEatPlaceServiceImpl implements MustEatPlaceService {
 
         return ServiceResult.success("맛집리스트 불러오기 성공", result);
     }
+
+    //맛집 ID로 맛집 가져오기
+    @Override
+    @Transactional(readOnly = true)
+    public MustEatPlaceDto getMustEatPlace(Long mustEatPlaceId) {
+
+        MustEatPlace mustEatPlace = mustEatPlaceRepository.findById(mustEatPlaceId)
+                .orElseThrow(() -> new ContentNotFoundException("존재하지 않는 맛집정보입니다."));
+
+        return MustEatPlaceDto.of(mustEatPlace);
+    }
 }
