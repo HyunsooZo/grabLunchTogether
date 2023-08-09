@@ -56,5 +56,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> PlanTimeNotMatchedExceptionHandler(PlanTimeNotMatchedException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    //Exception 핸들러(이미 수락/거절/만료 된 점심약속의 상태를 변경하려고 할 경우)
+    @ExceptionHandler(CrawlingIsInProgressException.class)
+    public ResponseEntity<String> CrawlingIsInProgressException(CrawlingIsInProgressException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 
