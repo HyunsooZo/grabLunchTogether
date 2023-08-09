@@ -87,6 +87,18 @@ public class FavoriteUserController {
         return ResponseResult.result(result);
     }
 
+    @PostMapping("/list")
+    @ApiOperation(value = "즐겨찾는 친구 조회하기", notes = "즐겨찾는 유저목록을 조회합니다.")
+    public ResponseEntity<?> listFavoriteUser(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto user = userService.tokenValidation(token);
+
+        ServiceResult result = favoriteUserService.listFavoriteUser(user.getId());
+
+        return ResponseResult.result(result);
+    }
+
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {

@@ -6,6 +6,7 @@ import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
 import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -83,5 +86,26 @@ public class FavoriteUserServiceImpl implements FavoriteUserService {
         favoriteUserRepository.delete(favoriteUser);
 
         return ServiceResult.success("즐겨찾는 유저 삭제가 완료되었습니다.");
+    }
+
+    @Override
+    public ServiceResult listFavoriteUser(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserInfoNotFoundException("고객정보를 찾을 수 없습니다."));
+
+        List<FavoriteUser> listEntity = favoriteUserRepository.findByUserId(user);
+
+        if (listEntity.isEmpty()) {
+            throw new ContentNotFoundException("등록된 즐겨찾는 유저가 존재하지 않습니다.");
+        }
+
+        List<FavoriteUserDto> result = new ArrayList<>();
+
+        listEntity.forEach(favoriteUser -> {
+            result.add(FavoriteUserDto.of(favoriteUser));
+        });
+
+        return ServiceResult.success("목록 수신 성공", result);
     }
 }
