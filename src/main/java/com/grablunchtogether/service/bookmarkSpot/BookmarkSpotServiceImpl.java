@@ -6,6 +6,7 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.MustEatPlace;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
 import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotInput;
 import com.grablunchtogether.repository.BookmarkSpotRepository;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -67,5 +70,25 @@ public class BookmarkSpotServiceImpl implements BookmarkSpotService {
                 .build());
 
         return ServiceResult.success("맛집 즐겨찾기 등록 완료");
+    }
+
+    @Override
+    public ServiceResult listBookmarkSpot(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserInfoNotFoundException("고객정보를 찾을 수 없습니다."));
+
+        List<BookmarkSpot> listEntity = bookmarkSpotRepository.findByUserId(user);
+
+        if (listEntity.isEmpty()) {
+            throw new ContentNotFoundException("즐겨찾기에 등록된 장소가 없습니다.");
+        }
+
+        List<BookmarkSpotDto> result = new ArrayList<>();
+
+        listEntity.forEach(bookmarkSpot -> {
+            result.add(BookmarkSpotDto.of(bookmarkSpot));
+        });
+
+        return ServiceResult.success("목록가져오기 성공", result);
     }
 }
