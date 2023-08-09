@@ -48,7 +48,19 @@ public class BookmarkSpotController {
 
         return ResponseResult.result(result);
     }
+    @PostMapping("/register/must-eat-place/{mustEatPlaceId}")
+    @ApiOperation(value = "맛집 즐겨찾기 등록", notes = "사용자가 조회된 맛집을 이용해 맛집 즐겨찾기를 등록합니다.")
+    public ResponseEntity<?> registerBookmarkSpotWithMustEatPlace(
+            @PathVariable Long mustEatPlaceId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
 
+        UserDto user = userService.tokenValidation(token);
+
+        ServiceResult result = bookmarkSpotService
+                .registerBookmarkWithMustEatPlace(mustEatPlaceId, user.getId());
+
+        return ResponseResult.result(result);
+    }
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {
