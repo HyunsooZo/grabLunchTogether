@@ -65,7 +65,7 @@ create table review
         foreign key (commenter_id) references user (id)
 );
 
-create table foodie_spot
+create table must_eat_place
 (
     id             bigint auto_increment
         primary key,
