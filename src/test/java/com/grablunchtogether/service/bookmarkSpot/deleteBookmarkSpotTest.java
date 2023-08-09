@@ -63,9 +63,10 @@ class deleteBookmarkSpotTest {
     public void deleteBookmarkSpot_Fail_UserNotMatch() {
         //given
         User user = User.builder().id(2L).build();
+        User user2 = User.builder().id(3L).build();
         BookmarkSpot bookmarkSpot = BookmarkSpot.builder()
                 .id(1L)
-                .userId(user)
+                .userId(user2)
                 .restaurant("테스트")
                 .build();
 
