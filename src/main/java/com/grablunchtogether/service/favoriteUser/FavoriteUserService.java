@@ -13,4 +13,7 @@ public interface FavoriteUserService {
     ServiceResult editFavoriteUser(FavoriteUserInput favoriteUserEditInput,
                                    Long id,
                                    Long favoriteUserId);
+
+    //즐겨찾기 유저 삭제
+    ServiceResult deleteFavoriteUser(Long userId, Long favoriteUserId);
 }

@@ -73,6 +73,20 @@ public class FavoriteUserController {
         return ResponseResult.result(result);
     }
 
+    @PostMapping("/delete/user/{favoriteUserId}")
+    @ApiOperation(value = "즐겨찾는 친구 삭제하기", notes = "즐겨찾는 유저를 삭제합니다.")
+    public ResponseEntity<?> deleteFavoriteUser(
+            @PathVariable Long favoriteUserId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto user = userService.tokenValidation(token);
+
+        ServiceResult result =
+                favoriteUserService.deleteFavoriteUser(user.getId(), favoriteUserId);
+
+        return ResponseResult.result(result);
+    }
+
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {
