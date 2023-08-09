@@ -104,7 +104,7 @@ public class BookmarkSpotServiceImpl implements BookmarkSpotService {
         BookmarkSpot bookmarkSpot = bookmarkSpotRepository.findById(bookmarkSpotId)
                 .orElseThrow(() -> new ContentNotFoundException("등록되지 않은 맛집정보입니다."));
 
-        if (!Objects.equals(bookmarkSpot.getUserId(), user)) {
+        if (bookmarkSpot.getUserId().equals(user)) {
             throw new AuthorityException("본인의 즐겨찾기 식당만 삭제할 수 있습니다.");
         }
 
