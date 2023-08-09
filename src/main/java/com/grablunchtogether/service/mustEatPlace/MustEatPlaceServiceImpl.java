@@ -1,6 +1,10 @@
 package com.grablunchtogether.service.mustEatPlace;
 
+import com.grablunchtogether.common.exception.ContentNotFoundException;
+import com.grablunchtogether.common.exception.CrawlingIsInProgressException;
+import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.MustEatPlace;
+import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -123,5 +128,29 @@ public class MustEatPlaceServiceImpl implements MustEatPlaceService {
                             .city(city)
                             .build());
         }
+    }
+
+    //도시 이름을 기반으로 맛집리스트 조회(별점순)
+    @Override
+    @Transactional(readOnly = true)
+    public ServiceResult mustEatPlaceList(String cityName) {
+        if (isCrawlingInProgress()) {
+            throw new CrawlingIsInProgressException(
+                    "맛집정보를 업데이트하는 중입니다. 잠시후 다시 시도해주세요.");
+        }
+
+        List<MustEatPlace> list =
+                mustEatPlaceRepository.findByCityOrderByRateDesc(cityName);
+        if (list.isEmpty()) {
+            throw new ContentNotFoundException("해당 지역에 대한 맛집 정보가 등록되어있지 않습니다.");
+        }
+
+        List<MustEatPlaceDto> result = new ArrayList<>();
+
+        list.forEach(e -> {
+            result.add(MustEatPlaceDto.of(e));
+        });
+
+        return ServiceResult.success("맛집리스트 불러오기 성공", result);
     }
 }
