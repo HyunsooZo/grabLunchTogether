@@ -7,5 +7,10 @@ public interface FavoriteUserService {
     //즐겨찾기 유저 추가
     ServiceResult addFavoriteUser(FavoriteUserInput favoriteUserInput,
                                   Long id,
-                                  Long favoriteUserId);
+                                  Long otherUserId);
+
+    //즐겨찾기 유저 정보 수정
+    ServiceResult editFavoriteUser(FavoriteUserInput favoriteUserEditInput,
+                                   Long id,
+                                   Long favoriteUserId);
 }

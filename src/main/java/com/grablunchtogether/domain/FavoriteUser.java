@@ -1,5 +1,6 @@
 package com.grablunchtogether.domain;
 
+import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,4 +32,8 @@ public class FavoriteUser {
 
     @Column
     private LocalDateTime registeredAt;
+
+    public void edit(FavoriteUserInput favoriteUserEditInput) {
+        this.nickName = favoriteUserEditInput.getNickName();
+    }
 }

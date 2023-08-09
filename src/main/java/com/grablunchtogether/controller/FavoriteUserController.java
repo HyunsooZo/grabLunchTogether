@@ -29,10 +29,10 @@ public class FavoriteUserController {
     private final UserService userService;
     private final FavoriteUserService favoriteUserService;
 
-    @PostMapping("/add/user/{favoriteUserId}")
+    @PostMapping("/add/user/{otherUserId}")
     @ApiOperation(value = "즐겨찾는 친구 추가하기", notes = "즐겨찾는 유저를 추가합니다.")
     public ResponseEntity<?> addFavoriteUser(
-            @PathVariable Long favoriteUserId,
+            @PathVariable Long otherUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @Valid @RequestBody FavoriteUserInput favoriteUserInput,
             Errors errors) {
@@ -46,7 +46,29 @@ public class FavoriteUserController {
 
         ServiceResult result = favoriteUserService.addFavoriteUser(favoriteUserInput,
                                                                     user.getId(),
-                                                                    favoriteUserId);
+                                                                    otherUserId);
+
+        return ResponseResult.result(result);
+    }
+    @PostMapping("/edit/user/{favoriteUserId}")
+    @ApiOperation(value = "즐겨찾는 친구 닉네임 수정하기", notes = "즐겨찾는 유저 닉네임을 수정합니다.")
+    public ResponseEntity<?> editFavoriteUser(
+            @PathVariable Long favoriteUserId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody FavoriteUserInput favoriteUserEditInput,
+            Errors errors) {
+
+        ResponseEntity<?> responseErrorList = errorValidation(errors);
+        if (responseErrorList != null) {
+            return responseErrorList;
+        }
+
+        UserDto user = userService.tokenValidation(token);
+
+        ServiceResult result =
+                favoriteUserService.editFavoriteUser(favoriteUserEditInput,
+                                                    user.getId(),
+                                                    favoriteUserId);
 
         return ResponseResult.result(result);
     }
