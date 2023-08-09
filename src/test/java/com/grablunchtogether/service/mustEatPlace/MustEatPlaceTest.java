@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 class MustEatPlaceTest {
     @Mock
@@ -75,5 +76,37 @@ class MustEatPlaceTest {
         Assertions.assertThatThrownBy(() -> mustEatPlaceService.mustEatPlaceList(city))
                 .isInstanceOf(ContentNotFoundException.class)
                 .hasMessage("해당 지역에 대한 맛집 정보가 등록되어있지 않습니다.");
+    }
+
+    @Test
+    public void testGetMustEatPlaceTest_Success(){
+        //given
+        Long id = 1L;
+
+        MustEatPlace mustEatPlace = MustEatPlace.builder()
+                .restaurant("restaurant")
+                .menu("menu")
+                .address("address")
+                .rate("rate")
+                .operationHour("operationTime")
+                .city("city")
+                .build();
+
+        Mockito.when(mustEatPlaceRepository.findById(id))
+                .thenReturn(Optional.of(mustEatPlace));
+        //when
+        MustEatPlaceDto result = mustEatPlaceService.getMustEatPlace(id);
+        //then
+        Assertions.assertThat(result).isEqualTo(MustEatPlaceDto.of(mustEatPlace));
+    }
+
+    @Test
+    public void testGetMustEatPlaceTest_Fail(){
+        //given
+        Long id = 1L;
+        //when,then
+        Assertions.assertThatThrownBy(()->mustEatPlaceService.getMustEatPlace(id))
+                .isInstanceOf(ContentNotFoundException.class)
+                .hasMessage("존재하지 않는 맛집정보입니다.");
     }
 }
