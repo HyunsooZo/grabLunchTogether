@@ -22,7 +22,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
-class editUserReviewTest {
+class EditUserReviewTest {
     @Mock
     private UserRepository userRepository;
 
