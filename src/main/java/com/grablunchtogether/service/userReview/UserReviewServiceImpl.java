@@ -60,13 +60,15 @@ public class UserReviewServiceImpl implements UserReviewService {
             throw new UserReviewAlreadyExistsException("이미 해당 점심약속에 대해 남긴 리뷰가 존재합니다.");
         }
 
+        targetUser.rateUpdate(newAverageRate);
+
         userReviewRepository.save(
                 UserReview.builder()
                         .reviewerId(user)
                         .targetedId(targetUser)
                         .planId(planHistory.getPlanId())
                         .reviewContent(userReviewInput.getReviewContent())
-                        .rate(newAverageRate)
+                        .rate(userReviewInput.getRate())
                         .registeredAt(LocalDateTime.now())
                         .build()
         );
@@ -75,6 +77,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
+    @Transactional
     public ServiceResult editReview(Long userId,
                                     Long userReviewId,
                                     UserReviewInput userReviewEditInput) {
@@ -97,6 +100,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
+    @Transactional
     public ServiceResult deleteReview(Long userId, Long userReviewId) {
 
         User user = userRepository.findById(userId).orElseThrow(
@@ -115,6 +119,7 @@ public class UserReviewServiceImpl implements UserReviewService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ServiceResult listReviews(Long targetUserId) {
 
         User user = userRepository.findById(targetUserId)

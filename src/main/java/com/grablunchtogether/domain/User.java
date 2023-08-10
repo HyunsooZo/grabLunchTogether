@@ -58,5 +58,9 @@ public class User {
     public void changePassword(String newPassword){
         this.userPassword = newPassword;
     }
+
+    public void rateUpdate(Double newAverageRate) {
+        this.userRate = newAverageRate;
+    }
 }
 
