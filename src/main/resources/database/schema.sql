@@ -46,7 +46,7 @@ ALTER TABLE plan_history
     ADD CONSTRAINT FK_requester_id FOREIGN KEY (requester_id) REFERENCES user (id),
     ADD CONSTRAINT FK_accepter_id FOREIGN KEY (accepter_id) REFERENCES user (id);
 
-create table review
+create table user_review
 (
     id             bigint       not null
         primary key,
@@ -54,15 +54,15 @@ create table review
     registered_at  datetime     null,
     review_content varchar(255) null,
     updated_at     datetime     null,
-    commenter_id   bigint       null,
     plan_id        bigint       null,
-    reviewed_id    bigint       null,
-    constraint FKkyyk7cdv7d1rh2v4b5jbt3b5y
-        foreign key (reviewed_id) references user (id),
-    constraint FKomheyskkgdrvp8f4d59ou606s
-        foreign key (plan_id) references plan (id),
-    constraint FKreb79wjxdshw4s1bhc49woxi5
-        foreign key (commenter_id) references user (id)
+    reviewer_id    bigint       null,
+    targeted_id    bigint       null,
+    constraint FK6r4d45i008kyohe6tob4dbnd4
+        foreign key (targeted_id) references user (id),
+    constraint FKkysqcqfumpg7bg7l7wba26a4n
+        foreign key (reviewer_id) references user (id),
+    constraint FKr44nufscxienme7cm55klxycg
+        foreign key (plan_id) references plan (id)
 );
 
 create table must_eat_place

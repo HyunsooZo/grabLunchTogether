@@ -37,10 +37,8 @@ class PlanApprovalTest {
     @Test
     public void TestPlanApproval_Success() {
         //given
-        User requester = new User();
-        requester.setId(1L);
-        User accepter = new User();
-        accepter.setId(2L);
+        User requester = User.builder().id(1L).build();
+        User accepter = User.builder().id(2L).build();
 
         Plan plan1 = Plan.builder()
                 .id(1L)
@@ -87,8 +85,7 @@ class PlanApprovalTest {
     public void TestPlanApproval_Fail_EmptyPlan() {
         //given
 
-        User accepter = new User();
-        accepter.setId(2L);
+        User accepter = User.builder().id(2L).build();
 
         Plan plan = Plan.builder().id(1L).build();
 
@@ -106,10 +103,8 @@ class PlanApprovalTest {
     @Test
     public void TestPlanApproval_Fail_AlreadyDone() {
         //given
-        User requester = new User();
-        requester.setId(1L);
-        User accepter = new User();
-        accepter.setId(2L);
+        User requester = User.builder().id(1L).build();
+        User accepter = User.builder().id(2L).build();
 
         Plan plan1 = Plan.builder()
                 .id(1L)

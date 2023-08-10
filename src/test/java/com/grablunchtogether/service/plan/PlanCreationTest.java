@@ -39,12 +39,9 @@ class PlanCreationTest {
     @Test
     public void testPlanCreation_Success() {
         //given
-        User requester = new User();
-        requester.setId(1L);
+        User requester = User.builder().id(1L).build();
 
-        User accepter = new User();
-        accepter.setId(2L);
-        accepter.setUserPhoneNumber("01084983484");
+        User accepter = User.builder().id(1L).userPhoneNumber("01084983484").build();
 
         PlanCreationInput planCreationInput = PlanCreationInput.builder()
                 .planMenu("test")
@@ -72,12 +69,9 @@ class PlanCreationTest {
     @Test
     public void testPlanCreation_Fail_Exists() {
         //given
-        User requester = new User();
-        requester.setId(1L);
+        User requester = User.builder().id(1L).userPhoneNumber("123333222").build();
 
-        User accepter = new User();
-        accepter.setId(2L);
-        accepter.setUserPhoneNumber("01084983484");
+        User accepter = User.builder().id(2L).userPhoneNumber("01084983484").build();
 
         PlanCreationInput planCreationInput = PlanCreationInput.builder()
                 .planMenu("test")
@@ -105,12 +99,8 @@ class PlanCreationTest {
     @Test
     public void testPlanCreation_Fail_NoUser() {
         //given
-        User requester = new User();
-        requester.setId(1L);
-
-        User accepter = new User();
-        accepter.setId(2L);
-        accepter.setUserPhoneNumber("01084983484");
+        User requester = User.builder().id(1L).build();
+        User accepter = User.builder().id(2L).userPhoneNumber("01084983484").build();
 
         PlanCreationInput planCreationInput = new PlanCreationInput();
 

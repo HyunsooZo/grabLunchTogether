@@ -62,5 +62,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> CrawlingIsInProgressException(CrawlingIsInProgressException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    //Exception 핸들러(이미 해당 점심약속에 대해 작성한 리뷰가 존재할때)
+    @ExceptionHandler(UserReviewAlreadyExistsException.class)
+    public ResponseEntity<String> UserReviewAlreadyExistsExceptionHandler(UserReviewAlreadyExistsException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 
