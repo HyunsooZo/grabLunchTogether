@@ -14,5 +14,5 @@ public interface UserReviewService {
     ServiceResult deleteReview(Long id, Long userReviewId);
 
     // 작성된 리뷰목록 조회
-    ServiceResult listReviews(Long id, Long targetUserId);
+    ServiceResult listReviews(Long targetUserId);
 }

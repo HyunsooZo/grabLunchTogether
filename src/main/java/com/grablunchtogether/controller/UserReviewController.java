@@ -79,6 +79,19 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
+    @GetMapping("/list/{targetUserId}")
+    @ApiOperation(value = "사용자에 대한 리뷰목록 조회", notes = "해당 사용자에 대한 리뷰들을 조회합니다.")
+    public ResponseEntity<?> listUserReview(
+            @PathVariable Long targetUserId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                userReviewService.listReviews(targetUserId);
+
+        return ResponseResult.result(result);
+    }
 
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();

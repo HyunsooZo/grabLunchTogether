@@ -8,6 +8,7 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
 import com.grablunchtogether.dto.userReview.UserReviewInput;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,6 +112,26 @@ public class UserReviewServiceImpl implements UserReviewService {
         userReviewRepository.delete(userReview);
 
         return ServiceResult.success("리뷰 삭제가 완료되었습니다.");
+    }
+
+    @Override
+    public ServiceResult listReviews(Long targetUserId) {
+
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new UserInfoNotFoundException("고객정보가 존재하지 않습니다."));
+
+        List<UserReview> list = userReviewRepository.findByTargetedId(user);
+
+        if (list.isEmpty()) {
+            throw new ContentNotFoundException("해당 유저에 대해 작성된 리뷰가 존재하지 않습니다.");
+        }
+
+        List<UserReviewDto> result = new ArrayList<>();
+
+        list.forEach(userReview -> {
+            result.add(UserReviewDto.of(userReview));
+        });
+        return ServiceResult.success("목록 조회 성공", result);
     }
 
     private Double calculateAverageRate(User targetUser, Double newRate) {
