@@ -9,6 +9,7 @@ import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.*;
 import com.grablunchtogether.service.externalApi.clovaOcr.OcrApiService;
 import com.grablunchtogether.service.externalApi.geocode.GeocodeApiService;
+import com.grablunchtogether.service.user.MailSenderService;
 import com.grablunchtogether.service.user.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,7 @@ public class UserController {
     private final UserService userService;
     private final GeocodeApiService geocodeApiService;
     private final OcrApiService ocrApiService;
+    private final MailSenderService mailSenderService;
 
     @PostMapping("/signup")
     @Transactional
@@ -145,6 +147,15 @@ public class UserController {
         ServiceResult result =
                 userService.userSignUp(userSignUpInput, geocodeApiResponse);
 
+        return ResponseResult.result(result);
+    }
+    @PostMapping("/resetPassword")
+    @ApiOperation(value = "비밀번호 초기화", notes = "비밀번호를 초기화 하고 이메일로 전송합니다.")
+    public ResponseEntity<?> ocrSignUp(
+            @RequestBody UserPasswordResetInput userPasswordResetInput){
+
+        ServiceResult result =
+                mailSenderService.resetPassword(userPasswordResetInput);
         return ResponseResult.result(result);
     }
 
