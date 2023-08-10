@@ -6,8 +6,9 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.dto.userReview.UserReviewInput;
 import com.grablunchtogether.service.user.UserService;
-import com.grablunchtogether.service.userReview.ReviewService;
+import com.grablunchtogether.service.userReview.UserReviewService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,10 +26,11 @@ import java.util.List;
 @RequestMapping("/api/review")
 @RestController
 public class UserReviewController {
-    private final ReviewService reviewService;
+    private final UserReviewService userReviewService;
     private final UserService userService;
 
     @PostMapping("add/{planHistoryId}")
+    @ApiOperation(value = "상대방에게 리뷰등록", notes = "점심약속을 마친 상대방에게 리뷰를 남깁니다.")
     public ResponseEntity<?> addReview(
             @PathVariable Long planHistoryId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -43,7 +45,22 @@ public class UserReviewController {
         UserDto userDto = userService.tokenValidation(token);
 
         ServiceResult result =
-                reviewService.addReview(userDto.getId(), planHistoryId, userReviewInput);
+                userReviewService.addReview(userDto.getId(), planHistoryId, userReviewInput);
+
+        return ResponseResult.result(result);
+    }
+
+    @PutMapping("/edit/{userReviewId}")
+    @ApiOperation(value = "작성된 리뷰 수정", notes = "작성된 리뷰를 수정합니다.(별점은 수정이 불가합니다.)")
+    public ResponseEntity<?> editUserReview(
+            @PathVariable Long userReviewId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @RequestBody UserReviewInput userReviewEditInput) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                userReviewService.editReview(userDto.getId(), userReviewId, userReviewEditInput);
 
         return ResponseResult.result(result);
     }

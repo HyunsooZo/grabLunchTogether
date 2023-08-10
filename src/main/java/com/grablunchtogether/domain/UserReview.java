@@ -1,5 +1,6 @@
 package com.grablunchtogether.domain;
 
+import com.grablunchtogether.dto.userReview.UserReviewInput;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,4 +42,9 @@ public class UserReview {
 
     @Column
     private LocalDateTime updatedAt;
+
+    public void edit(UserReviewInput userReviewEditInput){
+        this.reviewContent = userReviewEditInput.getReviewContent();
+        this.updatedAt = LocalDateTime.now();
+    }
 }
