@@ -65,6 +65,21 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
+    @DeleteMapping("/delete/{userReviewId}")
+    @ApiOperation(value = "작성된 리뷰 삭제", notes = "작성된 리뷰를 삭제합니다.(평균 별점은 변동되지 않습니다.)")
+    public ResponseEntity<?> deleteUserReview(
+            @PathVariable Long userReviewId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        UserDto userDto = userService.tokenValidation(token);
+
+        ServiceResult result =
+                userReviewService.deleteReview(userDto.getId(), userReviewId);
+
+        return ResponseResult.result(result);
+    }
+
+
     private ResponseEntity<?> errorValidation(Errors errors) {
         List<ResponseError> responseErrorList = new ArrayList<>();
         if (errors.hasErrors()) {

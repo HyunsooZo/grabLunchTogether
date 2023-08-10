@@ -94,6 +94,24 @@ public class UserReviewServiceImpl implements UserReviewService {
         return ServiceResult.success("리뷰 수정이 완료되었습니다.");
     }
 
+    @Override
+    public ServiceResult deleteReview(Long userId, Long userReviewId) {
+
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new UserInfoNotFoundException("고객정보를 찾을 수 없습니다. 다시 시도해 주세요."));
+
+        UserReview userReview = userReviewRepository.findById(userReviewId).orElseThrow(
+                () -> new ContentNotFoundException("존재하지 않는 리뷰입니다."));
+
+        if (!userReview.getReviewerId().equals(user)) {
+            throw new AuthorityException("본인이 작성한 리뷰만 삭제할 수 있습니다.");
+        }
+
+        userReviewRepository.delete(userReview);
+
+        return ServiceResult.success("리뷰 삭제가 완료되었습니다.");
+    }
+
     private Double calculateAverageRate(User targetUser, Double newRate) {
 
         User target = userRepository.findById(targetUser.getId()).orElseThrow(
