@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
@@ -20,8 +21,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.headers().frameOptions().sameOrigin();
 
-        // 로그인 개발 전 임시 세팅
         http.authorizeRequests()
-                .antMatchers("/**").permitAll();
+                .antMatchers("/api/user/signup",
+                        "/api/user/signup/simple",
+                        "/api/user/login",
+                        "/swagger-ui/index.html",
+                        "/swagger-ui/**",
+                        "/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/webjars/**")
+                .permitAll();
+
+        http.authorizeRequests()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .addFilterBefore(new JwtTokenFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
     }
 }
