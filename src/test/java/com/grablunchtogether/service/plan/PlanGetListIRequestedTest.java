@@ -38,11 +38,8 @@ class PlanGetListIRequestedTest {
     @Test
     public void testGetPlanListIRequested_Success() {
         //given
-        User requester = new User();
-        requester.setId(1L);
-
-        User accepter = new User();
-        accepter.setId(2L);
+        User requester = User.builder().id(1L).build();
+        User accepter = User.builder().id(2L).build();
 
         Plan plan1 = Plan.builder()
                 .id(1L)
@@ -86,11 +83,9 @@ class PlanGetListIRequestedTest {
     @Test
     public void testGetPlanListIRequested_Fail() {
         //given
-        User requester = new User();
-        requester.setId(1L);
+        User requester = User.builder().id(1L).build();
 
-        User accepter = new User();
-        accepter.setId(2L);
+        User accepter = User.builder().id(2L).build();
 
         List<Plan> list = new ArrayList<>();
 

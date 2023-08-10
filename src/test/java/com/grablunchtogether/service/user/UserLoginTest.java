@@ -40,11 +40,11 @@ class UserLoginTest {
                 new UserLoginInput("test@example.com", "1111");
 
         User existingUser = User.builder()
+                .id(2L)
                 .userName("Test User")
                 .userEmail("test@example.com")
                 .userPassword(PasswordUtility.getEncryptPassword("2222"))
                 .build();
-        existingUser.setId(2L);
 
         when(userRepository.findByUserEmail("test@example.com"))
                 .thenReturn(Optional.of(existingUser));
@@ -81,11 +81,11 @@ class UserLoginTest {
                 new UserLoginInput("test@example.com", "1111");
 
         User existingUser = User.builder()
+                .id(2L)
                 .userName("Test User")
                 .userEmail("test@example.com")
                 .userPassword(PasswordUtility.getEncryptPassword("1111"))
                 .build();
-        existingUser.setId(2L);
 
         when(userRepository.findByUserEmail("test@example.com"))
                 .thenReturn(Optional.of(existingUser));

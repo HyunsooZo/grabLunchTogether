@@ -75,7 +75,7 @@ class UserEditInformationTest {
         GeocodeDto coordinate = new GeocodeDto();
 
         User existingUser = new User();
-        existingUser.setUserPassword(PasswordUtility.getEncryptPassword("existingPassword"));
+        existingUser.changePassword(PasswordUtility.getEncryptPassword("existingPassword"));
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(existingUser));
 
         // when, then
