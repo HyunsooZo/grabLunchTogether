@@ -100,10 +100,8 @@ public class UserServiceImpl implements UserService {
         String userPhoneNumber =
                 userInformationEditInput.getUserPhoneNumber().replaceAll("\\D", "");
 
-        user.setUserPhoneNumber(userPhoneNumber);
-        user.setCompany(userInformationEditInput.getCompany());
-        user.setLatitude(coordinate.getLatitude());
-        user.setLongitude(coordinate.getLongitude());
+        user.update(userPhoneNumber,userInformationEditInput.getCompany(),
+                coordinate.getLatitude(),coordinate.getLongitude());
 
         userRepository.save(user);
 
@@ -129,7 +127,7 @@ public class UserServiceImpl implements UserService {
         String encryptedPassword =
                 PasswordUtility.getEncryptPassword(userChangePasswordInput.getUserNewPassword());
 
-        user.setUserPassword(encryptedPassword);
+        user.changePassword(encryptedPassword);
 
         userRepository.save(user);
 
