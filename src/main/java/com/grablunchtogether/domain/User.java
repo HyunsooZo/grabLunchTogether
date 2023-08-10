@@ -3,13 +3,13 @@ package com.grablunchtogether.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -46,5 +46,17 @@ public class User {
 
     @Column
     private LocalDateTime registeredAt;
+
+    public void update(String userPhoneNumber, String company, Double latitude,
+                       Double longitude){
+        this.userPhoneNumber = userPhoneNumber;
+        this.company = company;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public void changePassword(String newPassword){
+        this.userPassword = newPassword;
+    }
 }
 
