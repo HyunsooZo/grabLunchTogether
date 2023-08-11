@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class PlanHistory {
+public class PlanHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +30,4 @@ public class PlanHistory {
     @ManyToOne
     @JoinColumn(name = "accepterId", referencedColumnName = "id")
     private User accepterId;
-
-    @Column
-    private LocalDateTime registeredAt;
 }

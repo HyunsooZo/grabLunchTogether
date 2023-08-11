@@ -5,16 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,9 +44,6 @@ public class User {
 
     @Column
     private Double longitude;
-
-    @Column
-    private LocalDateTime registeredAt;
 
     public void update(String userPhoneNumber, String company, Double latitude,
                        Double longitude){

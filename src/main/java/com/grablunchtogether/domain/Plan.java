@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -16,8 +17,9 @@ import static com.grablunchtogether.common.enums.PlanStatus.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class Plan {
+public class Plan extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +49,6 @@ public class Plan {
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime planTime;
-
-    @Column
-    private LocalDateTime RegisteredAt;
 
     // 수락/ 거절을 위한 메서드
     public void approve(Character approvalCode) {

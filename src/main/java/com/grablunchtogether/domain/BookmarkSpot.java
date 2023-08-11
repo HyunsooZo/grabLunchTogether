@@ -4,16 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class BookmarkSpot {
+public class BookmarkSpot extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,7 +37,4 @@ public class BookmarkSpot {
 
     @Column
     private String rate;
-
-    @Column
-    private LocalDateTime registeredAt;
 }

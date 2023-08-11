@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
 
@@ -11,8 +12,9 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class MustEatPlace {
+public class MustEatPlace extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
