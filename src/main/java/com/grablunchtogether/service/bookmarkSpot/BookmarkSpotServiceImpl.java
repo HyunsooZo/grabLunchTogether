@@ -43,7 +43,6 @@ public class BookmarkSpotServiceImpl implements BookmarkSpotService {
                 .address(bookmarkSpotInput.getAddress())
                 .operationHour(bookmarkSpotInput.getOperationHour())
                 .rate(bookmarkSpotInput.getRate())
-                .registeredAt(LocalDateTime.now())
                 .build());
 
         return ServiceResult.success("맛집 즐겨찾기 등록 완료");
@@ -68,7 +67,6 @@ public class BookmarkSpotServiceImpl implements BookmarkSpotService {
                 .address(mustEatPlace.getAddress())
                 .operationHour(mustEatPlace.getOperationHour())
                 .rate(mustEatPlace.getRate())
-                .registeredAt(LocalDateTime.now())
                 .build());
 
         return ServiceResult.success("맛집 즐겨찾기 등록 완료");

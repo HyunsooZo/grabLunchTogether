@@ -51,7 +51,6 @@ class PlanEditTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         PlanCreationInput planModificationInput =
@@ -89,7 +88,6 @@ class PlanEditTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(COMPLETED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         PlanCreationInput planModificationInput =
@@ -125,7 +123,6 @@ class PlanEditTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(COMPLETED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         PlanCreationInput planModificationInput =

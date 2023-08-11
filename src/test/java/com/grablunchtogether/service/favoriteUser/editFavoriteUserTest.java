@@ -45,7 +45,6 @@ class editFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         FavoriteUserInput favoriteUserEditInput =
@@ -75,7 +74,6 @@ class editFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         FavoriteUserInput favoriteUserEditInput =
@@ -104,7 +102,6 @@ class editFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(other)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         FavoriteUserInput favoriteUserEditInput =

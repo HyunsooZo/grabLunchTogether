@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.mockito.Mockito.times;
@@ -45,7 +44,6 @@ class deleteFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(userRepository.findById(user.getId()))
@@ -73,7 +71,6 @@ class deleteFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(other)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(userRepository.findById(user.getId()))

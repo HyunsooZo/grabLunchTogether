@@ -5,16 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class FavoriteUser {
+public class FavoriteUser extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -29,9 +30,6 @@ public class FavoriteUser {
 
     @Column
     private String nickName;
-
-    @Column
-    private LocalDateTime registeredAt;
 
     public void edit(FavoriteUserInput favoriteUserEditInput) {
         this.nickName = favoriteUserEditInput.getNickName();

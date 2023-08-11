@@ -69,7 +69,6 @@ public class UserReviewServiceImpl implements UserReviewService {
                         .planId(planHistory.getPlanId())
                         .reviewContent(userReviewInput.getReviewContent())
                         .rate(userReviewInput.getRate())
-                        .registeredAt(LocalDateTime.now())
                         .build()
         );
 

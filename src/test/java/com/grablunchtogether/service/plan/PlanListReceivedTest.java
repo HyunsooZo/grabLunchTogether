@@ -50,7 +50,6 @@ class PlanListReceivedTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Plan plan2 = Plan.builder()
@@ -62,7 +61,6 @@ class PlanListReceivedTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("b")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         List<PlanDto> dtoList = new ArrayList<>();

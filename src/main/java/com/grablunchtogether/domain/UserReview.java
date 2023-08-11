@@ -5,16 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@AuditOverride(forClass = BaseEntity.class)
 @Entity
-public class UserReview {
+public class UserReview extends BaseEntity {
     @Id
     @GeneratedValue
     private Long id;
@@ -37,14 +38,7 @@ public class UserReview {
     @Column
     private Double rate;
 
-    @Column
-    private LocalDateTime registeredAt;
-
-    @Column
-    private LocalDateTime updatedAt;
-
-    public void edit(UserReviewInput userReviewEditInput){
+    public void edit(UserReviewInput userReviewEditInput) {
         this.reviewContent = userReviewEditInput.getReviewContent();
-        this.updatedAt = LocalDateTime.now();
     }
 }

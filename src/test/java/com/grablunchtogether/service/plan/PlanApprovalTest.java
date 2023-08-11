@@ -49,7 +49,6 @@ class PlanApprovalTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Plan plan2 = Plan.builder()
@@ -61,7 +60,6 @@ class PlanApprovalTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findByIdAndAccepterId(1L, accepter.getId()))
@@ -115,7 +113,6 @@ class PlanApprovalTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(ACCEPTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findByIdAndAccepterId(1L, accepter.getId()))
