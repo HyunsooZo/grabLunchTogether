@@ -47,7 +47,6 @@ class PlanCancelTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(ACCEPTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan1.getId()))
@@ -76,7 +75,6 @@ class PlanCancelTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(ACCEPTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan2.getId()))
@@ -103,7 +101,6 @@ class PlanCancelTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan1.getId()))

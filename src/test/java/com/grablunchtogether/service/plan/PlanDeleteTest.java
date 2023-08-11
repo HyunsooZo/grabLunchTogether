@@ -50,7 +50,6 @@ class PlanDeleteTest {
                 .planTime(LocalDateTime.parse("2023-09-01T11:00"))
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(requester.getId()))
@@ -79,7 +78,6 @@ class PlanDeleteTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(COMPLETED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan.getId()))
@@ -108,7 +106,6 @@ class PlanDeleteTest {
                 .planTime(LocalDateTime.now())
                 .requestMessage("a")
                 .planStatus(COMPLETED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan.getId()))
@@ -136,7 +133,6 @@ class PlanDeleteTest {
                 .planTime(LocalDateTime.parse("2023-08-08T00:14:02"))
                 .requestMessage("a")
                 .planStatus(REQUESTED)
-                .RegisteredAt(LocalDateTime.now())
                 .build();
 
         Mockito.when(planRepository.findById(plan.getId()))

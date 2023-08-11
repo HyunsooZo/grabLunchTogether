@@ -46,7 +46,6 @@ class listFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         FavoriteUser favoriteUser2 = FavoriteUser.builder()
@@ -54,7 +53,6 @@ class listFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         List<FavoriteUser> listEntity = new ArrayList<>();
@@ -88,7 +86,6 @@ class listFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         FavoriteUser favoriteUser2 = FavoriteUser.builder()
@@ -96,7 +93,6 @@ class listFavoriteUserTest {
                 .favoriteUserId(favorite)
                 .userId(user)
                 .nickName("aa")
-                .registeredAt(LocalDateTime.now())
                 .build();
 
         List<FavoriteUser> listEntity = new ArrayList<>();
