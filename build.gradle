@@ -45,6 +45,8 @@ dependencies {
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     //java-mail-sender
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    //hibernate-envers
+    implementation "org.springframework.data:spring-data-envers"
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
