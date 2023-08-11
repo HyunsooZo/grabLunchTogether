@@ -63,7 +63,6 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
                         .planId(plan)
                         .requesterId(plan.getRequester())
                         .accepterId(plan.getAccepter())
-                        .registeredAt(LocalDateTime.now())
                         .build());
             }
         });

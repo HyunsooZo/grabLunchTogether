@@ -56,7 +56,6 @@ public class PlanServiceImpl implements PlanService {
                         .planTime(planCreationInput.getPlanTime())
                         .requestMessage(planCreationInput.getRequestMessage())
                         .planStatus(REQUESTED)
-                        .RegisteredAt(LocalDateTime.now())
                         .build()
         );
 

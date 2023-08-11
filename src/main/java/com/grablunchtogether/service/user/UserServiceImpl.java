@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
                 .company(userSignUpInput.getCompany())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
-                .registeredAt(LocalDateTime.now())
                 .build());
 
         return ServiceResult.success("회원가입 완료");

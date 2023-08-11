@@ -41,7 +41,6 @@ public class FavoriteUserServiceImpl implements FavoriteUserService {
                         .nickName(favoriteUserInput.getNickName())
                         .userId(user)
                         .favoriteUserId(favoriteUser)
-                        .registeredAt(LocalDateTime.now())
                         .build()
         );
 
