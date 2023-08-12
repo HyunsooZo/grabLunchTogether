@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/bookmark-spot")
+@RequestMapping("/api/bookmark-spots")
 @Api(tags = "BookMark Spot API", description = "즐겨찾는 장소와 관련된 API")
 @RestController
 public class BookmarkSpotController {
     private final UserService userService;
     private final BookmarkSpotService bookmarkSpotService;
 
-    @PostMapping("/register/manual")
+    @PostMapping
     @ApiOperation(value = "맛집 즐겨찾기 등록", notes = "사용자가 직접입력하여 맛집 즐겨찾기를 등록합니다.")
     public ResponseEntity<?> registerBookmarkSpot(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -49,7 +49,7 @@ public class BookmarkSpotController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/register/must-eat-place/{mustEatPlaceId}")
+    @PostMapping("/must-eat-place/{mustEatPlaceId}")
     @ApiOperation(value = "맛집 즐겨찾기 등록", notes = "사용자가 조회된 맛집을 이용해 맛집 즐겨찾기를 등록합니다.")
     public ResponseEntity<?> registerBookmarkSpotWithMustEatPlace(
             @PathVariable Long mustEatPlaceId,
@@ -63,7 +63,7 @@ public class BookmarkSpotController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/list")
+    @GetMapping
     @ApiOperation(value = "맛집 즐겨찾기 조회", notes = "본인이 등록된 맛집 즐겨찾기 목록을 가져옵니다.")
     public ResponseEntity<?> listBookmarkSpot(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
@@ -75,7 +75,7 @@ public class BookmarkSpotController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/delete/{bookmarkSpotId}")
+    @DeleteMapping("/{bookmarkSpotId}")
     @ApiOperation(value = "맛집 즐겨찾기 삭제", notes = "본인이 등록된 맛집 즐겨찾기 목록을 삭제합니다.")
     public ResponseEntity<?> deleteBookmarkSpot(
             @PathVariable Long bookmarkSpotId,

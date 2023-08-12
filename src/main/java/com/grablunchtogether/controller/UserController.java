@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @Api(tags = "User API", description = "사용자와 관련된 API")
 @RestController
 public class UserController {
@@ -74,7 +74,7 @@ public class UserController {
         return ResponseResult.result(result);
     }
 
-    @PatchMapping("/edit/information")
+    @PatchMapping("/edit")
     @ApiOperation(value = "사용자 정보 수정", notes = "입력된 정보로 기존사용자의 정보를 수정합니다.")
     public ResponseEntity<?> editUserInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -100,7 +100,7 @@ public class UserController {
         return ResponseResult.result(result);
     }
 
-    @PatchMapping("/change/password")
+    @PatchMapping("/password/change")
     @ApiOperation(value = "사용자 비밀번호 변경", notes = "기존 비밀번호를 입력된 비밀번호로 변경합니다.")
     public ResponseEntity<?> changePassword(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
@@ -120,7 +120,7 @@ public class UserController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/signup/simple")
+    @PostMapping("/signup/ocr")
     @ApiOperation(value = "명함 OCR 회원가입", notes = "명함이미지를 받아 간편회원가입을 진행합니다.")
     public ResponseEntity<?> ocrSignUp(
             @Valid @RequestBody UserOcrSignUpInput userOcrSignUpInput,
@@ -149,7 +149,7 @@ public class UserController {
 
         return ResponseResult.result(result);
     }
-    @PostMapping("/resetPassword")
+    @PostMapping("/password/reset")
     @ApiOperation(value = "비밀번호 초기화", notes = "비밀번호를 초기화 하고 이메일로 전송합니다.")
     public ResponseEntity<?> ocrSignUp(
             @RequestBody UserPasswordResetInput userPasswordResetInput){

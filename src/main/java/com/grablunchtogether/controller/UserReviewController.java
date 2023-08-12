@@ -29,7 +29,7 @@ public class UserReviewController {
     private final UserReviewService userReviewService;
     private final UserService userService;
 
-    @PostMapping("add/{planHistoryId}")
+    @PostMapping("/planhistory/{planHistoryId}")
     @ApiOperation(value = "상대방에게 리뷰등록", notes = "점심약속을 마친 상대방에게 리뷰를 남깁니다.")
     public ResponseEntity<?> addReview(
             @PathVariable Long planHistoryId,
@@ -50,7 +50,7 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
-    @PutMapping("/edit/{userReviewId}")
+    @PutMapping("/{userReviewId}")
     @ApiOperation(value = "작성된 리뷰 수정", notes = "작성된 리뷰를 수정합니다.(별점은 수정이 불가합니다.)")
     public ResponseEntity<?> editUserReview(
             @PathVariable Long userReviewId,
@@ -65,7 +65,7 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
-    @DeleteMapping("/delete/{userReviewId}")
+    @DeleteMapping("/{userReviewId}")
     @ApiOperation(value = "작성된 리뷰 삭제", notes = "작성된 리뷰를 삭제합니다.(평균 별점은 변동되지 않습니다.)")
     public ResponseEntity<?> deleteUserReview(
             @PathVariable Long userReviewId,
@@ -79,7 +79,7 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
-    @GetMapping("/list/{targetUserId}")
+    @GetMapping("/{targetUserId}")
     @ApiOperation(value = "사용자에 대한 리뷰목록 조회", notes = "해당 사용자에 대한 리뷰들을 조회합니다.")
     public ResponseEntity<?> listUserReview(
             @PathVariable Long targetUserId,
