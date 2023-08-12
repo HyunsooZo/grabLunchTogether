@@ -79,7 +79,7 @@ public class UserReviewController {
         return ResponseResult.result(result);
     }
 
-    @GetMapping("/{targetUserId}")
+    @GetMapping("/user/{targetUserId}")
     @ApiOperation(value = "사용자에 대한 리뷰목록 조회", notes = "해당 사용자에 대한 리뷰들을 조회합니다.")
     public ResponseEntity<?> listUserReview(
             @PathVariable Long targetUserId,
