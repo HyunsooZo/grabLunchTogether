@@ -36,6 +36,8 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
                 planRepository.findPendingPlans(LocalDateTime.now());
         List<Plan> completedPlans =
                 planRepository.findCompletedPlans(LocalDateTime.now());
+        List<Plan> canceledPlans =
+                planRepository.findCanceledPlans(LocalDateTime.now());
 
         pendingPlans.forEach(plan -> {
             plan.expired();
@@ -47,11 +49,17 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
         }
 
         registerHistory(completedPlans);
+        registerHistory(canceledPlans);
 
         completedPlans.forEach(plan -> {
-            plan.historyLoaded();
+            plan.historyLoadComplete();
+            planRepository.save(plan);
         });
 
+        canceledPlans.forEach(plan -> {
+            plan.historyLoadCancel();
+            planRepository.save(plan);
+        });
     }
 
     @Override
