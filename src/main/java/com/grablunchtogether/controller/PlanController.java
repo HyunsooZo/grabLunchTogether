@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/plan")
+@RequestMapping("/api/plans")
 @Api(tags = "Plan API", description = "점심약속과 관련된 API")
 @RestController
 public class PlanController {
@@ -31,7 +31,7 @@ public class PlanController {
     private final PlanService planService;
     private final SMSApiService smsApiService;
 
-    @GetMapping("/search/list/{kilometer}")
+    @GetMapping("/distance/{kilometer}")
     @ApiOperation(value = "주변회원 찾기", notes = "입력된 거리 내 회원목록을 가져옵니다.")
     public ResponseEntity<?> getUserList(
             @PathVariable Double kilometer,
@@ -46,7 +46,7 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/create/{accepterId}")
+    @PostMapping("/user/{accepterId}")
     @ApiOperation(value = "점심약속 생성하기", notes = "상대방에게 입력된 정보로 점심약속을 신청합니다.")
     public ResponseEntity<?> createAPlan(
             @PathVariable Long accepterId,
@@ -83,7 +83,7 @@ public class PlanController {
     }
 
     // 내가 신청한 점심약속 리스트 조회
-    @GetMapping("/api/plan/list/requested")
+    @GetMapping("/requested")
     @ApiOperation(value = "요청한 점심약속 조회하기", notes = "내가 요청한 모든 약속리스트 조회하기")
     public ResponseEntity<?> getPlanListIRequested(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
@@ -96,7 +96,7 @@ public class PlanController {
     }
 
     // 점심약속 업데이트(1) - 거절 / 승낙 (상태업데이트)
-    @PatchMapping("/api/plan/accept/{planId}/{acceptCode}")
+    @PatchMapping("/{planId}/accept/{acceptCode}")
     @ApiOperation(value = "점심약속 수락/거절 하기", notes = "내가 받은 점심약속 수락/거절하기")
     public ResponseEntity<?> approvePlanRequest(
             @PathVariable Long planId,
@@ -110,7 +110,7 @@ public class PlanController {
     }
 
     // 점심약속 업데이트(2) - 취소(상태업데이트)
-    @PatchMapping("/api/plan/cancel/{planId}")
+    @PatchMapping("/{planId}/cancel")
     @ApiOperation(value = "점심약속 취소 하기", notes = "수락된 점심약속 취소하기")
     public ResponseEntity<?> cancelPlanRequest(
             @PathVariable Long planId,
@@ -123,7 +123,7 @@ public class PlanController {
         return ResponseResult.result(result);
     }
 
-    @PatchMapping("/api/plan/edit/{planId}")
+    @PatchMapping("/{planId}/edit")
     @ApiOperation(value = "점심약속 수정 하기", notes = "수락된 점심약속 취소하기")
     public ResponseEntity<?> editPlanRequest(
             @PathVariable Long planId,
@@ -139,7 +139,7 @@ public class PlanController {
     }
 
     // 점심약속 삭제
-    @DeleteMapping("/api/plan/delete/{planId}")
+    @DeleteMapping("/{planId}")
     @ApiOperation(value = "점심약속 삭제 하기", notes = "요청상태의 점심약속 삭제하기")
     public ResponseEntity<?> deletePlanRequest(
             @PathVariable Long planId,

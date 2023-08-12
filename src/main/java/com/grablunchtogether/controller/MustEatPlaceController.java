@@ -13,14 +13,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/must-eat-place")
+@RequestMapping("/api/must-eat-places")
 @Api(tags = "Must-Eat Place API", description = "지역별 맛집과 관련된 API")
 @RestController
 public class MustEatPlaceController {
     private final UserService userService;
     private final MustEatPlaceService mustEatPlaceService;
 
-    @GetMapping("/list/{city}")
+    @GetMapping("/{city}")
     @ApiOperation(value = "맛집목록 불러오기", notes = "도시를 입력하여 해당지역의 맛집목록을 조회합니다.")
     public ResponseEntity<?> findMustEatPlaces(
             @PathVariable String city,

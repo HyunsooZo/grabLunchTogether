@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.common.enums.PlanStatus;
+import com.grablunchtogether.domain.enums.PlanStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.grablunchtogether.common.enums.PlanStatus.*;
+import static com.grablunchtogether.domain.enums.PlanStatus.*;
 
 @Getter
 @AllArgsConstructor

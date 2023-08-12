@@ -22,14 +22,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/favorite-user")
+@RequestMapping("/api/favorite-users")
 @Api(tags = "Favorite User API", description = "즐겨찾는 유저 관련된 API")
 @RestController
 public class FavoriteUserController {
     private final UserService userService;
     private final FavoriteUserService favoriteUserService;
 
-    @PostMapping("/add/user/{otherUserId}")
+    @PostMapping("/user/{otherUserId}")
     @ApiOperation(value = "즐겨찾는 친구 추가하기", notes = "즐겨찾는 유저를 추가합니다.")
     public ResponseEntity<?> addFavoriteUser(
             @PathVariable Long otherUserId,
@@ -50,7 +50,7 @@ public class FavoriteUserController {
 
         return ResponseResult.result(result);
     }
-    @PostMapping("/edit/user/{favoriteUserId}")
+    @PatchMapping("/{favoriteUserId}")
     @ApiOperation(value = "즐겨찾는 친구 닉네임 수정하기", notes = "즐겨찾는 유저 닉네임을 수정합니다.")
     public ResponseEntity<?> editFavoriteUser(
             @PathVariable Long favoriteUserId,
@@ -73,7 +73,7 @@ public class FavoriteUserController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/delete/user/{favoriteUserId}")
+    @DeleteMapping("/{favoriteUserId}")
     @ApiOperation(value = "즐겨찾는 친구 삭제하기", notes = "즐겨찾는 유저를 삭제합니다.")
     public ResponseEntity<?> deleteFavoriteUser(
             @PathVariable Long favoriteUserId,
@@ -87,7 +87,7 @@ public class FavoriteUserController {
         return ResponseResult.result(result);
     }
 
-    @PostMapping("/list")
+    @PostMapping
     @ApiOperation(value = "즐겨찾는 친구 조회하기", notes = "즐겨찾는 유저목록을 조회합니다.")
     public ResponseEntity<?> listFavoriteUser(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {

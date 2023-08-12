@@ -17,8 +17,8 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.common.enums.PlanStatus.COMPLETED;
-import static com.grablunchtogether.common.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.domain.enums.PlanStatus.COMPLETED;
+import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
 
 class PlanDeleteTest {
     @Mock

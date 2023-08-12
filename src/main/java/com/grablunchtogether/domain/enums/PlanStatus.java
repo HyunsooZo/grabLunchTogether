@@ -1,4 +1,4 @@
-package com.grablunchtogether.common.enums;
+package com.grablunchtogether.domain.enums;
 
 public enum PlanStatus {
     REQUESTED,

@@ -17,7 +17,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.common.enums.PlanStatus.*;
+import static com.grablunchtogether.domain.enums.PlanStatus.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class PlanApprovalTest {
