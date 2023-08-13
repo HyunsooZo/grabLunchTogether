@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Entity
 public class UserReview extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
