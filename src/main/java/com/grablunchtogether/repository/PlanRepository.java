@@ -24,7 +24,7 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
     @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'REQUESTED'")
     List<Plan> findPendingPlans(@Param("currentDateTime") LocalDateTime currentDateTime);
 
-    @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'COMPLETED'")
+    @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'ACCEPTED'")
     List<Plan> findCompletedPlans(@Param("currentDateTime") LocalDateTime currentDateTime);
 
     @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'CANCELED'")

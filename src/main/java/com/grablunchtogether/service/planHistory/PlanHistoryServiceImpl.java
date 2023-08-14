@@ -32,32 +32,32 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
     @Transactional
     @Scheduled(cron = "0 * * * * *")
     public void updatePlanHistory() {
-        List<Plan> pendingPlans =
-                planRepository.findPendingPlans(LocalDateTime.now());
         List<Plan> completedPlans =
                 planRepository.findCompletedPlans(LocalDateTime.now());
+        List<Plan> pendingPlans =
+                planRepository.findPendingPlans(LocalDateTime.now());
         List<Plan> canceledPlans =
                 planRepository.findCanceledPlans(LocalDateTime.now());
-
-        pendingPlans.forEach(plan -> {
-            plan.expired();
-            planRepository.save(plan);
-        });
-
-        if(completedPlans.isEmpty()){
-            return;
-        }
-
-        registerHistory(completedPlans);
-        registerHistory(canceledPlans);
 
         completedPlans.forEach(plan -> {
             plan.historyLoadComplete();
             planRepository.save(plan);
         });
 
+        if (canceledPlans.isEmpty() && completedPlans.isEmpty()) {
+            return;
+        }
+
+        registerHistory(completedPlans);
+        registerHistory(canceledPlans);
+
         canceledPlans.forEach(plan -> {
             plan.historyLoadCancel();
+            planRepository.save(plan);
+        });
+
+        pendingPlans.forEach(plan -> {
+            plan.expired();
             planRepository.save(plan);
         });
     }
