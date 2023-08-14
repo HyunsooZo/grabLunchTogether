@@ -22,10 +22,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.headers().frameOptions().sameOrigin();
 
         http.authorizeRequests()
-                .antMatchers("/api/user/signup",
-                        "/api/user/signup/simple",
-                        "/api/user/login",
-                        "/api/user/resetPassword",
+                .antMatchers("/api/users/signup",
+                        "/api/users/signup/ocr",
+                        "/api/users/login",
+                        "/api/users/password/reset",
                         "/swagger-ui/index.html",
                         "/swagger-ui/**",
                         "/v2/api-docs",
