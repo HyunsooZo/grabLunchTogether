@@ -6,7 +6,6 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.domain.enums.PlanStatus;
 import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.PlanRepository;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,12 +35,17 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
     @Transactional
     @Scheduled(cron = "0 * * * * *")
     public void updatePlanHistory() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedTime = LocalDateTime.now().format(formatter);
+        LocalDateTime currentTime = LocalDateTime.parse(formattedTime, formatter);
+
         List<Plan> completedPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), ACCEPTED);
+                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, ACCEPTED);
         List<Plan> pendingPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), REQUESTED);
+                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, REQUESTED);
         List<Plan> canceledPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), CANCELED);
+                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, CANCELED);
 
         pendingPlans.forEach(plan -> {
             plan.expired();
