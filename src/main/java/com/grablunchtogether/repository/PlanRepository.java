@@ -21,12 +21,6 @@ public interface PlanRepository extends JpaRepository<Plan, Long> {
 
     Optional<Plan> findByIdAndAccepterId(Long planId, Long userId);
 
-    @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'REQUESTED'")
-    List<Plan> findPendingPlans(@Param("currentDateTime") LocalDateTime currentDateTime);
-
-    @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'ACCEPTED'")
-    List<Plan> findCompletedPlans(@Param("currentDateTime") LocalDateTime currentDateTime);
-
-    @Query("SELECT p FROM Plan p WHERE p.planTime < :currentDateTime AND p.planStatus = 'CANCELED'")
-    List<Plan> findCanceledPlans(@Param("currentDateTime") LocalDateTime currentDateTime);
+    List<Plan> findByPlanTimeBeforeAndPlanStatus(LocalDateTime currentDateTime,
+                                                 PlanStatus planStatus);
 }
