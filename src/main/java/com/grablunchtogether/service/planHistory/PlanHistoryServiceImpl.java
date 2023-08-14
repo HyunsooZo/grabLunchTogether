@@ -6,7 +6,6 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.domain.enums.PlanStatus;
 import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.PlanRepository;
@@ -18,10 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.grablunchtogether.domain.enums.PlanStatus.*;
 
 @EnableScheduling
 @RequiredArgsConstructor
@@ -35,52 +33,45 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
     @Transactional
     @Scheduled(cron = "0 * * * * *")
     public void updatePlanHistory() {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedTime = LocalDateTime.now().format(formatter);
+        LocalDateTime currentTime = LocalDateTime.parse(formattedTime, formatter);
+        System.out.println(currentTime);
+
         List<Plan> completedPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), ACCEPTED);
+                planRepository.findCompletedPlansUsingNativeQuery(currentTime);
         List<Plan> pendingPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), REQUESTED);
+                planRepository.findPendingPlansUsingNativeQuery(currentTime);
         List<Plan> canceledPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), CANCELED);
+                planRepository.findCanceledPlansUsingNativeQuery(currentTime);
 
         pendingPlans.forEach(plan -> {
             plan.expired();
             planRepository.save(plan);
         });
 
-        if (canceledPlans.isEmpty() && completedPlans.isEmpty()) {
-            return;
-        }
-
-        if (!canceledPlans.isEmpty()) {
-            registerHistory(canceledPlans);
-        }
-        if (!completedPlans.isEmpty()) {
-            registerHistory(completedPlans);
-        }
-
         canceledPlans.forEach(plan -> {
             plan.historyLoadCancel();
             planRepository.save(plan);
+            registerHistory(plan);
         });
 
         completedPlans.forEach(plan -> {
             plan.historyLoadComplete();
+            registerHistory(plan);
             planRepository.save(plan);
         });
     }
 
     @Override
     @Transactional
-    public void registerHistory(List<Plan> plans) {
-        plans.forEach(plan -> {
-            if (!planHistoryRepository.findByPlanId(plan).isPresent()) {
-                planHistoryRepository.save(PlanHistory.builder()
-                        .planId(plan)
-                        .requesterId(plan.getRequester())
-                        .accepterId(plan.getAccepter())
-                        .build());
-            }
-        });
+    public void registerHistory(Plan plan) {
+        planHistoryRepository.save(PlanHistory.builder()
+                .planId(plan)
+                .requesterId(plan.getRequester())
+                .accepterId(plan.getAccepter())
+                .build());
     }
 
     @Override
