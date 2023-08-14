@@ -68,5 +68,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<String> UserReviewAlreadyExistsExceptionHandler(UserReviewAlreadyExistsException exception) {
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.BAD_REQUEST);
     }
+
+    //Exception 핸들러(그 외 모든 예외)
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> ExceptionHandler(Exception exception) {
+        return new ResponseEntity<>("알수없는 에러 : \n"+exception.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
 
