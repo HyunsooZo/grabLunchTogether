@@ -39,8 +39,8 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
         List<Plan> canceledPlans =
                 planRepository.findCanceledPlans(LocalDateTime.now());
 
-        completedPlans.forEach(plan -> {
-            plan.historyLoadComplete();
+        pendingPlans.forEach(plan -> {
+            plan.expired();
             planRepository.save(plan);
         });
 
@@ -48,16 +48,20 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
             return;
         }
 
-        registerHistory(completedPlans);
-        registerHistory(canceledPlans);
+        if (!canceledPlans.isEmpty()) {
+            registerHistory(canceledPlans);
+        }
+        if (!completedPlans.isEmpty()) {
+            registerHistory(completedPlans);
+        }
 
         canceledPlans.forEach(plan -> {
             plan.historyLoadCancel();
             planRepository.save(plan);
         });
 
-        pendingPlans.forEach(plan -> {
-            plan.expired();
+        completedPlans.forEach(plan -> {
+            plan.historyLoadComplete();
             planRepository.save(plan);
         });
     }
@@ -100,7 +104,7 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
             result.add(PlanDto.of(planHistory.getPlanId()));
         });
 
-        if(result.isEmpty()){
+        if (result.isEmpty()) {
             throw new ContentNotFoundException("히스토리가 존재하지 않습니다.");
         }
 
