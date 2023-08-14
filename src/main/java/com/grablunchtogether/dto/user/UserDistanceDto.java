@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class UserDistanceDto {
+    private String id;
     private String userEmail;
     private String userName;
     private double userRate;
@@ -18,11 +19,12 @@ public class UserDistanceDto {
 
     public static UserDistanceDto of(Object[] object) {
         return UserDistanceDto.builder()
-                .userName(object[0].toString())
-                .userEmail(object[1].toString())
+                .id(object[4].toString())
+                .userName(object[1].toString())
+                .userEmail(object[0].toString())
                 .userRate(Double.parseDouble(object[2].toString()))
                 .company(object[3].toString())
-                .distance(String.format("%.1f", (Double) object[4]))
+                .distance(String.format("%.1f", (Double) object[5]))
                 .build();
     }
 }

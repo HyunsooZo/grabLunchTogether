@@ -13,9 +13,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User,Long> {
     Optional<User> findByUserEmail(String userEmail);
     @Query(value =
-            "SELECT u.user_email,u.user_name,u.user_rate,u.company," +
+            "SELECT u.user_email,u.user_name,u.user_rate,u.company,u.id," +
                     "(6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lng)) + sin(radians(:lat)) * sin(radians(latitude)))) AS distance" +
-                    " FROM User u" +
+                    " FROM user u" +
                     " WHERE (6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lng)) + sin(radians(:lat)) * sin(radians(latitude)))) <= :criteria" +
                     " ORDER BY distance",
             countQuery = "SELECT count(*) FROM user u WHERE (6371 * acos(cos(radians(:lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(:lng)) + sin(radians(:lat)) * sin(radians(Latitude)))) <= :criteria",

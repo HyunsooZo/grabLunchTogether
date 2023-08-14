@@ -6,6 +6,7 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.domain.enums.PlanStatus;
 import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.PlanRepository;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.grablunchtogether.domain.enums.PlanStatus.*;
+
 @EnableScheduling
 @RequiredArgsConstructor
 @Service
@@ -32,32 +35,36 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
     @Transactional
     @Scheduled(cron = "0 * * * * *")
     public void updatePlanHistory() {
-        List<Plan> pendingPlans =
-                planRepository.findPendingPlans(LocalDateTime.now());
         List<Plan> completedPlans =
-                planRepository.findCompletedPlans(LocalDateTime.now());
+                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), ACCEPTED);
+        List<Plan> pendingPlans =
+                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), REQUESTED);
         List<Plan> canceledPlans =
-                planRepository.findCanceledPlans(LocalDateTime.now());
+                planRepository.findByPlanTimeBeforeAndPlanStatus(LocalDateTime.now(), CANCELED);
 
         pendingPlans.forEach(plan -> {
             plan.expired();
             planRepository.save(plan);
         });
 
-        if(completedPlans.isEmpty()){
+        if (canceledPlans.isEmpty() && completedPlans.isEmpty()) {
             return;
         }
 
-        registerHistory(completedPlans);
-        registerHistory(canceledPlans);
-
-        completedPlans.forEach(plan -> {
-            plan.historyLoadComplete();
-            planRepository.save(plan);
-        });
+        if (!canceledPlans.isEmpty()) {
+            registerHistory(canceledPlans);
+        }
+        if (!completedPlans.isEmpty()) {
+            registerHistory(completedPlans);
+        }
 
         canceledPlans.forEach(plan -> {
             plan.historyLoadCancel();
+            planRepository.save(plan);
+        });
+
+        completedPlans.forEach(plan -> {
+            plan.historyLoadComplete();
             planRepository.save(plan);
         });
     }
@@ -100,7 +107,7 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
             result.add(PlanDto.of(planHistory.getPlanId()));
         });
 
-        if(result.isEmpty()){
+        if (result.isEmpty()) {
             throw new ContentNotFoundException("히스토리가 존재하지 않습니다.");
         }
 

@@ -40,6 +40,7 @@ class UserFindUserAroundTest {
 
         List<UserDistanceDto> list = new ArrayList<>();
         list.add(UserDistanceDto.builder()
+                .id(String.valueOf(3))
                 .userName("테스트")
                 .userEmail("test@test.com")
                 .userRate(0.0)
@@ -48,7 +49,7 @@ class UserFindUserAroundTest {
                 .build());
 
         List<Object[]> listFromRepo = new ArrayList<>();
-        listFromRepo.add(new Object[]{"테스트", "test@test.com", 0.0, "테스트회사", 0.1234});
+        listFromRepo.add(new Object[]{"test@test.com","테스트",  0.0, "테스트회사",3, 0.1234});
 
         when(userRepository.getUserListByDistance(latitude, longitude, kilometer))
                 .thenReturn(listFromRepo);
