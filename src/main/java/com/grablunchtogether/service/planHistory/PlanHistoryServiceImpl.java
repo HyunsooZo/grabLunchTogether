@@ -21,8 +21,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.*;
-
 @EnableScheduling
 @RequiredArgsConstructor
 @Service
@@ -39,53 +37,41 @@ public class PlanHistoryServiceImpl implements PlanHistoryService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedTime = LocalDateTime.now().format(formatter);
         LocalDateTime currentTime = LocalDateTime.parse(formattedTime, formatter);
+        System.out.println(currentTime);
 
         List<Plan> completedPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, ACCEPTED);
+                planRepository.findCompletedPlansUsingNativeQuery(currentTime);
         List<Plan> pendingPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, REQUESTED);
+                planRepository.findPendingPlansUsingNativeQuery(currentTime);
         List<Plan> canceledPlans =
-                planRepository.findByPlanTimeBeforeAndPlanStatus(currentTime, CANCELED);
+                planRepository.findCanceledPlansUsingNativeQuery(currentTime);
 
         pendingPlans.forEach(plan -> {
             plan.expired();
             planRepository.save(plan);
         });
 
-        if (canceledPlans.isEmpty() && completedPlans.isEmpty()) {
-            return;
-        }
-
-        if (!canceledPlans.isEmpty()) {
-            registerHistory(canceledPlans);
-        }
-        if (!completedPlans.isEmpty()) {
-            registerHistory(completedPlans);
-        }
-
         canceledPlans.forEach(plan -> {
             plan.historyLoadCancel();
             planRepository.save(plan);
+            registerHistory(plan);
         });
 
         completedPlans.forEach(plan -> {
             plan.historyLoadComplete();
+            registerHistory(plan);
             planRepository.save(plan);
         });
     }
 
     @Override
     @Transactional
-    public void registerHistory(List<Plan> plans) {
-        plans.forEach(plan -> {
-            if (!planHistoryRepository.findByPlanId(plan).isPresent()) {
-                planHistoryRepository.save(PlanHistory.builder()
-                        .planId(plan)
-                        .requesterId(plan.getRequester())
-                        .accepterId(plan.getAccepter())
-                        .build());
-            }
-        });
+    public void registerHistory(Plan plan) {
+        planHistoryRepository.save(PlanHistory.builder()
+                .planId(plan)
+                .requesterId(plan.getRequester())
+                .accepterId(plan.getAccepter())
+                .build());
     }
 
     @Override
