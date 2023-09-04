@@ -1,6 +1,5 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.AuthorityException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -17,8 +16,8 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.COMPLETED;
-import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.enums.PlanStatus.COMPLETED;
+import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
 class PlanEditTest {
     @Mock

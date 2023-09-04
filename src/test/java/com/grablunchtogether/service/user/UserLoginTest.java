@@ -1,6 +1,5 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
@@ -25,12 +24,12 @@ class UserLoginTest {
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, jwtTokenProvider);
+        userService = new UserService(userRepository, jwtTokenProvider);
     }
 
     @Test

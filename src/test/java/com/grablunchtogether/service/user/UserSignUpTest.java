@@ -1,6 +1,5 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
@@ -27,7 +26,7 @@ class UserSignUpTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository,jwtTokenProvider);
+        userService = new UserService(userRepository,jwtTokenProvider);
     }
 
     @Test

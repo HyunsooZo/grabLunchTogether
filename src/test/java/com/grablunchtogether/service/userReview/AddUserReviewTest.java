@@ -1,7 +1,5 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
@@ -36,7 +34,7 @@ class AddUserReviewTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, planHistoryRepository, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, planHistoryRepository, userReviewRepository);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -18,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
 class PlanListReceivedTest {
     @Mock

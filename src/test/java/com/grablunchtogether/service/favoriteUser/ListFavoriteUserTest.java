@@ -1,10 +1,10 @@
 package com.grablunchtogether.service.favoriteUser;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -14,12 +14,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-class listFavoriteUserTest {
+class ListFavoriteUserTest {
     @Mock
     private UserRepository userRepository;
 
@@ -32,7 +31,7 @@ class listFavoriteUserTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         favoriteUserService =
-                new FavoriteUserServiceImpl(favoriteUserRepository, userRepository);
+                new FavoriteUserService(favoriteUserRepository, userRepository);
     }
 
     @Test
@@ -103,7 +102,7 @@ class listFavoriteUserTest {
                 .thenReturn(listEntity);
         //when,then
         Assertions.assertThatThrownBy(() -> favoriteUserService.listFavoriteUser(user.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("등록된 즐겨찾는 유저가 존재하지 않습니다.");
     }
 }

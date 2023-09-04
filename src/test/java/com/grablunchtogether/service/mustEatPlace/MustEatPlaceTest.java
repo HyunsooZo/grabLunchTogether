@@ -1,9 +1,9 @@
 package com.grablunchtogether.service.mustEatPlace;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.MustEatPlace;
 import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +26,7 @@ class MustEatPlaceTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mustEatPlaceService =
-                new MustEatPlaceServiceImpl(mustEatPlaceRepository);
+                new MustEatPlaceService(mustEatPlaceRepository);
     }
 
     @Test
@@ -74,7 +74,7 @@ class MustEatPlaceTest {
 
         //when,then
         Assertions.assertThatThrownBy(() -> mustEatPlaceService.mustEatPlaceList(city))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("해당 지역에 대한 맛집 정보가 등록되어있지 않습니다.");
     }
 
@@ -106,7 +106,7 @@ class MustEatPlaceTest {
         Long id = 1L;
         //when,then
         Assertions.assertThatThrownBy(()->mustEatPlaceService.getMustEatPlace(id))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 맛집정보입니다.");
     }
 }

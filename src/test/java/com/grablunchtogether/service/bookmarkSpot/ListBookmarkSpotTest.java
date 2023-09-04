@@ -1,7 +1,6 @@
 package com.grablunchtogether.service.bookmarkSpot;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.User;
@@ -36,7 +35,7 @@ class ListBookmarkSpotTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        bookmarkSpotService = new BookmarkSpotServiceImpl(bookmarkSpotRepository,
+        bookmarkSpotService = new BookmarkSpotService(bookmarkSpotRepository,
                 userRepository, mustEatPlaceRepository);
     }
 
@@ -92,7 +91,7 @@ class ListBookmarkSpotTest {
 
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService.listBookmarkSpot(user.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("즐겨찾기에 등록된 장소가 없습니다.");
     }
 
@@ -106,7 +105,7 @@ class ListBookmarkSpotTest {
 
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService.listBookmarkSpot(user.getId()))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보를 찾을 수 없습니다.");
     }
 }

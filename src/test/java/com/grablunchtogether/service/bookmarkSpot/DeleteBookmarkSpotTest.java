@@ -1,10 +1,9 @@
 package com.grablunchtogether.service.bookmarkSpot;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.BookmarkSpotRepository;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -19,7 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class deleteBookmarkSpotTest {
+class DeleteBookmarkSpotTest {
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -32,7 +31,7 @@ class deleteBookmarkSpotTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        bookmarkSpotService = new BookmarkSpotServiceImpl(bookmarkSpotRepository,
+        bookmarkSpotService = new BookmarkSpotService(bookmarkSpotRepository,
                 userRepository, mustEatPlaceRepository);
     }
 
@@ -77,7 +76,7 @@ class deleteBookmarkSpotTest {
 
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService.deleteBookmarkSpot(bookmarkSpot.getId(), user.getId()))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인의 즐겨찾기 식당만 삭제할 수 있습니다.");
     }
 
@@ -98,7 +97,7 @@ class deleteBookmarkSpotTest {
 
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService.deleteBookmarkSpot(bookmarkSpot.getId(), user.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("등록되지 않은 맛집정보입니다.");
     }
 }

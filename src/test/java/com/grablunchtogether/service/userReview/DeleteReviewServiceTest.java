@@ -1,8 +1,5 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -32,7 +29,7 @@ class DeleteReviewServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, null, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, null, userReviewRepository);
     }
 
     @Test

@@ -1,7 +1,5 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -17,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.*;
+import static com.grablunchtogether.enums.PlanStatus.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class PlanApprovalTest {

@@ -1,7 +1,6 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
@@ -23,12 +22,12 @@ class UserEditInformationTest {
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, jwtTokenProvider);
+        userService = new UserService(userRepository, jwtTokenProvider);
     }
 
     @Test
@@ -80,8 +79,8 @@ class UserEditInformationTest {
 
         // when, then
         assertThatThrownBy(() -> userService.editUserInformation(userId, userInformationEditInput, coordinate))
-                .isInstanceOf(InvalidLoginException.class)
-                .hasMessage("기존 비밀번호가 일치하지 않습니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage("아이디 또는 비밀번호가 일치하지않습니다.");
 
         verify(userRepository, never()).save(existingUser);
     }

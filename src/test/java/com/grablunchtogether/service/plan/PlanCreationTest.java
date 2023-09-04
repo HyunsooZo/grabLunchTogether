@@ -1,8 +1,6 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.domain.enums.PlanStatus;
-import com.grablunchtogether.common.exception.ExistingPlanException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
+import com.grablunchtogether.enums.PlanStatus;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;

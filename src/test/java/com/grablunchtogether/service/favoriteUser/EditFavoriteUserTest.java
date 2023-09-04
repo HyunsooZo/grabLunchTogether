@@ -1,11 +1,10 @@
 package com.grablunchtogether.service.favoriteUser;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -15,10 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
-class editFavoriteUserTest {
+class EditFavoriteUserTest {
     @Mock
     private UserRepository userRepository;
 
@@ -31,7 +29,7 @@ class editFavoriteUserTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         favoriteUserService =
-                new FavoriteUserServiceImpl(favoriteUserRepository, userRepository);
+                new FavoriteUserService(favoriteUserRepository, userRepository);
     }
 
     @Test
@@ -85,7 +83,7 @@ class editFavoriteUserTest {
         Assertions.assertThatThrownBy(()->
                 favoriteUserService.editFavoriteUser(favoriteUserEditInput,
                         user.getId(), favoriteUser.getId()))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보를 찾을 수 없습니다.");
 
     }
@@ -116,7 +114,7 @@ class editFavoriteUserTest {
         Assertions.assertThatThrownBy(()->
                         favoriteUserService.editFavoriteUser(favoriteUserEditInput,
                                 user.getId(), favoriteUser.getId()))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인이 등록한 즐겨찾는 친구정보만 수정할 수 있습니다.");
     }
 }

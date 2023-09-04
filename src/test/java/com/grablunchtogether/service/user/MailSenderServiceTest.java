@@ -1,5 +1,4 @@
 package com.grablunchtogether.service.user;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserPasswordResetInput;
