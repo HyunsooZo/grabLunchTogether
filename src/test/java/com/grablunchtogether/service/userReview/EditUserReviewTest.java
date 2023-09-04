@@ -5,6 +5,7 @@ import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
 import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
@@ -78,7 +79,7 @@ class EditUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(userId, userReviewId, userReviewEditInput))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보를 찾을 수 없습니다. 다시 시도해 주세요.");
     }
 
@@ -94,7 +95,7 @@ class EditUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(userId, userReviewId, userReviewEditInput))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 리뷰입니다.");
     }
 
@@ -119,7 +120,7 @@ class EditUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(user.getId(), 1L, userReviewEditInput))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인이 작성한 리뷰만 수정할 수 있습니다.");
     }
 }

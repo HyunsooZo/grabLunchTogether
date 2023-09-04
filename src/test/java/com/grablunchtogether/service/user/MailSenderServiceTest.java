@@ -2,6 +2,7 @@ package com.grablunchtogether.service.user;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserPasswordResetInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +61,7 @@ class MailSenderServiceTest {
 
         // when, then
         assertThatThrownBy(() -> mailSenderService.resetPassword(resetInput))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보를 찾을 수 없습니다.");
         verify(javaMailSender, never()).send((MimeMessage) any());
         verify(userRepository, never()).save(any());

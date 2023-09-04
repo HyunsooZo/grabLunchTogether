@@ -3,6 +3,7 @@ package com.grablunchtogether.service.plan;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -28,7 +29,7 @@ class PlanCancelTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
@@ -81,7 +82,7 @@ class PlanCancelTest {
 
         //when,then
         Assertions.assertThatThrownBy(() -> planService.cancelPlan(accepter.getId(), plan2.getId()))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인이 요청/수신 한 점심약속 만 취소할 수 있습니다.");
     }
 
@@ -107,7 +108,7 @@ class PlanCancelTest {
 
         //when,then
         Assertions.assertThatThrownBy(() -> planService.cancelPlan(requester.getId(), plan1.getId()))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("이미 취소 되었거나 취소할 수 없는상태의 점심약속입니다.");
     }
 }

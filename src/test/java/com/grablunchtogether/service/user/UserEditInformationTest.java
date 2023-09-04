@@ -97,7 +97,7 @@ class UserEditInformationTest {
 
         // when, then
         assertThatThrownBy(() -> userService.editUserInformation(userId, userInformationEditInput, coordinate))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
 
         verify(userRepository, never()).save(any());

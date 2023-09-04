@@ -3,6 +3,7 @@ package com.grablunchtogether.service.plan;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -29,7 +30,7 @@ class PlanApprovalTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
@@ -92,7 +93,7 @@ class PlanApprovalTest {
         //when,then
         Assertions
                 .assertThatThrownBy(() -> planService.approvePlan(accepter.getId(), plan.getId(), 'Y'))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 점심약속이거나 나에게 요청된 약속이 아닙니다.");
     }
 
@@ -119,7 +120,7 @@ class PlanApprovalTest {
         //when,then
         Assertions
                 .assertThatThrownBy(() -> planService.approvePlan(accepter.getId(), plan1.getId(), 'Y'))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("이미 수락 또는 거절/만료 된 약속입니다.");
     }
 }

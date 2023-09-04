@@ -5,6 +5,7 @@ import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserLoginInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +53,7 @@ class UserLoginTest {
 
         // when, then
         assertThatThrownBy(() -> userService.login(userLoginInput))
-                .isInstanceOf(InvalidLoginException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("비밀번호가 일치하지 않습니다.");
     }
 
@@ -69,7 +70,7 @@ class UserLoginTest {
 
         // when, then
         assertThatThrownBy(() -> userService.login(userLoginInput))
-                .isInstanceOf(InvalidLoginException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 아이디 입니다.");
     }
 

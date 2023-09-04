@@ -4,6 +4,7 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -30,7 +31,7 @@ class PlanListReceivedTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
@@ -92,7 +93,7 @@ class PlanListReceivedTest {
 
         //when,then
         Assertions.assertThatThrownBy(() -> planService.getPlanListReceived(accepter.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("받은 점심약속 요청이 없습니다.");
     }
 }

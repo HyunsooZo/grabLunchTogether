@@ -3,6 +3,7 @@ package com.grablunchtogether.service.user;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.dto.user.UserDistanceDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ class UserFindUserAroundTest {
                 .thenReturn(Collections.emptyList());
         //when,then
         assertThatThrownBy(() -> userService.findUserAround(latitude, longitude, kilometer))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("해당 조건으로 조회되는 주변회원이 없습니다.");
     }
 }

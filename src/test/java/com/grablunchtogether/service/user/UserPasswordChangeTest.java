@@ -4,6 +4,7 @@ import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserChangePasswordInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +78,7 @@ class UserPasswordChangeTest {
 
         //when,then
         assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), userChangePasswordInput))
-                .isInstanceOf(InvalidLoginException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("기존 비밀번호가 일치하지 않습니다.");
     }
 
@@ -97,7 +98,7 @@ class UserPasswordChangeTest {
 
         //when,then
         assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), userChangePasswordInput))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
     }
 }
