@@ -2,7 +2,6 @@ package com.grablunchtogether.service.externalApi.naverSms;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.naverSms.MessageContentInput;
@@ -10,6 +9,7 @@ import com.grablunchtogether.dto.naverSms.SMSApiRequest;
 import com.grablunchtogether.dto.naverSms.SMSApiResponse;
 import com.grablunchtogether.dto.naverSms.SMSInput;
 import com.grablunchtogether.dto.plan.PlanCreationInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +32,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.grablunchtogether.exception.ErrorCode.USER_INFO_NOT_FOUND;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -62,9 +64,9 @@ public class SMSApiService {
                                   PlanCreationInput planCreationInput) {
 
         User requester = userRepository.findById(requesterId)
-                .orElseThrow(() -> new ContentNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
         User accepter = userRepository.findById(accepterId)
-                .orElseThrow(() -> new ContentNotFoundException("존재하지 않는 회원입니다."));
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
         MessageContentInput messageContentInput = MessageContentInput.builder()
                 .requesterName(requester.getUserName())

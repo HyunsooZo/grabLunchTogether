@@ -1,6 +1,5 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.plan.PlanCreationInput;
@@ -12,15 +11,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/plans")
@@ -50,14 +44,8 @@ public class PlanController {
     @ApiOperation(value = "점심약속 생성하기", notes = "상대방에게 입력된 정보로 점심약속을 신청합니다.")
     public ResponseEntity<?> createAPlan(
             @PathVariable Long accepterId,
-            @Valid @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @RequestBody PlanCreationInput planCreationInput,
-            Errors errors) {
-
-        ResponseEntity<?> responseErrorList = errorValidation(errors);
-        if (responseErrorList != null) {
-            return responseErrorList;
-        }
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody PlanCreationInput planCreationInput) {
 
         UserDto userDto = userService.tokenValidation(token);
 
@@ -128,7 +116,7 @@ public class PlanController {
     public ResponseEntity<?> editPlanRequest(
             @PathVariable Long planId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @RequestBody PlanCreationInput planModificationInput) {
+            @Valid @RequestBody PlanCreationInput planModificationInput) {
 
         UserDto userDto = userService.tokenValidation(token);
 
@@ -150,15 +138,5 @@ public class PlanController {
         ServiceResult result = planService.planDeletion(userDto.getId(), planId);
 
         return ResponseResult.result(result);
-    }
-    private ResponseEntity<?> errorValidation(Errors errors) {
-        List<ResponseError> responseErrorList = new ArrayList<>();
-        if (errors.hasErrors()) {
-            errors.getAllErrors().forEach(error -> {
-                responseErrorList.add(ResponseError.of((FieldError) error));
-            });
-            return new ResponseEntity<>(responseErrorList, HttpStatus.BAD_REQUEST);
-        }
-        return null;
     }
 }

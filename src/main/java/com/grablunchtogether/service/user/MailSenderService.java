@@ -1,9 +1,10 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserPasswordResetInput;
+import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class MailSenderService {
     public ServiceResult resetPassword(UserPasswordResetInput userPasswordResetInput) {
 
         User user = userRepository.findByUserEmail(userPasswordResetInput.getEmail())
-                .orElseThrow(() -> new UserInfoNotFoundException("고객정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
         String randomPassword = UUID.randomUUID().toString().substring(0, 10);
 

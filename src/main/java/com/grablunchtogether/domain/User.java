@@ -1,6 +1,7 @@
 package com.grablunchtogether.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.grablunchtogether.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +45,9 @@ public class User extends BaseEntity {
 
     @Column
     private Double longitude;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
 
     public void update(String userPhoneNumber, String company, Double latitude,
                        Double longitude){
