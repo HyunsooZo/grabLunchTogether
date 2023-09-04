@@ -84,7 +84,7 @@ public class BookmarkSpotController {
         UserDto user = userService.tokenValidation(token);
 
         ServiceResult result =
-                bookmarkSpotService.deleteBookmarkSpot(bookmarkSpotId,user.getId());
+                bookmarkSpotService.deleteBookmarkSpot(bookmarkSpotId, user.getId());
 
         return ResponseResult.result(result);
     }

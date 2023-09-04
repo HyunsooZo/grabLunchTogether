@@ -1,7 +1,7 @@
 package com.grablunchtogether.repository;
 
 import com.grablunchtogether.domain.Plan;
-import com.grablunchtogether.domain.enums.PlanStatus;
+import com.grablunchtogether.enums.PlanStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

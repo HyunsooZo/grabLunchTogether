@@ -1,6 +1,5 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.common.results.responseResult.ResponseError;
 import com.grablunchtogether.common.results.responseResult.ResponseResult;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
@@ -11,15 +10,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/favorite-users")
@@ -34,41 +28,30 @@ public class FavoriteUserController {
     public ResponseEntity<?> addFavoriteUser(
             @PathVariable Long otherUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody FavoriteUserInput favoriteUserInput,
-            Errors errors) {
-
-        ResponseEntity<?> responseErrorList = errorValidation(errors);
-        if (responseErrorList != null) {
-            return responseErrorList;
-        }
+            @Valid @RequestBody FavoriteUserInput favoriteUserInput) {
 
         UserDto user = userService.tokenValidation(token);
 
         ServiceResult result = favoriteUserService.addFavoriteUser(favoriteUserInput,
-                                                                    user.getId(),
-                                                                    otherUserId);
+                user.getId(),
+                otherUserId);
 
         return ResponseResult.result(result);
     }
+
     @PatchMapping("/{favoriteUserId}")
     @ApiOperation(value = "즐겨찾는 친구 닉네임 수정하기", notes = "즐겨찾는 유저 닉네임을 수정합니다.")
     public ResponseEntity<?> editFavoriteUser(
             @PathVariable Long favoriteUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody FavoriteUserInput favoriteUserEditInput,
-            Errors errors) {
-
-        ResponseEntity<?> responseErrorList = errorValidation(errors);
-        if (responseErrorList != null) {
-            return responseErrorList;
-        }
+            @Valid @RequestBody FavoriteUserInput favoriteUserEditInput) {
 
         UserDto user = userService.tokenValidation(token);
 
         ServiceResult result =
                 favoriteUserService.editFavoriteUser(favoriteUserEditInput,
-                                                    user.getId(),
-                                                    favoriteUserId);
+                        user.getId(),
+                        favoriteUserId);
 
         return ResponseResult.result(result);
     }
@@ -97,16 +80,5 @@ public class FavoriteUserController {
         ServiceResult result = favoriteUserService.listFavoriteUser(user.getId());
 
         return ResponseResult.result(result);
-    }
-
-    private ResponseEntity<?> errorValidation(Errors errors) {
-        List<ResponseError> responseErrorList = new ArrayList<>();
-        if (errors.hasErrors()) {
-            errors.getAllErrors().forEach(error -> {
-                responseErrorList.add(ResponseError.of((FieldError) error));
-            });
-            return new ResponseEntity<>(responseErrorList, HttpStatus.BAD_REQUEST);
-        }
-        return null;
     }
 }

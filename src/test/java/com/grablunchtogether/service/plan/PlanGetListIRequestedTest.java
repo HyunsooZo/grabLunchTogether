@@ -1,6 +1,6 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
@@ -18,8 +18,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.COMPLETED;
-import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.enums.PlanStatus.COMPLETED;
+import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
 class PlanGetListIRequestedTest {
     @Mock
@@ -33,7 +33,7 @@ class PlanGetListIRequestedTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
     @Test
     public void testGetPlanListIRequested_Success() {
@@ -92,7 +92,7 @@ class PlanGetListIRequestedTest {
 
         //when,then
         Assertions.assertThatThrownBy(()->planService.getPlanListIRequested(requester.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("요청한 점심식사 요청이 없습니다.");
     }
 }

@@ -1,11 +1,11 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.UserSignUpException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserSignUpInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ class UserSignUpTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository,jwtTokenProvider);
+        userService = new UserService(userRepository,jwtTokenProvider);
     }
 
     @Test
@@ -46,7 +46,7 @@ class UserSignUpTest {
         // When,Then
         assertThatThrownBy
                 (() -> userService.userSignUp(userSignUpInput, userCoordinate))
-                .isInstanceOf(UserSignUpException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 회원입니다.");
 
         verify(userRepository, times(1))

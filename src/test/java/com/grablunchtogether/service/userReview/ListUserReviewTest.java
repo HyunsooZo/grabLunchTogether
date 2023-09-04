@@ -1,11 +1,10 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +33,7 @@ class ListUserReviewTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, null, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, null, userReviewRepository);
     }
 
     @Test
@@ -86,7 +85,7 @@ class ListUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.listReviews(targetUserId))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보가 존재하지 않습니다.");
     }
 
@@ -101,7 +100,7 @@ class ListUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.listReviews(targetUserId))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("해당 유저에 대해 작성된 리뷰가 존재하지 않습니다.");
     }
 }

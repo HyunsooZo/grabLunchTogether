@@ -1,11 +1,11 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserLoginInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.utility.PasswordUtility;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,12 +25,12 @@ class UserLoginTest {
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    private UserServiceImpl userService;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, jwtTokenProvider);
+        userService = new UserService(userRepository, jwtTokenProvider);
     }
 
     @Test
@@ -53,7 +53,7 @@ class UserLoginTest {
 
         // when, then
         assertThatThrownBy(() -> userService.login(userLoginInput))
-                .isInstanceOf(InvalidLoginException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("비밀번호가 일치하지 않습니다.");
     }
 
@@ -70,7 +70,7 @@ class UserLoginTest {
 
         // when, then
         assertThatThrownBy(() -> userService.login(userLoginInput))
-                .isInstanceOf(InvalidLoginException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 아이디 입니다.");
     }
 

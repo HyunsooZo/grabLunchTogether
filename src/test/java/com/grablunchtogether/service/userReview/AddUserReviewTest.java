@@ -1,12 +1,11 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
@@ -36,7 +35,7 @@ class AddUserReviewTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, planHistoryRepository, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, planHistoryRepository, userReviewRepository);
     }
 
     @Test
@@ -85,7 +84,7 @@ class AddUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("히스토리가 존재하지 않습니다.");
     }
 
@@ -112,7 +111,7 @@ class AddUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인이 참석한 점심약속 대상에 대해서만 리뷰를 남길 수 있습니다.");
     }
 }

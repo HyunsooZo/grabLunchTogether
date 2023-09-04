@@ -1,12 +1,10 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +30,7 @@ class DeleteReviewServiceTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, null, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, null, userReviewRepository);
     }
 
     @Test
@@ -71,7 +69,7 @@ class DeleteReviewServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.deleteReview(userId, userReviewId))
-                .isInstanceOf(UserInfoNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("고객정보를 찾을 수 없습니다. 다시 시도해 주세요.");
     }
 
@@ -86,7 +84,7 @@ class DeleteReviewServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.deleteReview(userId, userReviewId))
-                .isInstanceOf(ContentNotFoundException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 리뷰입니다.");
     }
 
@@ -108,7 +106,7 @@ class DeleteReviewServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.deleteReview(user.getId(), userReview.getId()))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("본인이 작성한 리뷰만 삭제할 수 있습니다.");
     }
 }

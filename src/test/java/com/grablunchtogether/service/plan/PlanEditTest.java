@@ -1,10 +1,10 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.AuthorityException;
 import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanCreationInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
 import org.assertj.core.api.Assertions;
@@ -17,8 +17,8 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.COMPLETED;
-import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.enums.PlanStatus.COMPLETED;
+import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
 class PlanEditTest {
     @Mock
@@ -32,7 +32,7 @@ class PlanEditTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
@@ -104,7 +104,7 @@ class PlanEditTest {
         //when,then
         Assertions.assertThatThrownBy(() ->
                         planService.editPlanRequest(requester.getId(), plan.getId(), planModificationInput))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("요청중인 상태의 점심약속만 수정할 수 있습니다.");
     }
 
@@ -139,7 +139,7 @@ class PlanEditTest {
         //when,then
         Assertions.assertThatThrownBy(() ->
                         planService.editPlanRequest(requester.getId(), plan.getId(), planModificationInput))
-                .isInstanceOf(AuthorityException.class)
+                .isInstanceOf(CustomException.class)
                 .hasMessage("내가 신청한 약속만 수정할 수 있습니다.");
     }
 }
