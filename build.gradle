@@ -29,8 +29,6 @@ dependencies {
 
     //jackson
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    //jwt
-    implementation 'com.auth0:java-jwt:3.18.1'
     //mariadb
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.4'
     //scheduler
@@ -47,6 +45,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     //hibernate-envers
     implementation "org.springframework.data:spring-data-envers"
+    //jjwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

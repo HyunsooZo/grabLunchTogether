@@ -1,16 +1,16 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.PlanService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
@@ -18,7 +18,9 @@ import java.util.Optional;
 
 import static com.grablunchtogether.enums.PlanStatus.COMPLETED;
 import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
+import static org.mockito.Mockito.*;
 
+@DisplayName("약속 삭제")
 class PlanDeleteTest {
     @Mock
     private UserRepository userRepository;
@@ -35,6 +37,7 @@ class PlanDeleteTest {
     }
 
     @Test
+    @DisplayName("성공")
     public void TestDeletePlan_Success() {
         //given
         User requester = User.builder().id(1L).build();
@@ -46,22 +49,23 @@ class PlanDeleteTest {
                 .accepter(accepter)
                 .planRestaurant("a")
                 .planMenu("a")
-                .planTime(LocalDateTime.parse("2023-09-01T11:00"))
+                .planTime(LocalDateTime.parse("2200-09-01T11:00"))
                 .requestMessage("a")
                 .planStatus(REQUESTED)
                 .build();
 
-        Mockito.when(planRepository.findById(requester.getId()))
+        when(planRepository.findById(requester.getId()))
                 .thenReturn(Optional.of(plan));
 
         //when
-        ServiceResult result = planService.planDeletion(requester.getId(), plan.getId());
+        planService.planDeletion(requester.getId(), plan.getId());
 
         //then
-        Assertions.assertThat(result.isResult()).isTrue();
+        verify(planRepository,times(1)).delete(plan);
     }
 
     @Test
+    @DisplayName("실패(이미 성사된 약속)")
     public void TestDeletePlan_Fail_AlreadyDone() {
         //given
         User requester = User.builder().id(1L).build();
@@ -79,7 +83,7 @@ class PlanDeleteTest {
                 .planStatus(COMPLETED)
                 .build();
 
-        Mockito.when(planRepository.findById(plan.getId()))
+        when(planRepository.findById(plan.getId()))
                 .thenReturn(Optional.of(plan));
 
         //when,then
@@ -90,6 +94,7 @@ class PlanDeleteTest {
     }
 
     @Test
+    @DisplayName("실패(권한없음)")
     public void TestDeletePlan_Fail_NotMyPlan() {
         //given
         User requester = User.builder().id(1L).build();
@@ -107,17 +112,18 @@ class PlanDeleteTest {
                 .planStatus(COMPLETED)
                 .build();
 
-        Mockito.when(planRepository.findById(plan.getId()))
+        when(planRepository.findById(plan.getId()))
                 .thenReturn(Optional.of(plan));
 
         //when,then
         Assertions.assertThatThrownBy(() ->
                         planService.planDeletion(requester.getId(), plan.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("본인이 요청한 점심약속 만 삭제할 수 있습니다.");
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 
     @Test
+    @DisplayName("실패(삭제가능시간 초과)")
     public void TestDeletePlan_Fail_TimeRule() {
         //given
         User requester = User.builder().id(1L).build();
@@ -129,18 +135,18 @@ class PlanDeleteTest {
                 .accepter(accepter)
                 .planRestaurant("a")
                 .planMenu("a")
-                .planTime(LocalDateTime.parse("2023-08-08T00:14:02"))
+                .planTime(LocalDateTime.parse("2021-08-08T00:14:02"))
                 .requestMessage("a")
                 .planStatus(REQUESTED)
                 .build();
 
-        Mockito.when(planRepository.findById(plan.getId()))
+        when(planRepository.findById(plan.getId()))
                 .thenReturn(Optional.of(plan));
 
         //when,then
         Assertions.assertThatThrownBy(() ->
                         planService.planDeletion(requester.getId(), plan.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("약속시간 1시간 이전에만 삭제가 가능합니다.");
+                .hasMessage("약속시간 1시간 이전에만 가능합니다.");
     }
 }

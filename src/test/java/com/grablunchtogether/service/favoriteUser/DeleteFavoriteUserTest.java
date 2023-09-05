@@ -1,13 +1,14 @@
 package com.grablunchtogether.service.favoriteUser;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.FavoriteUserService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 import static org.mockito.Mockito.times;
 
+@DisplayName("즐겨찾는 회원 삭제")
 class DeleteFavoriteUserTest {
     @Mock
     private UserRepository userRepository;
@@ -34,6 +36,7 @@ class DeleteFavoriteUserTest {
     }
 
     @Test
+    @DisplayName("성공")
     public void deleteFavoriteUser_Success() {
         //given
         User user = User.builder().id(1L).build();
@@ -51,15 +54,13 @@ class DeleteFavoriteUserTest {
         Mockito.when(favoriteUserRepository.findById(favoriteUser.getId()))
                 .thenReturn(Optional.of(favoriteUser));
         //when
-        ServiceResult result =
-                favoriteUserService.deleteFavoriteUser(user.getId(), favoriteUser.getId()
-                );
+        favoriteUserService.deleteFavoriteUser(user.getId(), favoriteUser.getId());
         //then
-        Assertions.assertThat(result.isResult()).isTrue();
         Mockito.verify(favoriteUserRepository, times(1)).delete(favoriteUser);
     }
 
     @Test
+    @DisplayName("실패")
     public void deleteFavoriteUser_Fail() {
         //given
         User user = User.builder().id(4L).build();
@@ -80,6 +81,6 @@ class DeleteFavoriteUserTest {
         //when
         Assertions.assertThatThrownBy(() -> favoriteUserService.deleteFavoriteUser(user.getId(), favoriteUser.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("본인이 등록한 즐겨찾는 친구정보만 삭제할 수 있습니다.");
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 }
