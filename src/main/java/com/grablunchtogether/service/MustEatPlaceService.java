@@ -1,9 +1,8 @@
-package com.grablunchtogether.service.mustEatPlace;
+package com.grablunchtogether.service;
 
-import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.MustEatPlace;
 import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +19,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.grablunchtogether.exception.ErrorCode.*;
 
@@ -132,33 +131,27 @@ public class MustEatPlaceService {
 
     //도시 이름을 기반으로 맛집리스트 조회(별점순)
     @Transactional(readOnly = true)
-    public ServiceResult mustEatPlaceList(String cityName) {
+    public List<MustEatPlaceDto.Dto> mustEatPlaceList(String cityName) {
+
         if (isCrawlingInProgress()) {
             throw new CustomException(CRAWLING_IS_IN_PROGRESS);
         }
 
-        List<MustEatPlace> list =
+        List<MustEatPlace> mustEatPlaces =
                 mustEatPlaceRepository.findByCityOrderByRateDesc(cityName);
-        if (list.isEmpty()) {
-            throw new CustomException(CONTENT_NOT_FOUND);
-        }
 
-        List<MustEatPlaceDto> result = new ArrayList<>();
-
-        list.forEach(e -> {
-            result.add(MustEatPlaceDto.of(e));
-        });
-
-        return ServiceResult.success("맛집리스트 불러오기 성공", result);
+        return mustEatPlaces.stream()
+                .map(MustEatPlaceDto.Dto::of)
+                .collect(Collectors.toList());
     }
 
     //맛집 ID로 맛집 가져오기
     @Transactional(readOnly = true)
-    public MustEatPlaceDto getMustEatPlace(Long mustEatPlaceId) {
+    public MustEatPlaceDto.Dto getMustEatPlace(Long mustEatPlaceId) {
 
         MustEatPlace mustEatPlace = mustEatPlaceRepository.findById(mustEatPlaceId)
-                .orElseThrow(() -> new CustomException(CONTENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(MUST_EAT_PLACE_NOT_FOUND));
 
-        return MustEatPlaceDto.of(mustEatPlace);
+        return MustEatPlaceDto.Dto.of(mustEatPlace);
     }
 }
