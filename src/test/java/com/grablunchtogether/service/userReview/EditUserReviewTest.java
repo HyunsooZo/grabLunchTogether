@@ -1,6 +1,5 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
@@ -9,7 +8,9 @@ import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
+import com.grablunchtogether.service.UserReviewService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@DisplayName("리뷰 수정")
 class EditUserReviewTest {
     @Mock
     private UserRepository userRepository;
@@ -39,6 +41,7 @@ class EditUserReviewTest {
     }
 
     @Test
+    @DisplayName("성공")
     public void editReview_Success() {
         // Given
         Long userId = 1L;
@@ -59,16 +62,15 @@ class EditUserReviewTest {
         Mockito.when(userReviewRepository.findById(userReviewId)).thenReturn(Optional.of(userReview));
 
         // When
-        ServiceResult result = userReviewService.editReview(userId, userReviewId, userReviewEditInput);
+        userReviewService.editReview(userId, userReviewId, userReviewEditInput);
 
         // Then
-        assertThat(result.isResult()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("리뷰 수정이 완료되었습니다.");
         assertThat(userReview.getRate()).isEqualTo(3.5);
         assertThat(userReview.getReviewContent()).isEqualTo("Updated review content");
     }
 
     @Test
+    @DisplayName("실패(고객정보없음)")
     public void editReview_Fail_UserInfoNotFound() {
         // Given
         Long userId = 1L;
@@ -80,10 +82,11 @@ class EditUserReviewTest {
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(userId, userReviewId, userReviewEditInput))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("고객정보를 찾을 수 없습니다. 다시 시도해 주세요.");
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 
     @Test
+    @DisplayName("실패(리뷰없음)")
     public void editReview_Fail_ContentNotFound() {
         // Given
         Long userId = 1L;
@@ -96,10 +99,11 @@ class EditUserReviewTest {
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(userId, userReviewId, userReviewEditInput))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("존재하지 않는 리뷰입니다.");
+                .hasMessage("존재하지 않는 리뷰 입니다.");
     }
 
     @Test
+    @DisplayName("실패(권한없음)")
     public void editReview_Fail_AuthorityException() {
         // Given
         UserReviewInput userReviewEditInput = UserReviewInput.builder()
@@ -121,6 +125,6 @@ class EditUserReviewTest {
         // When, Then
         assertThatThrownBy(() -> userReviewService.editReview(user.getId(), 1L, userReviewEditInput))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("본인이 작성한 리뷰만 수정할 수 있습니다.");
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 }

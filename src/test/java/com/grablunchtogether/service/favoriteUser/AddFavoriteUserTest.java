@@ -1,20 +1,24 @@
 package com.grablunchtogether.service.favoriteUser;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
+import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
-import org.assertj.core.api.Assertions;
+import com.grablunchtogether.service.FavoriteUserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
+
+@DisplayName("즐겨찾는 회원 추가")
 class AddFavoriteUserTest {
     @Mock
     private UserRepository userRepository;
@@ -25,47 +29,56 @@ class AddFavoriteUserTest {
     private FavoriteUserService favoriteUserService;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         favoriteUserService =
                 new FavoriteUserService(favoriteUserRepository, userRepository);
     }
 
     @Test
-    public void addFavoriteUser_Success(){
+    @DisplayName("성공")
+    public void addFavoriteUser_Success() {
         //given
         User user = User.builder().id(1L).build();
         User favoriteUser = User.builder().id(2L).build();
-        FavoriteUserInput favoriteUserInput =
-                FavoriteUserInput.builder().nickName("닉네임").build();
+        FavoriteUserDto.Request favoriteUserInput =
+                FavoriteUserDto.Request.builder().nickName("닉네임").build();
+        FavoriteUser favUser = FavoriteUser.builder()
+                .userId(user)
+                .favoriteUserId(favoriteUser)
+                .nickName(favoriteUserInput.getNickName())
+                .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
-                .thenReturn(Optional.of(user));
-        Mockito.when(userRepository.findById(favoriteUser.getId()))
-                .thenReturn(Optional.of(favoriteUser));
+        when(userRepository.findById(favUser.getUserId().getId()))
+                .thenReturn(Optional.of(favUser.getUserId()));
+        when(userRepository.findById(favUser.getFavoriteUserId().getId()))
+                .thenReturn(Optional.of(favUser.getFavoriteUserId()));
         //when
-        ServiceResult result = favoriteUserService.addFavoriteUser(favoriteUserInput,
-                user.getId(), favoriteUser.getId());
+        favoriteUserService.addFavoriteUser(
+                favoriteUserInput, favUser.getUserId().getId(), favUser.getFavoriteUserId().getId()
+        );
         //then
-        Assertions.assertThat(result.isResult()).isTrue();
-        Assertions.assertThat(result.getMessage()).isEqualTo("즐겨찾기 유저 추가가 완료되었습니다.");
+        verify(favoriteUserRepository, times(1)).save(any(FavoriteUser.class));
+
     }
+
     @Test
-    public void addFavoriteUser_Fail_UserNotFound(){
+    @DisplayName("실패(회원정보없음)")
+    public void addFavoriteUser_Fail_UserNotFound() {
         //given
         User user = User.builder().id(1L).build();
         User favoriteUser = User.builder().id(2L).build();
-        FavoriteUserInput favoriteUserInput =
-                FavoriteUserInput.builder().nickName("닉네임").build();
+        FavoriteUserDto.Request favoriteUserInput =
+                FavoriteUserDto.Request.builder().nickName("닉네임").build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.empty());
-        Mockito.when(userRepository.findById(favoriteUser.getId()))
+        when(userRepository.findById(favoriteUser.getId()))
                 .thenReturn(Optional.empty());
         //when,then
-        Assertions.assertThatThrownBy(()->favoriteUserService.addFavoriteUser(favoriteUserInput,
+        assertThatThrownBy(() -> favoriteUserService.addFavoriteUser(favoriteUserInput,
                 user.getId(), favoriteUser.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("고객정보를 찾을 수 없습니다.");
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 }

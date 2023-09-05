@@ -1,64 +1,71 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
+import com.grablunchtogether.configuration.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.UserSignUpInput;
+import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 
+@DisplayName("회원가입")
 class UserSignUpTest {
     @Mock
     private UserRepository userRepository;
+    @Mock
     private JwtTokenProvider jwtTokenProvider;
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository,jwtTokenProvider);
+        userService = new UserService(userRepository,jwtTokenProvider,passwordEncoder);
     }
 
     @Test
+    @DisplayName("실패(기존회원)")
     public void testUserSignUp_ExistingUser() {
         // Given
-        UserSignUpInput userSignUpInput = UserSignUpInput.builder()
+        UserDto.SignUpRequest signUpRequest = UserDto.SignUpRequest.builder()
                 .userEmail("existing@example.com")
                 .build();
 
         GeocodeDto userCoordinate = new GeocodeDto();
 
         User existingUser = new User();
-        when(userRepository.findByUserEmail(userSignUpInput.getUserEmail()))
+        when(userRepository.findByUserEmail(signUpRequest.getUserEmail()))
                 .thenReturn(Optional.of(existingUser));
 
         // When,Then
         assertThatThrownBy
-                (() -> userService.userSignUp(userSignUpInput, userCoordinate))
+                (() -> userService.userSignUp(signUpRequest, userCoordinate))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("이미 존재하는 회원입니다.");
 
         verify(userRepository, times(1))
-                .findByUserEmail(userSignUpInput.getUserEmail());
+                .findByUserEmail(signUpRequest.getUserEmail());
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
+    @DisplayName("성공")
     void testUserSignUp_Success() {
         // Given
-        UserSignUpInput userSignUpInput =
-                UserSignUpInput.builder()
+        UserDto.SignUpRequest signUpRequest =
+                UserDto.SignUpRequest.builder()
                         .userEmail("test@example.com")
                         .userName("Test User")
                         .userPassword("password")
@@ -66,7 +73,7 @@ class UserSignUpTest {
                         .company("Test Company")
                         .build();
 
-        String phoneNumber = userSignUpInput.getUserPhoneNumber().replaceAll("-", "");
+        String phoneNumber = signUpRequest.getUserPhoneNumber().replaceAll("-", "");
 
         GeocodeDto userCoordinate =
                 GeocodeDto.builder()
@@ -77,17 +84,16 @@ class UserSignUpTest {
         when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
 
         // when
-        ServiceResult result = userService.userSignUp(
-                UserSignUpInput.builder()
-                        .userEmail(userSignUpInput.getUserEmail())
-                        .userName(userSignUpInput.getUserName())
-                        .userPassword(userSignUpInput.getUserPassword())
+        userService.userSignUp(
+                UserDto.SignUpRequest.builder()
+                        .userEmail(signUpRequest.getUserEmail())
+                        .userName(signUpRequest.getUserName())
+                        .userPassword(signUpRequest.getUserPassword())
                         .userPhoneNumber(phoneNumber)
-                        .company(userSignUpInput.getCompany())
+                        .company(signUpRequest.getCompany())
                         .build(), userCoordinate);
 
         // then
-        assertThat(result).isEqualTo(ServiceResult.success("회원가입 완료"));
         verify(userRepository).findByUserEmail(eq("test@example.com"));
         verify(userRepository).save(argThat(user ->
                 user.getUserEmail().equals("test@example.com") &&

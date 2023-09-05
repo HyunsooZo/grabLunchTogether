@@ -1,14 +1,15 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.PlanService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import java.util.List;
 import static com.grablunchtogether.enums.PlanStatus.COMPLETED;
 import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
+@DisplayName("신청한 약속목록 조회")
 class PlanGetListIRequestedTest {
     @Mock
     private UserRepository userRepository;
@@ -36,6 +38,7 @@ class PlanGetListIRequestedTest {
         planService = new PlanService(userRepository, planRepository);
     }
     @Test
+    @DisplayName("성공")
     public void testGetPlanListIRequested_Success() {
         //given
         User requester = User.builder().id(1L).build();
@@ -63,9 +66,9 @@ class PlanGetListIRequestedTest {
                 .planStatus(REQUESTED)
                 .build();
 
-        List<PlanDto> dtoList = new ArrayList<>();
-        dtoList.add(PlanDto.of(plan1));
-        dtoList.add(PlanDto.of(plan2));
+        List<PlanDto.Dto> dtoList = new ArrayList<>();
+        dtoList.add(PlanDto.Dto.of(plan1));
+        dtoList.add(PlanDto.Dto.of(plan2));
         List<Plan> list = new ArrayList<>();
         list.add(plan1);
         list.add(plan2);
@@ -73,26 +76,8 @@ class PlanGetListIRequestedTest {
         Mockito.when(planRepository.findByRequesterIdAndPlanStatusNot(requester.getId(), COMPLETED))
                 .thenReturn(list);
         //when
-        ServiceResult result = planService.getPlanListIRequested(requester.getId());
+        List<PlanDto.Dto> planListIRequested = planService.getPlanListIRequested(requester.getId());
         //then
-        Assertions.assertThat((List<PlanDto>) result.getObject())
-                .isEqualTo(dtoList);
-    }
-    @Test
-    public void testGetPlanListIRequested_Fail() {
-        //given
-        User requester = User.builder().id(1L).build();
-
-        User accepter = User.builder().id(2L).build();
-
-        List<Plan> list = new ArrayList<>();
-
-        Mockito.when(planRepository.findByRequesterIdAndPlanStatusNot(requester.getId(), COMPLETED))
-                .thenReturn(list);
-
-        //when,then
-        Assertions.assertThatThrownBy(()->planService.getPlanListIRequested(requester.getId()))
-                .isInstanceOf(CustomException.class)
-                .hasMessage("요청한 점심식사 요청이 없습니다.");
+        Assertions.assertThat(planListIRequested).isEqualTo(dtoList);
     }
 }

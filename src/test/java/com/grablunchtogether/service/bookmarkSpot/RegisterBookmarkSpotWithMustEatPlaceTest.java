@@ -1,23 +1,25 @@
 package com.grablunchtogether.service.bookmarkSpot;
 
-import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.MustEatPlace;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.BookmarkSpotRepository;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.BookmarkSpotService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
+@DisplayName("맛집정보로 북마크 추가")
 class RegisterBookmarkSpotWithMustEatPlaceTest {
     @Mock
     private UserRepository userRepository;
@@ -36,6 +38,7 @@ class RegisterBookmarkSpotWithMustEatPlaceTest {
     }
 
     @Test
+    @DisplayName(value = "성공")
     public void addBookmarkSpotWMustEatPlace_Success() {
         //given
         User user = User.builder()
@@ -52,21 +55,20 @@ class RegisterBookmarkSpotWithMustEatPlaceTest {
                 .city("서울")
                 .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(mustEatPlaceRepository.findById(mustEatPlace.getId()))
+        when(mustEatPlaceRepository.findById(mustEatPlace.getId()))
                 .thenReturn(Optional.of(mustEatPlace));
 
         //when
-        ServiceResult result =
-                bookmarkSpotService.registerBookmarkWithMustEatPlace(mustEatPlace.getId(), user.getId());
+        bookmarkSpotService.registerBookmarkWithMustEatPlace(mustEatPlace.getId(), user.getId());
 
         //then
-        assertThat(result.isResult()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("맛집 즐겨찾기 등록 완료");
+        verify(bookmarkSpotRepository, times(1)).save(any(BookmarkSpot.class));
     }
 
     @Test
+    @DisplayName(value = "실패(회원정보없음)")
     public void addBookmarkSpotWMustEatPlace_Fail_UserNotFound() {
         //given
         User user = User.builder()
@@ -83,30 +85,31 @@ class RegisterBookmarkSpotWithMustEatPlaceTest {
                 .city("서울")
                 .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.empty());
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService
                 .registerBookmarkWithMustEatPlace(mustEatPlace.getId(), user.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("고객정보를 찾을 수 없습니다.");
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 
     @Test
+    @DisplayName(value = "실패(맛집정보없음)")
     public void addBookmarkSpotWMustEatPlace_Fail_SpotNotFound() {
         //given
         User user = User.builder()
                 .id(1L)
                 .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.of(user));
-        Mockito.when(mustEatPlaceRepository.findById(1L))
+        when(mustEatPlaceRepository.findById(1L))
                 .thenReturn(Optional.empty());
         //when,then
         assertThatThrownBy(() -> bookmarkSpotService
                 .registerBookmarkWithMustEatPlace(1L, user.getId()))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("등록되지 않은 맛집정보입니다.");
+                .hasMessage("존재하지 않는 맛집정보입니다.");
     }
 }

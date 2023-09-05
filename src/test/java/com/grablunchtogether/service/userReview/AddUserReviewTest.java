@@ -1,15 +1,17 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.domain.UserReview;
 import com.grablunchtogether.dto.userReview.UserReviewInput;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
+import com.grablunchtogether.service.UserReviewService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,9 +19,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.times;
 
+@DisplayName("리뷰 등록")
 class AddUserReviewTest {
     @Mock
     private UserRepository userRepository;
@@ -39,6 +42,7 @@ class AddUserReviewTest {
     }
 
     @Test
+    @DisplayName("성공")
     public void addReview_Success() {
         // Given
         Long planHistoryId = 1L;
@@ -64,14 +68,15 @@ class AddUserReviewTest {
         Mockito.when(userRepository.findById(requester.getId())).thenReturn(Optional.of(requester));
 
         // When
-        ServiceResult result = userReviewService.addReview(accepter.getId(), planHistoryId, userReviewInput);
+        userReviewService.addReview(accepter.getId(), planHistoryId, userReviewInput);
 
         // Then
-        assertThat(result.isResult()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("리뷰등록이 완료되었습니다.");
+        Mockito.verify(userReviewRepository, times(1))
+                .save(Mockito.any(UserReview.class));
     }
 
     @Test
+    @DisplayName("실패(약속실행된적없음)")
     public void addReview_Fail_ContentNotFound() {
         // Given
         Long userId = 1L;
@@ -85,10 +90,11 @@ class AddUserReviewTest {
         // When, Then
         assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("히스토리가 존재하지 않습니다.");
+                .hasMessage("존재하지 않는 약속 히스토리 입니다.");
     }
 
     @Test
+    @DisplayName("실패(권한없음)")
     public void addReview_Fail_AuthorityException() {
         // Given
         Long userId = 1L;
@@ -112,6 +118,6 @@ class AddUserReviewTest {
         // When, Then
         assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
                 .isInstanceOf(CustomException.class)
-                .hasMessage("본인이 참석한 점심약속 대상에 대해서만 리뷰를 남길 수 있습니다.");
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 }
