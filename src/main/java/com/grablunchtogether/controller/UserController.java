@@ -1,14 +1,14 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.common.results.responseResult.ResponseResult;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.dto.clovaOcr.OcrApiDto;
+import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.*;
-import com.grablunchtogether.service.externalApi.clovaOcr.OcrApiService;
-import com.grablunchtogether.service.externalApi.geocode.GeocodeApiService;
-import com.grablunchtogether.service.user.MailSenderService;
-import com.grablunchtogether.service.user.UserService;
+import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.service.GeocodeApiService;
+import com.grablunchtogether.service.MailSenderService;
+import com.grablunchtogether.service.OcrApiService;
+import com.grablunchtogether.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -29,97 +31,92 @@ public class UserController {
     private final GeocodeApiService geocodeApiService;
     private final OcrApiService ocrApiService;
     private final MailSenderService mailSenderService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
     @Transactional
     @ApiOperation(value = "사용자 회원가입", notes = "입력된 정보로 회원가입을 진행합니다.")
-    public ResponseEntity<?> userSignUp(
-            @Valid @RequestBody UserSignUpInput userSignUpInput) {
+    public ResponseEntity<Void> userSignUp(
+            @Valid @RequestBody UserDto.SignUpRequest signUpRequest) {
 
-        //고객 좌표 가져오는 외부 api호출
+        //고객 좌표 가져오는 외부 api 호출
         GeocodeDto userCoordinate = geocodeApiService.getCoordinate(
-                userSignUpInput.getStreetName(), userSignUpInput.getStreetNumber());
+                signUpRequest.getStreetName(), signUpRequest.getStreetNumber());
 
-        ServiceResult result =
-                userService.userSignUp(userSignUpInput, userCoordinate);
+        userService.userSignUp(signUpRequest, userCoordinate);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(OK).build();
     }
 
     @PostMapping("/login")
     @ApiOperation(value = "사용자 로그인", notes = "입력된 사용자 ID/PW로 로그인을 진행합니다.")
-    public ResponseEntity<?> login(@Valid @RequestBody UserLoginInput userLoginInput) {
+    public ResponseEntity<TokenDto.Response> login(@Valid @RequestBody UserDto.LoginRequest loginRequest) {
 
-        ServiceResult result = userService.login(userLoginInput);
+        TokenDto.Dto tokenDto = userService.login(loginRequest);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(OK).body(TokenDto.Response.from(tokenDto));
     }
 
     @PatchMapping("/edit")
     @ApiOperation(value = "사용자 정보 수정", notes = "입력된 정보로 기존사용자의 정보를 수정합니다.")
-    public ResponseEntity<?> editUserInformation(
+    public ResponseEntity<Void> editUserInformation(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody UserInformationEditInput userInformationEditInput) {
+            @Valid @RequestBody UserDto.InfoEditRequest infoEditRequest) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
         //수정된 주소의 좌표 다시 가져오기
         GeocodeDto coordinate = geocodeApiService.getCoordinate(
-                userInformationEditInput.getAddress(), userInformationEditInput.getStreetNumber()
+                infoEditRequest.getAddress(), infoEditRequest.getStreetNumber()
         );
 
-        ServiceResult result = userService.editUserInformation(
-                userDto.getId(), userInformationEditInput, coordinate
-        );
+        userService.editUserInformation(userId, infoEditRequest, coordinate);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PatchMapping("/password/change")
     @ApiOperation(value = "사용자 비밀번호 변경", notes = "기존 비밀번호를 입력된 비밀번호로 변경합니다.")
-    public ResponseEntity<?> changePassword(
+    public ResponseEntity<Void> changePassword(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody UserChangePasswordInput userChangePasswordInput) {
+            @Valid @RequestBody UserDto.PasswordChangeRequest passwordChangeRequest) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result =
-                userService.changeUserPassword(userDto.getId(), userChangePasswordInput);
+        userService.changeUserPassword(userId, passwordChangeRequest);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PostMapping("/signup/ocr")
     @ApiOperation(value = "명함 OCR 회원가입", notes = "명함이미지를 받아 간편회원가입을 진행합니다.")
-    public ResponseEntity<?> ocrSignUp(
-            @Valid @RequestBody UserOcrSignUpInput userOcrSignUpInput) {
+    public ResponseEntity<Void> ocrSignUp(
+            @Valid @RequestBody UserDto.OcrSignUpRequest ocrSignUpRequest) {
 
-        OcrApiDto ocrData = ocrApiService.getUserInfoFromNameCard(userOcrSignUpInput.getImageName());
+        ClovaOcr.OcrApiDto ocrData = ocrApiService.getUserInfoFromNameCard(ocrSignUpRequest.getImageName());
 
         GeocodeDto geocodeApiResponse =
                 geocodeApiService.getCoordinate(ocrData.getAddress(), ocrData.getStreetNumber());
 
-        UserSignUpInput userSignUpInput = UserSignUpInput.builder()
+        UserDto.SignUpRequest signUpRequest = UserDto.SignUpRequest.builder()
                 .userEmail(ocrData.getEmail())
                 .userName(ocrData.getName())
-                .userPassword(userOcrSignUpInput.getPassword())
+                .userPassword(ocrSignUpRequest.getPassword())
                 .userPhoneNumber(ocrData.getMobile())
                 .company(ocrData.getCompany())
                 .build();
 
-        ServiceResult result =
-                userService.userSignUp(userSignUpInput, geocodeApiResponse);
+        userService.userSignUp(signUpRequest, geocodeApiResponse);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(CREATED).build();
     }
 
     @PostMapping("/password/reset")
     @ApiOperation(value = "비밀번호 초기화", notes = "비밀번호를 초기화 하고 이메일로 전송합니다.")
-    public ResponseEntity<?> ocrSignUp(
-            @RequestBody UserPasswordResetInput userPasswordResetInput) {
+    public ResponseEntity<Void> ocrSignUp(
+            @RequestBody UserDto.PasswordResetRequest passwordResetRequest) {
 
-        ServiceResult result =
-                mailSenderService.resetPassword(userPasswordResetInput);
-        return ResponseResult.result(result);
+        mailSenderService.resetPassword(passwordResetRequest);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }
