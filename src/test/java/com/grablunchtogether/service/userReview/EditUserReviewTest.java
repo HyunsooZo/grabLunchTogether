@@ -3,7 +3,7 @@ package com.grablunchtogether.service.userReview;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
-import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -46,9 +46,11 @@ class EditUserReviewTest {
         // Given
         Long userId = 1L;
         Long userReviewId = 1L;
-        UserReviewInput userReviewEditInput = new UserReviewInput();
-        userReviewEditInput.setRate(4.0);
-        userReviewEditInput.setReviewContent("Updated review content");
+        UserReviewDto.UserReviewRequest userReviewEditInput =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.0)
+                        .reviewContent("Updated review content")
+                        .build();
 
         User user = User.builder().id(userId).build();
         UserReview userReview = UserReview.builder()
@@ -75,7 +77,8 @@ class EditUserReviewTest {
         // Given
         Long userId = 1L;
         Long userReviewId = 1L;
-        UserReviewInput userReviewEditInput = new UserReviewInput();
+        UserReviewDto.UserReviewRequest userReviewEditInput =
+                new UserReviewDto.UserReviewRequest();
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
@@ -91,7 +94,8 @@ class EditUserReviewTest {
         // Given
         Long userId = 1L;
         Long userReviewId = 1L;
-        UserReviewInput userReviewEditInput = new UserReviewInput();
+        UserReviewDto.UserReviewRequest userReviewEditInput =
+                new UserReviewDto.UserReviewRequest();
 
         Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(new User()));
         Mockito.when(userReviewRepository.findById(userReviewId)).thenReturn(Optional.empty());
@@ -106,7 +110,8 @@ class EditUserReviewTest {
     @DisplayName("실패(권한없음)")
     public void editReview_Fail_AuthorityException() {
         // Given
-        UserReviewInput userReviewEditInput = UserReviewInput.builder()
+        UserReviewDto.UserReviewRequest userReviewEditInput =
+                UserReviewDto.UserReviewRequest.builder()
                 .reviewContent("s").build();
 
         User user = User.builder().id(2L).build();

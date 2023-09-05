@@ -4,7 +4,7 @@ import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
-import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -46,9 +46,11 @@ class AddUserReviewTest {
     public void addReview_Success() {
         // Given
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         User requester = User.builder().id(2L).userRate(4.0).build();
         User accepter = User.builder().id(3L).userRate(3.8).build();
@@ -68,7 +70,7 @@ class AddUserReviewTest {
         Mockito.when(userRepository.findById(requester.getId())).thenReturn(Optional.of(requester));
 
         // When
-        userReviewService.addReview(accepter.getId(), planHistoryId, userReviewInput);
+        userReviewService.addReview(accepter.getId(), planHistoryId, userReviewRequest);
 
         // Then
         Mockito.verify(userReviewRepository, times(1))
@@ -81,14 +83,16 @@ class AddUserReviewTest {
         // Given
         Long userId = 1L;
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         Mockito.when(planHistoryRepository.findById(planHistoryId)).thenReturn(Optional.empty());
 
         // When, Then
-        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
+        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("존재하지 않는 약속 히스토리 입니다.");
     }
@@ -99,9 +103,11 @@ class AddUserReviewTest {
         // Given
         Long userId = 1L;
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         User requester = User.builder().id(2L).userRate(4.0).build();
         User accepter = User.builder().id(3L).userRate(3.8).build();
@@ -116,7 +122,7 @@ class AddUserReviewTest {
         Mockito.when(planHistoryRepository.findById(planHistoryId)).thenReturn(Optional.of(planHistory));
 
         // When, Then
-        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
+        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewRequest))
                 .isInstanceOf(CustomException.class)
                 .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
