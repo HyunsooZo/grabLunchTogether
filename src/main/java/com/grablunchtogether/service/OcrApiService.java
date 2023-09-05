@@ -1,11 +1,9 @@
-package com.grablunchtogether.service.externalApi.clovaOcr;
+package com.grablunchtogether.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grablunchtogether.dto.clovaOcr.OcrApiDto;
-import com.grablunchtogether.dto.clovaOcr.OcrImageElements;
-import com.grablunchtogether.dto.clovaOcr.OcrInput;
+import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -15,9 +13,11 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
+
+import static com.grablunchtogether.dto.clovaOcr.ClovaOcr.*;
 
 @Service
 public class OcrApiService {
@@ -35,8 +35,8 @@ public class OcrApiService {
         String encodedData = imageToBase64(imageName);
         String imageFormat = findImageFormat(imageName);
 
-        OcrInput ocrInput = createOcrinput(encodedData, imageFormat);
-        String body = convertToJsonString(ocrInput);
+        OcrRequest ocrRequest = createOcrinput(encodedData, imageFormat);
+        String body = convertToJsonString(ocrRequest);
         HttpEntity<String> httpBody = createHttpEntity(body);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -90,17 +90,17 @@ public class OcrApiService {
     }
 
     // ocr api호출을 위한 Json 포맷 입력 만들기
-    private OcrInput createOcrinput(String encodedData, String imageFormat) {
+    private OcrRequest createOcrinput(String encodedData, String imageFormat) {
         OcrImageElements imageElements =
                 OcrImageElements.builder()
                         .name("ocrImage")
                         .data(encodedData)
                         .format(imageFormat)
                         .build();
-        List<OcrImageElements> ocrImageElementsList = new ArrayList<>();
-        ocrImageElementsList.add(imageElements);
+        List<ClovaOcr.OcrImageElements> ocrImageElementsList =
+                Collections.singletonList(imageElements);
 
-        return OcrInput.builder()
+        return ClovaOcr.OcrRequest.builder()
                 .images(ocrImageElementsList)
                 .lang("ko")
                 .requestId("string")
@@ -111,11 +111,11 @@ public class OcrApiService {
     }
 
     // 포맷을 Json String으로 변환
-    private String convertToJsonString(OcrInput ocrInput) {
+    private String convertToJsonString(OcrRequest ocrRequest) {
         ObjectMapper objectMapper = new ObjectMapper();
         String result = null;
         try {
-            result = objectMapper.writeValueAsString(ocrInput);
+            result = objectMapper.writeValueAsString(ocrRequest);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -147,12 +147,14 @@ public class OcrApiService {
         JsonNode companyArray = nameCardObject.path("result").path("company");
         return companyArray.get(0).get("text").asText();
     }
+
     // JsonNode에서 주소추출
     private String extractAddress(JsonNode nameCardObject) {
         JsonNode addressArray = nameCardObject.path("result").path("address");
         String[] addressArr = addressArray.get(0).get("text").asText().split(" ");
         return addressArr[addressArr.length - 2];
     }
+
     // JsonNode에서 주소번호 추출
     private String extractStreetNumber(JsonNode nameCardObject) {
         JsonNode resultNode = nameCardObject.path("result");
@@ -160,11 +162,13 @@ public class OcrApiService {
         String[] addressArr = addressArray.get(0).get("text").asText().split(" ");
         return addressArr[addressArr.length - 1].replaceAll("\\D", "");
     }
+
     // JsonNode에서 휴대폰번호 추출
     private String extractMobile(JsonNode nameCardObject) {
         JsonNode mobileArray = nameCardObject.path("result").path("mobile");
         return mobileArray.get(0).get("text").asText().replaceAll("\\D", "");
     }
+
     // JsonNode에서 이메일 추출
     private String extractEmail(JsonNode nameCardObject) {
         JsonNode emailArray = nameCardObject.path("result").path("email");
