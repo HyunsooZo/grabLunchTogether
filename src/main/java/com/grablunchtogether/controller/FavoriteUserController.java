@@ -1,9 +1,8 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
 import com.grablunchtogether.service.FavoriteUserService;
-import com.grablunchtogether.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import static org.springframework.http.HttpStatus.*;
 @Api(tags = "Favorite User API", description = "즐겨찾는 유저 관련된 API")
 @RestController
 public class FavoriteUserController {
-    private final UserService userService;
     private final FavoriteUserService favoriteUserService;
     private final JwtTokenProvider jwtTokenProvider;
 

@@ -1,9 +1,8 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
 import com.grablunchtogether.service.BookmarkSpotService;
-import com.grablunchtogether.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import static org.springframework.http.HttpStatus.*;
 @Api(tags = "BookMark Spot API", description = "즐겨찾는 장소와 관련된 API")
 @RestController
 public class BookmarkSpotController {
-    private final UserService userService;
     private final BookmarkSpotService bookmarkSpotService;
     private final JwtTokenProvider jwtTokenProvider;
 

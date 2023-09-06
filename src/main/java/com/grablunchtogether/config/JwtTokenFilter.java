@@ -1,6 +1,5 @@
-package com.grablunchtogether.configuration;
+package com.grablunchtogether.config;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
