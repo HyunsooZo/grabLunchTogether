@@ -57,11 +57,11 @@ public class User extends BaseEntity {
         this.longitude = longitude;
     }
 
-    public void changePassword(String newPassword){
+    public void setPassword(String newPassword){
         this.userPassword = newPassword;
     }
 
-    public void rateUpdate(Double newAverageRate) {
+    public void setRate(Double newAverageRate) {
         this.userRate = newAverageRate;
     }
 }

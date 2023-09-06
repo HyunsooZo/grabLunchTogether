@@ -1,16 +1,15 @@
-package com.grablunchtogether.service.user;
+package com.grablunchtogether.service;
 
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.user.UserPasswordResetInput;
+import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserRepository;
-import com.grablunchtogether.utility.PasswordUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,19 +20,20 @@ import java.util.UUID;
 public class MailSenderService {
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Transactional
-    public ServiceResult resetPassword(UserPasswordResetInput userPasswordResetInput) {
+    public void resetPassword(UserDto.PasswordResetRequest passwordResetRequest) {
 
-        User user = userRepository.findByUserEmail(userPasswordResetInput.getEmail())
+        User user = userRepository.findByUserEmail(passwordResetRequest.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
         String randomPassword = UUID.randomUUID().toString().substring(0, 10);
 
         String encryptedPassword =
-                PasswordUtility.getEncryptPassword(randomPassword);
+                passwordEncoder.encode(randomPassword);
 
-        user.changePassword(encryptedPassword);
+        user.setPassword(encryptedPassword);
 
         sendEmail(
                 user.getUserEmail(),
@@ -42,8 +42,6 @@ public class MailSenderService {
         );
 
         userRepository.save(user);
-
-        return ServiceResult.success("비밀번호 초기화 완료");
     }
 
     public void sendEmail(String to, String subject, String text) {

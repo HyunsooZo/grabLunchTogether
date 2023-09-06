@@ -1,4 +1,4 @@
-package com.grablunchtogether.service.user;
+package com.grablunchtogether.service;
 
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
@@ -27,7 +27,8 @@ public class UserTokenDetailService implements UserDetailsService {
         com.grablunchtogether.domain.User userEntity = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
-        List<GrantedAuthority> authorities = new ArrayList<>(userEntity.getUserRole().getAuthorities());
+        List<GrantedAuthority> authorities =
+                new ArrayList<>(userEntity.getUserRole().getAuthorities());
 
         return User.builder()
                 .username(userEntity.getUserEmail())

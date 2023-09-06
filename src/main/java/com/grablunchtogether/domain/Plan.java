@@ -1,5 +1,6 @@
 package com.grablunchtogether.domain;
 
+import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.enums.PlanStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,12 +60,11 @@ public class Plan extends BaseEntity {
         this.planStatus = CANCELED;
     }
 
-    public void update(String planMenu, String planRestaurant, LocalDateTime planTime,
-                       String requestMessage) {
-        this.planMenu = planMenu;
-        this.planRestaurant = planRestaurant;
-        this.planTime = planTime;
-        this.requestMessage = requestMessage;
+    public void update(PlanDto.Request planModificationRequest) {
+        this.planMenu = planModificationRequest.getPlanMenu();
+        this.planRestaurant = planModificationRequest.getPlanRestaurant();
+        this.planTime = planModificationRequest.getPlanTime();
+        this.requestMessage = planModificationRequest.getRequestMessage();
     }
 
     public void expired() {

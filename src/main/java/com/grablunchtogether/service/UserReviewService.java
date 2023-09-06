@@ -1,12 +1,9 @@
-package com.grablunchtogether.service.userReview;
+package com.grablunchtogether.service;
 
-import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
-import com.grablunchtogether.dto.userReview.UserReviewDto;
-import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
@@ -14,11 +11,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.grablunchtogether.dto.userReview.UserReviewDto.Dto;
+import static com.grablunchtogether.dto.userReview.UserReviewDto.UserReviewRequest;
 import static com.grablunchtogether.exception.ErrorCode.*;
 
 @RequiredArgsConstructor
@@ -29,11 +28,11 @@ public class UserReviewService {
     private final UserReviewRepository userReviewRepository;
 
     @Transactional
-    public ServiceResult addReview(Long userId, Long planHistoryId,
-                                   UserReviewInput userReviewInput) {
+    public void addReview(Long userId, Long planHistoryId,
+                          UserReviewRequest userReviewRequest) {
 
         PlanHistory planHistory = planHistoryRepository.findById(planHistoryId)
-                .orElseThrow(() -> new CustomException(CONTENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(PLAN_HISTORY_NOT_FOUND));
 
         User targetUser = null;
 
@@ -46,42 +45,41 @@ public class UserReviewService {
         }
 
         Double newAverageRate =
-                calculateAverageRate(targetUser, userReviewInput.getRate());
+                calculateAverageRate(targetUser, userReviewRequest.getRate());
 
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(USER_INFO_NOT_FOUND));
 
         Optional<UserReview> optionalUserReview =
                 userReviewRepository.findByPlanIdAndReviewerId(planHistory.getPlanId(), user);
+
         if (optionalUserReview.isPresent()) {
             throw new CustomException(USER_REVIEW_ALREADY_EXISTS);
         }
 
-        targetUser.rateUpdate(newAverageRate);
+        targetUser.setRate(newAverageRate);
 
         userReviewRepository.save(
                 UserReview.builder()
                         .reviewerId(user)
                         .targetedId(targetUser)
                         .planId(planHistory.getPlanId())
-                        .reviewContent(userReviewInput.getReviewContent())
-                        .rate(userReviewInput.getRate())
+                        .reviewContent(userReviewRequest.getReviewContent())
+                        .rate(userReviewRequest.getRate())
                         .build()
         );
-
-        return ServiceResult.success("리뷰등록이 완료되었습니다.");
     }
 
     @Transactional
-    public ServiceResult editReview(Long userId,
-                                    Long userReviewId,
-                                    UserReviewInput userReviewEditInput) {
+    public void editReview(Long userId,
+                           Long userReviewId,
+                           UserReviewRequest userReviewEditInput) {
 
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new CustomException(USER_INFO_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
-        UserReview userReview = userReviewRepository.findById(userReviewId).orElseThrow(
-                () -> new CustomException(CONTENT_NOT_FOUND));
+        UserReview userReview = userReviewRepository.findById(userReviewId)
+                .orElseThrow(() -> new CustomException(USER_REVIEW_NOT_FOUND));
 
         if (!userReview.getReviewerId().equals(user)) {
             throw new CustomException(NOT_PERMITTED);
@@ -90,46 +88,35 @@ public class UserReviewService {
         userReview.edit(userReviewEditInput);
 
         userReviewRepository.save(userReview);
-
-        return ServiceResult.success("리뷰 수정이 완료되었습니다.");
     }
 
     @Transactional
-    public ServiceResult deleteReview(Long userId, Long userReviewId) {
+    public void deleteReview(Long userId, Long userReviewId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
         UserReview userReview = userReviewRepository.findById(userReviewId)
-                .orElseThrow(() -> new CustomException(CONTENT_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(USER_REVIEW_NOT_FOUND));
 
         if (!userReview.getReviewerId().equals(user)) {
             throw new CustomException(NOT_PERMITTED);
         }
 
         userReviewRepository.delete(userReview);
-
-        return ServiceResult.success("리뷰 삭제가 완료되었습니다.");
     }
 
     @Transactional(readOnly = true)
-    public ServiceResult listReviews(Long targetUserId) {
+    public List<Dto> listReviews(Long targetUserId) {
 
         User user = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
         List<UserReview> list = userReviewRepository.findByTargetedId(user);
 
-        if (list.isEmpty()) {
-            throw new CustomException(CONTENT_NOT_FOUND);
-        }
-
-        List<UserReviewDto> result = new ArrayList<>();
-
-        list.forEach(userReview -> {
-            result.add(UserReviewDto.of(userReview));
-        });
-        return ServiceResult.success("목록 조회 성공", result);
+        return list.stream()
+                .map(Dto::of)
+                .collect(Collectors.toList());
     }
 
     private Double calculateAverageRate(User targetUser, Double newRate) {

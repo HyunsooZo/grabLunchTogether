@@ -1,12 +1,11 @@
-package com.grablunchtogether.service.planHistory;
+package com.grablunchtogether.service;
 
-import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.exception.ErrorCode;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -18,8 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @EnableScheduling
 @RequiredArgsConstructor
@@ -73,31 +73,19 @@ public class PlanHistoryService {
     }
 
     @Transactional(readOnly = true)
-    public ServiceResult listMyHistory(Long userId) {
+    public List<PlanDto.Dto> listMyHistory(Long userId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
-        List<PlanHistory> requestedList =
-                planHistoryRepository.findByRequesterId(user);
+        List<PlanHistory> planHistories =
+                Stream
+                        .concat(planHistoryRepository.findByRequesterId(user).stream(),
+                                planHistoryRepository.findByAccepterId(user).stream())
+                        .collect(Collectors.toList());
 
-        List<PlanHistory> acceptedList =
-                planHistoryRepository.findByAccepterId(user);
-
-        List<PlanDto> result = new ArrayList<>();
-
-        requestedList.forEach(planHistory -> {
-            result.add(PlanDto.of(planHistory.getPlanId()));
-        });
-
-        acceptedList.forEach(planHistory -> {
-            result.add(PlanDto.of(planHistory.getPlanId()));
-        });
-
-        if (result.isEmpty()) {
-            throw new CustomException(ErrorCode.CONTENT_NOT_FOUND);
-        }
-
-        return ServiceResult.success("목록 가져오기 성공", result);
+        return planHistories.stream()
+                .map(planHistory -> PlanDto.Dto.of(planHistory.getPlanId()))
+                .collect(Collectors.toList());
     }
 }

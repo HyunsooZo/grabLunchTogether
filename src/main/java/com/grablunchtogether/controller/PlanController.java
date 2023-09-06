@@ -1,12 +1,12 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.common.results.responseResult.ResponseResult;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.dto.plan.PlanCreationInput;
+import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
-import com.grablunchtogether.service.externalApi.naverSms.SMSApiService;
-import com.grablunchtogether.service.plan.PlanService;
-import com.grablunchtogether.service.user.UserService;
+import com.grablunchtogether.service.PlanService;
+import com.grablunchtogether.service.SMSApiService;
+import com.grablunchtogether.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/plans")
@@ -24,37 +27,37 @@ public class PlanController {
     private final UserService userService;
     private final PlanService planService;
     private final SMSApiService smsApiService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/distance/{kilometer}")
     @ApiOperation(value = "주변회원 찾기", notes = "입력된 거리 내 회원목록을 가져옵니다.")
-    public ResponseEntity<?> getUserList(
+    public ResponseEntity<UserDistanceDto.Response> getUserList(
             @PathVariable Double kilometer,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+        UserDto.Dto userDto = userService.getUserById(userId);
 
-        ServiceResult result = userService.findUserAround(
-                userDto.getLatitude(), userDto.getLongitude(), kilometer
-        );
+        List<UserDistanceDto.Dto> userAround =
+                userService.findUserAround(userDto.getLatitude(), userDto.getLongitude(), kilometer);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(OK).body(UserDistanceDto.Response.of(userAround));
     }
 
     @PostMapping("/user/{accepterId}")
     @ApiOperation(value = "점심약속 생성하기", notes = "상대방에게 입력된 정보로 점심약속을 신청합니다.")
-    public ResponseEntity<?> createAPlan(
+    public ResponseEntity<Void> createAPlan(
             @PathVariable Long accepterId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody PlanCreationInput planCreationInput) {
+            @Valid @RequestBody PlanDto.Request planCreationRequest) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result =
-                planService.createPlan(userDto.getId(), accepterId, planCreationInput);
+        planService.createPlan(userId, accepterId, planCreationRequest);
 
-        smsApiService.sendSmsToAccepter(userDto.getId(), accepterId, planCreationInput);
+        smsApiService.sendSmsToAccepter(userId, accepterId, planCreationRequest);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(CREATED).build();
     }
 
     // 나에게 신청된 점심약속 리스트 조회
@@ -63,11 +66,11 @@ public class PlanController {
     public ResponseEntity<?> getPlanListReceived(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result = planService.getPlanListReceived(userDto.getId());
+        List<PlanDto.Dto> plans = planService.getPlanListReceived(userId);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(OK).body(PlanDto.Response.of(plans));
     }
 
     // 내가 신청한 점심약속 리스트 조회
@@ -76,11 +79,12 @@ public class PlanController {
     public ResponseEntity<?> getPlanListIRequested(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result = planService.getPlanListIRequested(userDto.getId());
+        List<PlanDto.Dto> plans =
+                planService.getPlanListIRequested(userId);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(OK).body(PlanDto.Response.of(plans));
     }
 
     // 점심약속 업데이트(1) - 거절 / 승낙 (상태업데이트)
@@ -91,10 +95,10 @@ public class PlanController {
             @PathVariable Character acceptCode,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
-        ServiceResult result = planService.approvePlan(userDto.getId(), planId, acceptCode);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+        planService.approvePlan(userId, planId, acceptCode);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     // 점심약속 업데이트(2) - 취소(상태업데이트)
@@ -104,11 +108,11 @@ public class PlanController {
             @PathVariable Long planId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result = planService.cancelPlan(userDto.getId(), planId);
+        planService.cancelPlan(userId, planId);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PatchMapping("/{planId}/edit")
@@ -116,14 +120,13 @@ public class PlanController {
     public ResponseEntity<?> editPlanRequest(
             @PathVariable Long planId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody PlanCreationInput planModificationInput) {
+            @Valid @RequestBody PlanDto.Request planModificationRequest) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result =
-                planService.editPlanRequest(userDto.getId(), planId, planModificationInput);
+        planService.editPlanRequest(userId, planId, planModificationRequest);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     // 점심약속 삭제
@@ -133,10 +136,10 @@ public class PlanController {
             @PathVariable Long planId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto userDto = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result = planService.planDeletion(userDto.getId(), planId);
+        planService.planDeletion(userId, planId);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }
