@@ -2,6 +2,7 @@ package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.user.UserDistanceDto;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.UserService;
 import org.assertj.core.api.Assertions;
@@ -27,12 +28,15 @@ class UserFindUserAroundTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository,jwtTokenProvider,passwordEncoder);
+        userService =
+                new UserService(userRepository,jwtTokenProvider,passwordEncoder,userOtpRedisRepository);
     }
 
     @Test
