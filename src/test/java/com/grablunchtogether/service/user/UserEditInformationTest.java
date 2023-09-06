@@ -1,10 +1,11 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,12 +29,15 @@ class UserEditInformationTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository, jwtTokenProvider, passwordEncoder);
+        userService =
+                new UserService(userRepository,jwtTokenProvider,passwordEncoder,userOtpRedisRepository);
     }
 
     @Test
@@ -75,8 +79,8 @@ class UserEditInformationTest {
     public void testEditUserInformation_Fail_InvalidPassword() {
         // given
         Long userId = 1L;
-        UserDto.InfoEditRequest infoEditRequest = new UserDto.InfoEditRequest();
-        infoEditRequest.setUserPassword("wrongPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("wrongPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         User existingUser = new User();
@@ -96,8 +100,8 @@ class UserEditInformationTest {
     public void testEditUserInformation_Fail_UserInfoNotFound() {
         // given
         Long userId = 1L;
-        UserDto.InfoEditRequest infoEditRequest = new UserDto.InfoEditRequest();
-        infoEditRequest.setUserPassword("existingPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("existingPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.empty());

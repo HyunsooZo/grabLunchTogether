@@ -6,7 +6,5 @@ public enum PlanStatus {
     REJECTED,
     COMPLETED,
     CANCELED,
-    EXPIRED,
-    HISTORY_LOADED_COMPLETED,
-    HISTORY_LOADED_CANCELED
+    EXPIRED
 }

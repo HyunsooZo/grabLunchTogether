@@ -1,9 +1,10 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserDto.PasswordChangeRequest;
 import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +28,15 @@ class UserPasswordChangeTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository, jwtTokenProvider, passwordEncoder);
+        userService =
+                new UserService(userRepository,jwtTokenProvider,passwordEncoder,userOtpRedisRepository);
     }
 
     @Test

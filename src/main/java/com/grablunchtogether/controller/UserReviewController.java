@@ -1,6 +1,6 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.service.UserReviewService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

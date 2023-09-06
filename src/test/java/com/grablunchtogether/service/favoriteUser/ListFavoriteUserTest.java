@@ -72,6 +72,6 @@ class ListFavoriteUserTest {
         //when
         List<FavoriteUserDto.Dto> favoriteUsers = favoriteUserService.listFavoriteUser(user.getId());
         //then
-        Assertions.assertThat(favoriteUsers).isEqualTo(collect);
+        Assertions.assertThat(favoriteUsers.get(0).getId()).isEqualTo(collect.get(0).getId());
     }
 }

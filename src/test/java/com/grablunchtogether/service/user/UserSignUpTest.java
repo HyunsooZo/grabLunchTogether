@@ -1,10 +1,11 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +28,15 @@ class UserSignUpTest {
     private JwtTokenProvider jwtTokenProvider;
     @Mock
     private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserService(userRepository,jwtTokenProvider,passwordEncoder);
+        userService =
+                new UserService(userRepository,jwtTokenProvider,passwordEncoder,userOtpRedisRepository);
     }
 
     @Test
@@ -62,7 +66,7 @@ class UserSignUpTest {
 
     @Test
     @DisplayName("성공")
-    void testUserSignUp_Success() {
+    void testUserSignUp_Success() throws Exception {
         // Given
         UserDto.SignUpRequest signUpRequest =
                 UserDto.SignUpRequest.builder()

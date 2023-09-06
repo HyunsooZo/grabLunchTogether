@@ -1,6 +1,5 @@
-package com.grablunchtogether.configuration;
+package com.grablunchtogether.config;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.PatternMatchUtils;
@@ -22,6 +21,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             "/api/users/signup/ocr",
             "/api/users/login",
             "/api/users/password/reset",
+            "/otp/verification",
             "/swagger-ui/index.html",
             "/swagger-ui/**",
             "/v2/api-docs",

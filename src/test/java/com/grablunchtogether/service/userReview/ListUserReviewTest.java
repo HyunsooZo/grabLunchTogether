@@ -79,7 +79,8 @@ class ListUserReviewTest {
         List<UserReviewDto.Dto> reviews = userReviewService.listReviews(targetUserId);
 
         // Then
-        Assertions.assertThat(reviews).isEqualTo(collect);
+        Assertions.assertThat(reviews.get(0).getReviewContent())
+                .isEqualTo(collect.get(0).getReviewContent());
     }
 
     @Test

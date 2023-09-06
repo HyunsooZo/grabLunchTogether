@@ -1,4 +1,4 @@
-package com.grablunchtogether.configuration;
+package com.grablunchtogether.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
