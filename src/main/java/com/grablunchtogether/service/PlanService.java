@@ -98,13 +98,13 @@ public class PlanService {
 
     // 받은 or 신청한 요청을 취소
     @Transactional
-    public void cancelPlan(Long userid, Long planId) {
+    public PlanDto.Dto cancelPlan(Long userId, Long planId) {
 
         Plan plan = planRepository.findById(planId)
                 .orElseThrow(() -> new CustomException(PLAN_NOT_FOUND));
 
-        if (!Objects.equals(plan.getAccepter().getId(), userid) &&
-                !Objects.equals(plan.getRequester().getId(), userid)) {
+        if (!Objects.equals(plan.getAccepter().getId(), userId) &&
+                !Objects.equals(plan.getRequester().getId(), userId)) {
             throw new CustomException(NOT_PERMITTED);
         }
 
@@ -115,6 +115,8 @@ public class PlanService {
         plan.cancel();
 
         planRepository.save(plan);
+
+        return PlanDto.Dto.of(plan);
     }
 
     //내가 요청한 점심약속 수정
@@ -135,6 +137,25 @@ public class PlanService {
         }
 
         plan.update(planModificationRequest);
+
+        planRepository.save(plan);
+    }
+
+    public void completePlan(Long userId, Long planId) {
+
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new CustomException(PLAN_NOT_FOUND));
+
+        if (!Objects.equals(plan.getAccepter().getId(), userId) &&
+                !Objects.equals(plan.getRequester().getId(), userId)) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+
+        if (!Objects.equals(plan.getPlanStatus(), ACCEPTED)){
+            throw new CustomException(ErrorCode.CAN_NOT_COMPLETE_PLAN);
+        }
+
+        plan.complete();
 
         planRepository.save(plan);
     }

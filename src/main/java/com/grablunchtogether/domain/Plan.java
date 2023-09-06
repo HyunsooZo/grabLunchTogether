@@ -71,11 +71,5 @@ public class Plan extends BaseEntity {
         this.planStatus = EXPIRED;
     }
 
-    public void historyLoadComplete() {
-        this.planStatus = HISTORY_LOADED_COMPLETED;
-    }
-
-    public void historyLoadCancel() {
-        this.planStatus = HISTORY_LOADED_CANCELED;
-    }
+    public void complete() {this.planStatus = CANCELED;}
 }

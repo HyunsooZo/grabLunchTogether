@@ -1,6 +1,6 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.service.PlanHistoryService;
 import io.swagger.annotations.Api;

@@ -30,41 +30,27 @@ public class PlanHistoryService {
     private final UserRepository userRepository;
 
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
-    public void updatePlanHistory() {
+    @Scheduled(cron = "0 0 0 * * *")
+    public void expiresPlans() {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedTime = LocalDateTime.now().format(formatter);
         LocalDateTime currentTime = LocalDateTime.parse(formattedTime, formatter);
-        System.out.println(currentTime);
 
-        List<Plan> completedPlans =
-                planRepository.findCompletedPlansUsingNativeQuery(currentTime);
         List<Plan> pendingPlans =
                 planRepository.findPendingPlansUsingNativeQuery(currentTime);
-        List<Plan> canceledPlans =
-                planRepository.findCanceledPlansUsingNativeQuery(currentTime);
 
         pendingPlans.forEach(plan -> {
             plan.expired();
             planRepository.save(plan);
         });
-
-        canceledPlans.forEach(plan -> {
-            plan.historyLoadCancel();
-            planRepository.save(plan);
-            registerHistory(plan);
-        });
-
-        completedPlans.forEach(plan -> {
-            plan.historyLoadComplete();
-            registerHistory(plan);
-            planRepository.save(plan);
-        });
     }
 
     @Transactional
-    public void registerHistory(Plan plan) {
+    public void registerHistory(Long planId) {
+        Plan plan = planRepository.findById(planId)
+                .orElseThrow(() -> new CustomException(ErrorCode.PLAN_NOT_FOUND));
+
         planHistoryRepository.save(PlanHistory.builder()
                 .planId(plan)
                 .requesterId(plan.getRequester())

@@ -1,9 +1,10 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.plan.PlanDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.service.PlanHistoryService;
 import com.grablunchtogether.service.PlanService;
 import com.grablunchtogether.service.SMSApiService;
 import com.grablunchtogether.service.UserService;
@@ -26,6 +27,7 @@ import static org.springframework.http.HttpStatus.*;
 public class PlanController {
     private final UserService userService;
     private final PlanService planService;
+    private final PlanHistoryService planHistoryService;
     private final SMSApiService smsApiService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -110,7 +112,9 @@ public class PlanController {
 
         Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        planService.cancelPlan(userId, planId);
+        PlanDto.Dto planDto = planService.cancelPlan(userId, planId);
+
+        planHistoryService.registerHistory(planDto.getId());
 
         return ResponseEntity.status(NO_CONTENT).build();
     }
@@ -125,6 +129,18 @@ public class PlanController {
         Long userId = jwtTokenProvider.getIdFromToken(token);
 
         planService.editPlanRequest(userId, planId, planModificationRequest);
+
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+    @PatchMapping("/{planId}/complete")
+    @ApiOperation(value = "점심약속 완료처리 하기", notes = "성사된 점심약속 완료처리")
+    public ResponseEntity<?> completePlan(
+            @PathVariable Long planId,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
+
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+
+        planService.completePlan(userId,planId);
 
         return ResponseEntity.status(NO_CONTENT).build();
     }
