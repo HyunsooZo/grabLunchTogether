@@ -2,14 +2,13 @@ package com.grablunchtogether.service;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.OtpDto;
+import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.UserRole;
-import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 

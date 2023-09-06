@@ -1,7 +1,7 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.OtpDto;
+import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.naverSms.NaverSmsDto;
