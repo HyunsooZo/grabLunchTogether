@@ -29,7 +29,8 @@ public enum ErrorCode {
     PLAN_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 약속정보입니다."),
     PLAN_HISTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 약속 히스토리 입니다."),
     USER_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰 입니다."),
-    CAN_NOT_COMPLETE_PLAN(HttpStatus.BAD_REQUEST,"수락되지 않은 약속입니다." );
+    CAN_NOT_COMPLETE_PLAN(HttpStatus.BAD_REQUEST, "수락되지 않은 약속입니다."),
+    OTP_IS_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 OTP 입니다.");
 
     private final HttpStatus status;
     private final String message;
