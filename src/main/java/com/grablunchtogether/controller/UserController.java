@@ -1,14 +1,13 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
+import com.grablunchtogether.dto.OtpDto;
 import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserDto;
-import com.grablunchtogether.service.GeocodeApiService;
-import com.grablunchtogether.service.MailSenderService;
-import com.grablunchtogether.service.OcrApiService;
-import com.grablunchtogether.service.UserService;
+import com.grablunchtogether.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -32,18 +31,22 @@ public class UserController {
     private final OcrApiService ocrApiService;
     private final MailSenderService mailSenderService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final SMSApiService smsApiService;
 
     @PostMapping("/signup")
     @Transactional
     @ApiOperation(value = "사용자 회원가입", notes = "입력된 정보로 회원가입을 진행합니다.")
     public ResponseEntity<Void> userSignUp(
-            @Valid @RequestBody UserDto.SignUpRequest signUpRequest) {
+            @Valid @RequestBody UserDto.SignUpRequest signUpRequest) throws Exception {
 
         //고객 좌표 가져오는 외부 api 호출
         GeocodeDto userCoordinate = geocodeApiService.getCoordinate(
                 signUpRequest.getStreetName(), signUpRequest.getStreetNumber());
 
-        userService.userSignUp(signUpRequest, userCoordinate);
+        NaverSmsDto.SmsContent smsContent =
+                userService.userSignUp(signUpRequest, userCoordinate);
+
+        smsApiService.sendSMS(smsContent);
 
         return ResponseEntity.status(OK).build();
     }
@@ -91,7 +94,7 @@ public class UserController {
     @PostMapping("/signup/ocr")
     @ApiOperation(value = "명함 OCR 회원가입", notes = "명함이미지를 받아 간편회원가입을 진행합니다.")
     public ResponseEntity<Void> ocrSignUp(
-            @Valid @RequestBody UserDto.OcrSignUpRequest ocrSignUpRequest) {
+            @Valid @RequestBody UserDto.OcrSignUpRequest ocrSignUpRequest) throws Exception {
 
         ClovaOcr.OcrApiDto ocrData = ocrApiService.getUserInfoFromNameCard(ocrSignUpRequest.getImageName());
 
@@ -117,6 +120,15 @@ public class UserController {
             @RequestBody UserDto.PasswordResetRequest passwordResetRequest) {
 
         mailSenderService.resetPassword(passwordResetRequest);
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+    @PostMapping("/otp/verification")
+    @ApiOperation(value = "SMS OTP 인증", notes = "문자메세지로 전송된 OTP를 인증합니다.")
+    public ResponseEntity<Void> otpVerification(
+            @RequestBody OtpDto.Request otpDtoRequest) {
+
+        userService.verifyOtp(otpDtoRequest);
+
         return ResponseEntity.status(NO_CONTENT).build();
     }
 }

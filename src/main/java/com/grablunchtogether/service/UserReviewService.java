@@ -50,12 +50,10 @@ public class UserReviewService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new CustomException(USER_INFO_NOT_FOUND));
 
-        Optional<UserReview> optionalUserReview =
-                userReviewRepository.findByPlanIdAndReviewerId(planHistory.getPlanId(), user);
-
-        if (optionalUserReview.isPresent()) {
-            throw new CustomException(USER_REVIEW_ALREADY_EXISTS);
-        }
+        userReviewRepository.findByPlanIdAndReviewerId(planHistory.getPlanId(), user)
+                .ifPresent(review -> {
+                    throw new CustomException(USER_REVIEW_ALREADY_EXISTS);
+                });
 
         targetUser.setRate(newAverageRate);
 

@@ -50,6 +50,8 @@ public class SMSApiService {
     @Value("${naver.sms.headerSign}")
     private String headerSign;
 
+    private final String SMS_URL = "https://sens.apigw.ntruss.com/sms/v2/services/";
+
 
     private final UserRepository userRepository;
 
@@ -82,8 +84,9 @@ public class SMSApiService {
         }
     }
 
-    //sendSmsToAccepter 내부에서 호출하는 실제로 SMS보내는 메서드
-    private NaverSmsDto.SmsApiResponse sendSMS(NaverSmsDto.SmsContent smsContent) throws
+    //실제로 SMS보내는 메서드
+    @Transactional
+    public NaverSmsDto.SmsApiResponse sendSMS(NaverSmsDto.SmsContent smsContent) throws
             UnsupportedEncodingException,
             NoSuchAlgorithmException,
             InvalidKeyException,
@@ -119,7 +122,7 @@ public class SMSApiService {
 
         NaverSmsDto.SmsApiResponse result =
                 restTemplate.postForObject(
-                        new URI("https://sens.apigw.ntruss.com/sms/v2/services/" + serviceId + "/messages"),
+                        new URI(SMS_URL + serviceId + "/messages"),
                         httpBody,
                         NaverSmsDto.SmsApiResponse.class);
 
@@ -129,25 +132,32 @@ public class SMSApiService {
     }
 
     //네이버에서 제공하는 자바 시그니처 생성 메서드
-    public String makeSignature(Long time) throws
-            UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
-
+    public String makeSignature(Long time) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException {
+        String space = " ";
         String newLine = "\n";
-        String method = "POST ";
-        String url = "/sms/v2/services/" + serviceId + "/messages\n";
+        String method = "POST";
+        String url = "/sms/v2/services/" + this.serviceId + "/messages";
         String timestamp = time.toString();
+        String accessKey = this.accessKey;
+        String secretKey = this.secretKey;
 
-        String message = method + url + newLine + timestamp + newLine + accessKey;
+        String message = new StringBuilder()
+                .append(method)
+                .append(space)
+                .append(url)
+                .append(newLine)
+                .append(timestamp)
+                .append(newLine)
+                .append(accessKey)
+                .toString();
 
-        SecretKeySpec signingKey =
-                new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
-
+        SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes("UTF-8"), "HmacSHA256");
         Mac mac = Mac.getInstance("HmacSHA256");
-
         mac.init(signingKey);
 
         byte[] rawHmac = mac.doFinal(message.getBytes("UTF-8"));
+        String encodeBase64String = Base64.encodeBase64String(rawHmac);
 
-        return Base64.encodeBase64String(rawHmac);
+        return encodeBase64String;
     }
 }

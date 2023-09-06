@@ -2,31 +2,44 @@ package com.grablunchtogether.service;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.dto.OtpDto;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.enums.UserRole;
+import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.exception.ErrorCode;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static com.grablunchtogether.enums.UserStatus.*;
+import static com.grablunchtogether.enums.UserStatus.NOT_VERIFIED;
 import static com.grablunchtogether.exception.ErrorCode.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserOtpRedisRepository userOtpRedisRepository;
 
-    public void userSignUp(UserDto.SignUpRequest signUpRequest,
-                           GeocodeDto userCoordinate) {
+    public NaverSmsDto.SmsContent userSignUp(UserDto.SignUpRequest signUpRequest,
+                                             GeocodeDto userCoordinate) throws Exception {
 
         //기존회원 조회
         userRepository.findByUserEmail(signUpRequest.getUserEmail())
@@ -52,7 +65,25 @@ public class UserService {
                 .company(signUpRequest.getCompany())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
+                .userRole(UserRole.ROLE_USER)
+                .userStatus(NOT_VERIFIED)
                 .build());
+
+        // OTP 생성 및 SMS 메세지 내용 작성
+        String otp = String.valueOf(
+                ThreadLocalRandom
+                        .current()
+                        .nextInt(100000, 1000000)
+        );
+
+        String SMS_MESSAGE = "[GrabLunchTogether] 인증번호 : %s\n인증번호를 입력해주세요.";
+
+        userOtpRedisRepository.save(otp, signUpRequest.getUserEmail());
+
+        return NaverSmsDto.SmsContent.builder()
+                .to(userPhoneNumber)
+                .content(String.format(SMS_MESSAGE, otp))
+                .build();
     }
 
     //유저 로그인
@@ -133,9 +164,24 @@ public class UserService {
     }
 
     public UserDto.Dto getUserById(Long userId) {
-
         return UserDto.Dto.of(
                 userRepository.findById(userId)
                         .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND)));
+    }
+
+    public void verifyOtp(OtpDto.Request otpDtoRequest) {
+
+        String savedEmail = userOtpRedisRepository.check(otpDtoRequest.getOtp());
+
+        if (savedEmail == null || !savedEmail.equals(otpDtoRequest.getEmail())) {
+            throw new CustomException(ErrorCode.OTP_IS_INVALID);
+        }
+
+        User user = userRepository.findByUserEmail(otpDtoRequest.getEmail())
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
+
+        user.setStatus(VERIFIED);
+
+        userRepository.save(user);
     }
 }
