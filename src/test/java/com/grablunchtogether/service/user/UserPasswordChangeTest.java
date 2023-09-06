@@ -1,6 +1,6 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.user.UserDto.PasswordChangeRequest;
 import com.grablunchtogether.exception.CustomException;

@@ -1,6 +1,6 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.configuration.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserDto;
@@ -75,8 +75,8 @@ class UserEditInformationTest {
     public void testEditUserInformation_Fail_InvalidPassword() {
         // given
         Long userId = 1L;
-        UserDto.InfoEditRequest infoEditRequest = new UserDto.InfoEditRequest();
-        infoEditRequest.setUserPassword("wrongPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("wrongPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         User existingUser = new User();
@@ -96,8 +96,8 @@ class UserEditInformationTest {
     public void testEditUserInformation_Fail_UserInfoNotFound() {
         // given
         Long userId = 1L;
-        UserDto.InfoEditRequest infoEditRequest = new UserDto.InfoEditRequest();
-        infoEditRequest.setUserPassword("existingPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("existingPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.empty());

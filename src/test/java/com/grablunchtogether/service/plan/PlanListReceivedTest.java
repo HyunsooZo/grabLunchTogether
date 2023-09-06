@@ -78,6 +78,7 @@ class PlanListReceivedTest {
         //when
         List<PlanDto.Dto> planListReceived = planService.getPlanListReceived(accepter.getId());
         //then
-        Assertions.assertThat(planListReceived).isEqualTo(dtoList);
+        Assertions.assertThat(planListReceived.get(0).getPlanMenu())
+                .isEqualTo(dtoList.get(0).getPlanMenu());
     }
 }

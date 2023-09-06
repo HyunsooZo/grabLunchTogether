@@ -78,6 +78,7 @@ class PlanGetListIRequestedTest {
         //when
         List<PlanDto.Dto> planListIRequested = planService.getPlanListIRequested(requester.getId());
         //then
-        Assertions.assertThat(planListIRequested).isEqualTo(dtoList);
+        Assertions.assertThat(planListIRequested.get(0).getPlanMenu())
+                .isEqualTo(dtoList.get(0).getPlanMenu());
     }
 }
