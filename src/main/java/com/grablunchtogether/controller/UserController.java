@@ -32,6 +32,7 @@ public class UserController {
     private final MailSenderService mailSenderService;
     private final JwtTokenProvider jwtTokenProvider;
     private final SMSApiService smsApiService;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     @Transactional
@@ -58,6 +59,18 @@ public class UserController {
         TokenDto.Dto tokenDto = userService.login(loginRequest);
 
         return ResponseEntity.status(OK).body(TokenDto.Response.from(tokenDto));
+    }
+
+    @PostMapping("/logout")
+    @ApiOperation(value = "사용자 로그아웃", notes = "사용자 로그아웃을 진행합니다.")
+    public ResponseEntity<Void> logout(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+
+        String userEmail = jwtTokenProvider.getEmailFromToken(token);
+
+        refreshTokenService.deleteRefreshToken(userEmail);
+
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PatchMapping("/edit")
