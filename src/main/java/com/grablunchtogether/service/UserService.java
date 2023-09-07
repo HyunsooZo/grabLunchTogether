@@ -11,6 +11,7 @@ import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.UserRole;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
+import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,10 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserOtpRedisRepository userOtpRedisRepository;
+    private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
     public NaverSmsDto.SmsContent userSignUp(UserDto.SignUpRequest signUpRequest,
-                                             GeocodeDto userCoordinate) throws Exception {
+                                             GeocodeDto userCoordinate) {
 
         //기존회원 조회
         userRepository.findByUserEmail(signUpRequest.getUserEmail())
@@ -99,7 +101,9 @@ public class UserService {
         }
 
         String accessToken = jwtTokenProvider.issuingAccessToken(TokenDto.TokenIssuanceDto.from(user));
-        String refreshToken = null;
+        String refreshToken = jwtTokenProvider.issuingRefreshToken(user.getUserEmail());
+
+        refreshTokenRedisRepository.save(user.getUserEmail(), refreshToken);
 
         return TokenDto.Dto.from(user, accessToken, refreshToken);
     }

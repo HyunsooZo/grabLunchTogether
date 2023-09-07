@@ -23,7 +23,7 @@ public class TokenDto {
         public static TokenIssuanceDto from(User user) {
             return TokenIssuanceDto.builder()
                     .id(user.getId())
-                    .email(user.getUserName())
+                    .email(user.getUserEmail())
                     .userRole(user.getUserRole())
                     .build();
         }

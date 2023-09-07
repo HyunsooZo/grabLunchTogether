@@ -43,25 +43,25 @@ public class JwtTokenProvider {
     public String issuingAccessToken(TokenDto.TokenIssuanceDto tokenTokenIssuanceDto) {
         Claims claims = Jwts.claims().setSubject(tokenTokenIssuanceDto.getId().toString());
         claims.put("email", tokenTokenIssuanceDto.getEmail());
-        claims.put("userRole", tokenTokenIssuanceDto.getUserRole().getRoleName()); // 역할 정보 추가
+        claims.put("userRole", tokenTokenIssuanceDto.getUserRole().getRoleName());
 
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuer(issuer)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                // 유효기간 1일 (24시간)
-                .setExpiration(new Date(System.currentTimeMillis() + (24 * 60 * 60 * 1000)))
+                // 유효기간 1시간
+                .setExpiration(new Date(System.currentTimeMillis() + (60 * 60 * 1000)))
                 .signWith(secretKey)
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String issuingRefreshToken(String email) {
         return Jwts.builder()
                 .claim("email", email)
                 .setIssuer(issuer)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                //유효기간 15일 (24시간 *15)
-                .setExpiration(new Date(System.currentTimeMillis() + (15 * 24 * 60 * 60 * 1000)))
+                //유효기간 1일
+                .setExpiration(new Date(System.currentTimeMillis() + (24 * 60 * 60 * 1000)))
                 .signWith(secretKey)
                 .compact();
     }
@@ -90,6 +90,17 @@ public class JwtTokenProvider {
                 .getSubject());
     }
 
+    public String getEmailFromToken(String token) {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("email", String.class);
+    }
 
     public Authentication getAuthentication(String token) {
         if (token.startsWith("Bearer ")) {
@@ -113,19 +124,5 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(
                 userDetails, "", authorities
         );
-    }
-
-    public String getRoleFromToken(String token) {
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        }
-
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        return valueOf(claims.get("userRole", String.class)).getRoleName();
     }
 }
