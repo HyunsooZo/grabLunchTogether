@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.cache.CacheManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,13 +28,16 @@ class MustEatPlaceTest {
     @Mock
     private MustEatPlaceRepository mustEatPlaceRepository;
 
+    @Mock
+    private CacheManager cacheManager;
+
     private MustEatPlaceService mustEatPlaceService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         mustEatPlaceService =
-                new MustEatPlaceService(mustEatPlaceRepository);
+                new MustEatPlaceService(mustEatPlaceRepository,cacheManager);
     }
 
     @Test
