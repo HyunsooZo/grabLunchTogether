@@ -10,6 +10,9 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.grablunchtogether.exception.ErrorCode.*;
@@ -31,6 +35,7 @@ import static com.grablunchtogether.exception.ErrorCode.*;
 @Service
 public class MustEatPlaceService {
     private final MustEatPlaceRepository mustEatPlaceRepository;
+    private final CacheManager cacheManager;
 
     @Value("${foodie_spot.url.header}")
     private String urlHeader;
@@ -77,6 +82,9 @@ public class MustEatPlaceService {
 
         // 이번 주 업데이트 된 별점으로 맛집 정보 저장
         cities.forEach(this::crawlAndSave);
+        // 기존 캐시 데이터 삭제
+        cities.forEach(this::clearCacheById);
+
         log.info(String.format("맛집 크롤링 완료 / %s", LocalDateTime.now()));
 
         // 크롤링 진행 종료
@@ -131,6 +139,7 @@ public class MustEatPlaceService {
 
     //도시 이름을 기반으로 맛집리스트 조회(별점순)
     @Transactional(readOnly = true)
+    @Cacheable(value = "restaurantList", key = "'city:' + #cityName")
     public List<MustEatPlaceDto.Dto> mustEatPlaceList(String cityName) {
 
         if (isCrawlingInProgress()) {
@@ -153,5 +162,12 @@ public class MustEatPlaceService {
                 .orElseThrow(() -> new CustomException(MUST_EAT_PLACE_NOT_FOUND));
 
         return MustEatPlaceDto.Dto.of(mustEatPlace);
+    }
+
+    public void clearCacheById(String cityName) {
+        Cache restaurantListCache = cacheManager.getCache("restaurantList");
+        if (restaurantListCache != null) {
+            restaurantListCache.evict("city:" + cityName);
+        }
     }
 }
