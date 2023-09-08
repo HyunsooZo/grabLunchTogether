@@ -13,7 +13,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.cache.CacheManager;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +64,7 @@ class MustEatPlaceTest {
         List<MustEatPlace> listFromRepo = Arrays.asList(mustEatPlace1,mustEatPlace2);
 
         List<MustEatPlaceDto.Dto> collect = listFromRepo.stream()
-                .map(MustEatPlaceDto.Dto::of)
+                .map(MustEatPlaceDto.Dto::from)
                 .collect(Collectors.toList());
 
         Mockito.when(mustEatPlaceRepository.findByCityOrderByRateDesc(city))

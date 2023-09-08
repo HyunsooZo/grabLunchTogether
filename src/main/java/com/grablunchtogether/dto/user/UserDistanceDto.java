@@ -22,7 +22,7 @@ public class UserDistanceDto {
         private String company;
         private String distance;
 
-        public static Dto of(Object[] object) {
+        public static Dto from(Object[] object) {
             return Dto.builder()
                     .id(object[4].toString())
                     .userName(object[1].toString())

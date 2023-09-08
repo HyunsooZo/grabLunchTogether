@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.grablunchtogether.exception.ErrorCode.*;
@@ -150,7 +149,7 @@ public class MustEatPlaceService {
                 mustEatPlaceRepository.findByCityOrderByRateDesc(cityName);
 
         return mustEatPlaces.stream()
-                .map(MustEatPlaceDto.Dto::of)
+                .map(MustEatPlaceDto.Dto::from)
                 .collect(Collectors.toList());
     }
 
@@ -161,7 +160,7 @@ public class MustEatPlaceService {
         MustEatPlace mustEatPlace = mustEatPlaceRepository.findById(mustEatPlaceId)
                 .orElseThrow(() -> new CustomException(MUST_EAT_PLACE_NOT_FOUND));
 
-        return MustEatPlaceDto.Dto.of(mustEatPlace);
+        return MustEatPlaceDto.Dto.from(mustEatPlace);
     }
 
     public void clearCacheById(String cityName) {

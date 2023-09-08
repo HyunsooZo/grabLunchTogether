@@ -21,7 +21,7 @@ public class MustEatPlaceDto {
         private String city;
         private String rate;
 
-        public static Dto of(MustEatPlace mustEatPlace) {
+        public static Dto from(MustEatPlace mustEatPlace) {
             return Dto.builder()
                     .id(mustEatPlace.getId())
                     .restaurant(mustEatPlace.getRestaurant())
@@ -40,7 +40,7 @@ public class MustEatPlaceDto {
     @ApiModel("MustEatPlace 응답")
     public static class Response{
         private List<Dto> mustEatPlaces;
-        public static Response of(List<Dto> mustEatPlaceList){
+        public static Response from(List<Dto> mustEatPlaceList){
             return Response.builder()
                     .mustEatPlaces(mustEatPlaceList)
                     .build();
