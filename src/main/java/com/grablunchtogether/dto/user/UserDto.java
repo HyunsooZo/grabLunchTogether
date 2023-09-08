@@ -56,6 +56,8 @@ public class UserDto {
 
         @NotBlank(message = "회사 주소는 필수입력 항목입니다.")
         private String streetNumber;
+
+        private String imageUrl;
     }
 
     @Getter
@@ -145,16 +147,18 @@ public class UserDto {
         private String userPhoneNumber;
         private double userRate;
         private String company;
+        private String imageUrl;
         private double latitude;
         private double longitude;
 
-        public static Dto of(User user) {
+        public static Dto from(User user) {
             return Dto.builder()
                     .id(user.getId())
                     .userEmail(user.getUserEmail())
                     .userName(user.getUserName())
                     .userPhoneNumber(user.getUserPhoneNumber())
                     .userRate(user.getUserRate())
+                    .imageUrl(user.getImageUrl())
                     .company(user.getCompany())
                     .latitude(user.getLatitude())
                     .longitude(user.getLongitude())

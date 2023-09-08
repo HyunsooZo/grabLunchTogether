@@ -2,10 +2,10 @@ package com.grablunchtogether.service;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.UserRole;
@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.grablunchtogether.enums.UserStatus.*;
 import static com.grablunchtogether.enums.UserStatus.NOT_VERIFIED;
+import static com.grablunchtogether.enums.UserStatus.VERIFIED;
 import static com.grablunchtogether.exception.ErrorCode.*;
 
 @Slf4j
@@ -63,6 +63,7 @@ public class UserService {
                 .userPhoneNumber(userPhoneNumber)
                 .userRate(0.0)
                 .company(signUpRequest.getCompany())
+                .imageUrl(signUpRequest.getImageUrl())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
                 .userRole(UserRole.ROLE_USER)
@@ -161,16 +162,17 @@ public class UserService {
                 userRepository.getUserListByDistance(latitude, longitude, kilometer);
 
         return users.stream()
-                .map(UserDistanceDto.Dto::of)
+                .map(UserDistanceDto.Dto::from)
                 .collect(Collectors.toList());
     }
 
     public UserDto.Dto getUserById(Long userId) {
-        return UserDto.Dto.of(
+        return UserDto.Dto.from(
                 userRepository.findById(userId)
                         .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND)));
     }
 
+    @Transactional(readOnly = true)
     public void verifyOtp(OtpDto.Request otpDtoRequest) {
 
         String savedEmail = userOtpRedisRepository.check(otpDtoRequest.getOtp());

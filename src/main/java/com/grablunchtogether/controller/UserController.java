@@ -1,6 +1,7 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
+import com.grablunchtogether.dto.image.ImageDto;
 import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
@@ -15,8 +16,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -33,6 +37,7 @@ public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final SMSApiService smsApiService;
     private final RefreshTokenService refreshTokenService;
+    private final S3BucketService s3BucketService;
 
     @PostMapping("/signup")
     @Transactional
@@ -143,5 +148,14 @@ public class UserController {
         userService.verifyOtp(otpDtoRequest);
 
         return ResponseEntity.status(NO_CONTENT).build();
+    }
+    @PostMapping("/image")
+    @ApiOperation(value = "이미지 호스팅", notes = "사진을 업로드하고 호스팅된 주소를 받습니다.")
+    public ResponseEntity<ImageDto.Response> getImageUrl(
+            @RequestBody MultipartFile multipartFile) throws IOException {
+
+        ImageDto.Dto dto = s3BucketService.saveFile(multipartFile);
+
+        return ResponseEntity.status(OK).body(ImageDto.Response.of(dto));
     }
 }

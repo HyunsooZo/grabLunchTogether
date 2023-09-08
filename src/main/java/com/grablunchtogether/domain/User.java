@@ -42,6 +42,9 @@ public class User extends BaseEntity {
     private String company;
 
     @Column
+    public String imageUrl;
+
+    @Column
     private Double latitude;
 
     @Column
@@ -71,6 +74,10 @@ public class User extends BaseEntity {
 
     public void setStatus(UserStatus userStatus) {
         this.userStatus = userStatus;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
 
