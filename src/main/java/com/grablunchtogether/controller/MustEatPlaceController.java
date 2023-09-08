@@ -28,6 +28,6 @@ public class MustEatPlaceController {
 
         List<MustEatPlaceDto.Dto> mustEatPlaces = mustEatPlaceService.mustEatPlaceList(city);
 
-        return ResponseEntity.status(OK).body(MustEatPlaceDto.Response.of(mustEatPlaces));
+        return ResponseEntity.status(OK).body(MustEatPlaceDto.Response.from(mustEatPlaces));
     }
 }
