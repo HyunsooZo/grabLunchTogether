@@ -5,6 +5,7 @@ import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.UserService;
@@ -30,13 +31,21 @@ class UserSignUpTest {
     private BCryptPasswordEncoder passwordEncoder;
     @Mock
     private UserOtpRedisRepository userOtpRedisRepository;
+    @Mock
+    private RefreshTokenRedisRepository refreshTokenRedisRepository;
     private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         userService =
-                new UserService(userRepository,jwtTokenProvider,passwordEncoder,userOtpRedisRepository);
+                new UserService(
+                        userRepository,
+                        jwtTokenProvider,
+                        passwordEncoder,
+                        userOtpRedisRepository,
+                        refreshTokenRedisRepository
+                );
     }
 
     @Test
