@@ -69,7 +69,7 @@ public class UserController {
     @PostMapping("/logout")
     @ApiOperation(value = "사용자 로그아웃", notes = "사용자 로그아웃을 진행합니다.")
     public ResponseEntity<Void> logout(
-            @RequestHeader(HttpHeaders.AUTHORIZATION) String token){
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
         String userEmail = jwtTokenProvider.getEmailFromToken(token);
 
@@ -140,6 +140,7 @@ public class UserController {
         mailSenderService.resetPassword(passwordResetRequest);
         return ResponseEntity.status(NO_CONTENT).build();
     }
+
     @PostMapping("/otp/verification")
     @ApiOperation(value = "SMS OTP 인증", notes = "문자메세지로 전송된 OTP를 인증합니다.")
     public ResponseEntity<Void> otpVerification(
@@ -149,6 +150,7 @@ public class UserController {
 
         return ResponseEntity.status(NO_CONTENT).build();
     }
+
     @PostMapping("/image")
     @ApiOperation(value = "이미지 호스팅", notes = "사진을 업로드하고 호스팅된 주소를 받습니다.")
     public ResponseEntity<ImageDto.Response> getImageUrl(
@@ -157,5 +159,22 @@ public class UserController {
         ImageDto.Dto dto = s3BucketService.saveFile(multipartFile);
 
         return ResponseEntity.status(OK).body(ImageDto.Response.of(dto));
+    }
+
+    @PatchMapping("/image")
+    @ApiOperation(value = "프로필 이미지 수정", notes = "프로필 이미지를 수정합니다.")
+    public ResponseEntity<ImageDto.Response> getImageUrl(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @RequestBody ImageDto.Request imageRequest) {
+
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+
+        String previousUrl =
+                userService.updateProfilePicture(userId, imageRequest.getImageUrl());
+
+        //기존 이미지 존재할 경우 기존 이미지는 S3버켓에서 제거
+        s3BucketService.deleteFile(previousUrl);
+
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 }

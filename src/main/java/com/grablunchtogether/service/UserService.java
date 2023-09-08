@@ -188,4 +188,18 @@ public class UserService {
 
         userRepository.save(user);
     }
+
+    public String updateProfilePicture(Long userId, String imageUrl) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
+
+        String previousImageUrl = user.getImageUrl();
+
+        user.setImageUrl(imageUrl);
+
+        userRepository.save(user);
+
+        return previousImageUrl;
+    }
 }

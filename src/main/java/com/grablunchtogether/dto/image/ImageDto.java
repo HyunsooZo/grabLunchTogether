@@ -10,6 +10,14 @@ public class ImageDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    public static class Request {
+        private String imageUrl;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     public static class Dto {
         private String imageUrl;
     }
