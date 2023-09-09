@@ -63,7 +63,7 @@ public class UserService {
                 .userPhoneNumber(userPhoneNumber)
                 .userRate(0.0)
                 .company(signUpRequest.getCompany())
-                .imageUrl(signUpRequest.getImageUrl())
+                .nameCardUrl(signUpRequest.getNameCardUrl())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
                 .userRole(UserRole.ROLE_USER)
@@ -194,9 +194,9 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
-        String previousImageUrl = user.getImageUrl();
+        String previousImageUrl = user.getProfileUrl();
 
-        user.setImageUrl(imageUrl);
+        user.setProfileUrl(imageUrl);
 
         userRepository.save(user);
 

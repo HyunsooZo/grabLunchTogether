@@ -3,6 +3,7 @@ package com.grablunchtogether.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.grablunchtogether.dto.image.ImageDto;
+import com.grablunchtogether.enums.ImageDirectory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,13 @@ public class S3BucketService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    private final String DIRECTORY = "profile";
 
-    public ImageDto.Dto saveFile(MultipartFile multipartFile) throws IOException {
-        // 파일 이름에 UUID와 원래 파일의 확장자를 포함
-        String originalFileName = DIRECTORY + "/" + UUID.randomUUID() + "." + getFileExtension(multipartFile);
+    public ImageDto.Dto saveFile(MultipartFile multipartFile,
+                                 ImageDirectory imageDirectory) throws IOException {
+
+        // 파일 이름에 이미지 타입에 대한 경로 및 UUID와 원래 파일의 확장자를 포함
+        String originalFileName = imageDirectory.getString() + "/" +
+                UUID.randomUUID() + "." + getFileExtension(multipartFile);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multipartFile.getSize());

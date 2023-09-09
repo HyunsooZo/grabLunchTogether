@@ -8,10 +8,12 @@ import com.grablunchtogether.dto.geocode.GeocodeDto;
 import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.enums.ImageDirectory;
 import com.grablunchtogether.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.type.ImageType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,6 +126,7 @@ public class UserController {
                 .userName(ocrData.getName())
                 .userPassword(ocrSignUpRequest.getPassword())
                 .userPhoneNumber(ocrData.getMobile())
+                .nameCardUrl(ocrSignUpRequest.getImageName())
                 .company(ocrData.getCompany())
                 .build();
 
@@ -152,11 +155,13 @@ public class UserController {
     }
 
     @PostMapping("/image")
-    @ApiOperation(value = "이미지 호스팅", notes = "사진을 업로드하고 호스팅된 주소를 받습니다.")
+    @ApiOperation(value = "이미지 호스팅", notes = "사진을 업로드하고 호스팅된 주소를 받습니다." +
+            "(프로필사진일 경우 ?directory=PROFILE , 명함사진일 경우 ?directory=NAMECARD")
     public ResponseEntity<ImageDto.Response> getImageUrl(
+            @RequestParam("directory") ImageDirectory imageDirectory,
             @RequestBody MultipartFile multipartFile) throws IOException {
 
-        ImageDto.Dto dto = s3BucketService.saveFile(multipartFile);
+        ImageDto.Dto dto = s3BucketService.saveFile(multipartFile,imageDirectory);
 
         return ResponseEntity.status(OK).body(ImageDto.Response.of(dto));
     }
