@@ -57,7 +57,7 @@ public class UserDto {
         @NotBlank(message = "회사 주소는 필수입력 항목입니다.")
         private String streetNumber;
 
-        private String imageUrl;
+        private String profileUrl;
 
         private String nameCardUrl;
     }
@@ -149,7 +149,7 @@ public class UserDto {
         private String userPhoneNumber;
         private double userRate;
         private String company;
-        private String imageUrl;
+        private String profileUrl;
         private String nameCardUrl;
         private double latitude;
         private double longitude;
@@ -162,11 +162,20 @@ public class UserDto {
                     .userPhoneNumber(user.getUserPhoneNumber())
                     .userRate(user.getUserRate())
                     .nameCardUrl(user.getNameCardUrl())
-                    .imageUrl(user.getProfileUrl())
+                    .profileUrl(user.getProfileUrl())
                     .company(user.getCompany())
                     .latitude(user.getLatitude())
                     .longitude(user.getLongitude())
                     .build();
         }
+    }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    @ApiModel("회원 탈퇴 요청")
+    public static class WithdrawalRequest {
+        @NotBlank(message = "비밀번호를 입력해 주세요.")
+        public String userPassword;
     }
 }

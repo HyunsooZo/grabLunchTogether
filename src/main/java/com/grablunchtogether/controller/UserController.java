@@ -1,19 +1,18 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.image.ImageDto;
-import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.image.ImageDto;
 import com.grablunchtogether.dto.naverSms.NaverSmsDto;
 import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.ImageDirectory;
 import com.grablunchtogether.service.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.type.ImageType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-
 import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.*;
@@ -161,7 +159,7 @@ public class UserController {
             @RequestParam("directory") ImageDirectory imageDirectory,
             @RequestBody MultipartFile multipartFile) throws IOException {
 
-        ImageDto.Dto dto = s3BucketService.saveFile(multipartFile,imageDirectory);
+        ImageDto.Dto dto = s3BucketService.saveFile(multipartFile, imageDirectory);
 
         return ResponseEntity.status(OK).body(ImageDto.Response.of(dto));
     }
@@ -179,6 +177,24 @@ public class UserController {
 
         //기존 이미지 존재할 경우 기존 이미지는 S3버켓에서 제거
         s3BucketService.deleteFile(previousUrl);
+
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+
+    @PatchMapping("/withdrawal")
+    @ApiOperation(value = "회원 탈퇴", notes = "회원계정을 탈퇴합니다.")
+    public ResponseEntity<Void> userWithdrawal(
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+            @Valid @RequestBody UserDto.WithdrawalRequest withdrawalRequest) {
+
+        Long userId = jwtTokenProvider.getIdFromToken(token);
+
+        UserDto.Dto userDto = userService.getUserById(userId);
+
+        userService.withdrawUser(userId, withdrawalRequest);
+
+        s3BucketService.deleteFile(userDto.getProfileUrl());
+        s3BucketService.deleteFile(userDto.getNameCardUrl());
 
         return ResponseEntity.status(NO_CONTENT).build();
     }

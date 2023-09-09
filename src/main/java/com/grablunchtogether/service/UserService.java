@@ -9,6 +9,7 @@ import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.UserRole;
+import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
@@ -38,6 +39,7 @@ public class UserService {
     private final UserOtpRedisRepository userOtpRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
+    @Transactional
     public NaverSmsDto.SmsContent userSignUp(UserDto.SignUpRequest signUpRequest,
                                              GeocodeDto userCoordinate) {
 
@@ -64,6 +66,7 @@ public class UserService {
                 .userRate(0.0)
                 .company(signUpRequest.getCompany())
                 .nameCardUrl(signUpRequest.getNameCardUrl())
+                .profileUrl(signUpRequest.getProfileUrl())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
                 .userRole(UserRole.ROLE_USER)
@@ -166,6 +169,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UserDto.Dto getUserById(Long userId) {
         return UserDto.Dto.from(
                 userRepository.findById(userId)
@@ -189,6 +193,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public String updateProfilePicture(Long userId, String imageUrl) {
 
         User user = userRepository.findById(userId)
@@ -201,5 +206,20 @@ public class UserService {
         userRepository.save(user);
 
         return previousImageUrl;
+    }
+
+    @Transactional
+    public void withdrawUser(Long userId, UserDto.WithdrawalRequest withdrawalRequest) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
+
+        if(!passwordEncoder.matches(withdrawalRequest.getUserPassword(),user.getUserPassword())){
+            throw new CustomException(ErrorCode.PASSWORD_NOT_MATCH);
+        }
+
+        user.setStatus(UserStatus.DELETED);
+
+        userRepository.save(user);
     }
 }

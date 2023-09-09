@@ -31,7 +31,8 @@ public enum ErrorCode {
     USER_REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 리뷰 입니다."),
     CAN_NOT_COMPLETE_PLAN(HttpStatus.BAD_REQUEST, "수락되지 않은 약속입니다."),
     OTP_IS_INVALID(HttpStatus.BAD_REQUEST, "유효하지 않은 OTP 입니다."),
-    REFRESH_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다.");
+    REFRESH_CODE_EXPIRED(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다."),
+    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST,"비밀번호가 일치하지 않습니다." );
 
     private final HttpStatus status;
     private final String message;
