@@ -1,5 +1,6 @@
 package com.grablunchtogether.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
@@ -15,12 +16,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -40,19 +44,15 @@ public class UserController {
     private final S3BucketService s3BucketService;
 
     @PostMapping("/signup")
-    @Transactional
     @ApiOperation(value = "사용자 회원가입", notes = "입력된 정보로 회원가입을 진행합니다.")
     public ResponseEntity<Void> userSignUp(
-            @Valid @RequestBody UserDto.SignUpRequest signUpRequest) throws Exception {
+            @Valid @RequestBody UserDto.SignUpRequest signUpRequest) {
 
         //고객 좌표 가져오는 외부 api 호출
         GeocodeDto userCoordinate = geocodeApiService.getCoordinate(
                 signUpRequest.getStreetName(), signUpRequest.getStreetNumber());
 
-        NaverSmsDto.SmsContent smsContent =
-                userService.userSignUp(signUpRequest, userCoordinate);
-
-        smsApiService.sendSMS(smsContent);
+        userService.userSignUp(signUpRequest, userCoordinate);
 
         return ResponseEntity.status(OK).build();
     }
@@ -142,10 +142,23 @@ public class UserController {
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
+    @PostMapping("/otp/request")
+    @ApiOperation(value = "SMS OTP 요청/재요청", notes = "회원가입 이전 휴대번호 본인확인 겸 OTP 요청/재요청")
+    public ResponseEntity<Void> otpGeneration(
+            @RequestBody OtpDto.OtpRequest otpDtoRequest) throws UnsupportedEncodingException,
+            NoSuchAlgorithmException, URISyntaxException, InvalidKeyException, JsonProcessingException {
+
+        NaverSmsDto.SmsContent smsContent = userService.otpResend(otpDtoRequest);
+
+        smsApiService.sendSMS(smsContent);
+
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+
     @PostMapping("/otp/verification")
     @ApiOperation(value = "SMS OTP 인증", notes = "문자메세지로 전송된 OTP를 인증합니다.")
     public ResponseEntity<Void> otpVerification(
-            @RequestBody OtpDto.Request otpDtoRequest) {
+            @RequestBody OtpDto.VerificationRequest otpDtoRequest) {
 
         userService.verifyOtp(otpDtoRequest);
 

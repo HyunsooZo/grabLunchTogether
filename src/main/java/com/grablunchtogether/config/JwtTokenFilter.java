@@ -2,6 +2,7 @@ package com.grablunchtogether.config;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -10,9 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @AllArgsConstructor
+@Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private JwtTokenProvider jwtTokenProvider;
@@ -23,7 +25,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             "/api/users/password/reset",
             "/api/users/image",
             "/api/auth/refresh",
-            "/otp/verification",
+            "/api/users/otp/request",
+            "/api/users/otp/verification",
             "/swagger-ui/index.html",
             "/swagger-ui/**",
             "/v2/api-docs",
