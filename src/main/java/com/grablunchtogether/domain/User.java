@@ -42,7 +42,10 @@ public class User extends BaseEntity {
     private String company;
 
     @Column
-    public String imageUrl;
+    public String profileUrl;
+
+    @Column
+    public String nameCardUrl;
 
     @Column
     private Double latitude;
@@ -76,8 +79,8 @@ public class User extends BaseEntity {
         this.userStatus = userStatus;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setProfileUrl(String imageUrl) {
+        this.profileUrl = imageUrl;
     }
 }
 

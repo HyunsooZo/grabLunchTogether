@@ -12,9 +12,17 @@ public class OtpDto {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
+    @ApiModel("Otp재발급 요청")
+    public static class OtpRequest {
+      private String phone;
+    }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
     @ApiModel("Otp검증 요청")
-    public static class Request {
+    public static class VerificationRequest {
       private String otp;
-      private String email;
+      private String phone;
     }
 }

@@ -13,8 +13,8 @@ public class UserOtpRedisRepository {
 
     private static final String GRAB_LUNCH = "otp : ";
 
-    public void save(String otp, String email) {
-        redisTemplate.opsForValue().set(GRAB_LUNCH + otp, email);
+    public void save(String otp, String phone) {
+        redisTemplate.opsForValue().set(GRAB_LUNCH + otp, phone);
         //3분 뒤 OTP 만료
         redisTemplate.expire(otp, 3, TimeUnit.MINUTES);
     }
@@ -23,7 +23,7 @@ public class UserOtpRedisRepository {
         return redisTemplate.opsForValue().get(GRAB_LUNCH + otp);
     }
 
-    public void delete(String otp) {
-        redisTemplate.delete(GRAB_LUNCH + otp);
+    public boolean delete(String otp) {
+        return redisTemplate.delete(GRAB_LUNCH + otp);
     }
 }

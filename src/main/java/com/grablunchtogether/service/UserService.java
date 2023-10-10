@@ -9,8 +9,8 @@ import com.grablunchtogether.dto.user.OtpDto;
 import com.grablunchtogether.dto.user.UserDistanceDto;
 import com.grablunchtogether.dto.user.UserDto;
 import com.grablunchtogether.enums.UserRole;
+import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import static com.grablunchtogether.enums.UserStatus.NOT_VERIFIED;
-import static com.grablunchtogether.enums.UserStatus.VERIFIED;
+import static com.grablunchtogether.enums.UserStatus.DELETED;
+import static com.grablunchtogether.enums.UserStatus.NORMAL;
 import static com.grablunchtogether.exception.ErrorCode.*;
 
 @Slf4j
@@ -38,7 +38,8 @@ public class UserService {
     private final UserOtpRedisRepository userOtpRedisRepository;
     private final RefreshTokenRedisRepository refreshTokenRedisRepository;
 
-    public NaverSmsDto.SmsContent userSignUp(UserDto.SignUpRequest signUpRequest,
+    @Transactional
+    public void userSignUp(UserDto.SignUpRequest signUpRequest,
                                              GeocodeDto userCoordinate) {
 
         //기존회원 조회
@@ -63,28 +64,13 @@ public class UserService {
                 .userPhoneNumber(userPhoneNumber)
                 .userRate(0.0)
                 .company(signUpRequest.getCompany())
-                .imageUrl(signUpRequest.getImageUrl())
+                .nameCardUrl(signUpRequest.getNameCardUrl())
+                .profileUrl(signUpRequest.getProfileUrl())
                 .latitude(userCoordinate.getLatitude())
                 .longitude(userCoordinate.getLongitude())
                 .userRole(UserRole.ROLE_USER)
-                .userStatus(NOT_VERIFIED)
+                .userStatus(NORMAL)
                 .build());
-
-        // OTP 생성 및 SMS 메세지 내용 작성
-        String otp = String.valueOf(
-                ThreadLocalRandom
-                        .current()
-                        .nextInt(100000, 1000000)
-        );
-
-        String SMS_MESSAGE = "[GrabLunchTogether] 인증번호 : %s\n인증번호를 입력해주세요.";
-
-        userOtpRedisRepository.save(otp, signUpRequest.getUserEmail());
-
-        return NaverSmsDto.SmsContent.builder()
-                .to(userPhoneNumber)
-                .content(String.format(SMS_MESSAGE, otp))
-                .build();
     }
 
     //유저 로그인
@@ -96,6 +82,10 @@ public class UserService {
 
         User user = userRepository.findByUserEmail(email)
                 .orElseThrow(() -> new CustomException(USER_SIGN_IN_FAIL));
+
+        if (user.getUserStatus().equals(DELETED)) {
+            throw new CustomException(LEFT_USER);
+        }
 
         if (!passwordEncoder.matches(password, user.getUserPassword())) {
             throw new CustomException(USER_SIGN_IN_FAIL);
@@ -166,40 +156,73 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public UserDto.Dto getUserById(Long userId) {
         return UserDto.Dto.from(
                 userRepository.findById(userId)
                         .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND)));
     }
 
-    @Transactional(readOnly = true)
-    public void verifyOtp(OtpDto.Request otpDtoRequest) {
+    @Transactional
+    public void verifyOtp(OtpDto.VerificationRequest otpDtoRequest) {
 
-        String savedEmail = userOtpRedisRepository.check(otpDtoRequest.getOtp());
+        String phoneNumber = userOtpRedisRepository.check(otpDtoRequest.getOtp());
 
-        if (savedEmail == null || !savedEmail.equals(otpDtoRequest.getEmail())) {
-            throw new CustomException(ErrorCode.OTP_IS_INVALID);
+        if (phoneNumber == null || !phoneNumber.equals(otpDtoRequest.getPhone())) {
+            throw new CustomException(OTP_IS_INVALID);
         }
 
-        User user = userRepository.findByUserEmail(otpDtoRequest.getEmail())
-                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
-
-        user.setStatus(VERIFIED);
-
-        userRepository.save(user);
+        if(!userOtpRedisRepository.delete(otpDtoRequest.getOtp())){
+            throw new CustomException(OTP_IS_INVALID);
+        }
     }
 
+    @Transactional
     public String updateProfilePicture(Long userId, String imageUrl) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
-        String previousImageUrl = user.getImageUrl();
+        String previousImageUrl = user.getProfileUrl();
 
-        user.setImageUrl(imageUrl);
+        user.setProfileUrl(imageUrl);
 
         userRepository.save(user);
 
         return previousImageUrl;
+    }
+
+    @Transactional
+    public void withdrawUser(Long userId, UserDto.WithdrawalRequest withdrawalRequest) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
+
+        if (!passwordEncoder.matches(withdrawalRequest.getUserPassword(), user.getUserPassword())) {
+            throw new CustomException(PASSWORD_NOT_MATCH);
+        }
+
+        user.setStatus(UserStatus.DELETED);
+
+        userRepository.save(user);
+    }
+
+    public NaverSmsDto.SmsContent otpResend(OtpDto.OtpRequest otpDtoRequest) {
+
+        // OTP 생성 및 SMS 메세지 내용 작성
+        String otp = String.valueOf(
+                ThreadLocalRandom
+                        .current()
+                        .nextInt(100000, 1000000)
+        );
+
+        String SMS_MESSAGE = "[GrabLunchTogether] 인증번호 : %s\n인증번호를 입력해주세요.";
+
+        userOtpRedisRepository.save(otp, otpDtoRequest.getPhone());
+
+        return NaverSmsDto.SmsContent.builder()
+                .to(otpDtoRequest.getPhone())
+                .content(String.format(SMS_MESSAGE, otp))
+                .build();
     }
 }
