@@ -5,6 +5,7 @@ import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.token.TokenDto;
 import com.grablunchtogether.enums.UserRole;
+import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
@@ -62,6 +63,7 @@ class UserLoginTest {
                 .id(2L)
                 .userName("Test User")
                 .userEmail("test@example.com")
+                .userStatus(UserStatus.NORMAL)
                 .userPassword(passwordEncoder.encode("2222"))
                 .build();
 
@@ -108,6 +110,7 @@ class UserLoginTest {
                 .userPassword("1111")
                 .userPhoneNumber("00000000000")
                 .userRole(UserRole.ROLE_USER)
+                .userStatus(UserStatus.NORMAL)
                 .latitude(0.0)
                 .latitude(0.0)
                 .userRate(0.0)
