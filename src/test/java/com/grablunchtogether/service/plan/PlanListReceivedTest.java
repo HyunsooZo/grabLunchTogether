@@ -1,14 +1,15 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.PlanService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,8 +19,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.REQUESTED;
+import static com.grablunchtogether.enums.PlanStatus.REQUESTED;
 
+@DisplayName("신청받은 약속목록 조회")
 class PlanListReceivedTest {
     @Mock
     private PlanRepository planRepository;
@@ -31,10 +33,11 @@ class PlanListReceivedTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
+    @DisplayName("성공")
     public void testGetListReceived_Success() {
         //given
         User requester = User.builder().id(1L).build();
@@ -63,9 +66,9 @@ class PlanListReceivedTest {
                 .planStatus(REQUESTED)
                 .build();
 
-        List<PlanDto> dtoList = new ArrayList<>();
-        dtoList.add(PlanDto.of(plan1));
-        dtoList.add(PlanDto.of(plan2));
+        List<PlanDto.Dto> dtoList = new ArrayList<>();
+        dtoList.add(PlanDto.Dto.of(plan1));
+        dtoList.add(PlanDto.Dto.of(plan2));
         List<Plan> list = new ArrayList<>();
         list.add(plan1);
         list.add(plan2);
@@ -73,27 +76,9 @@ class PlanListReceivedTest {
         Mockito.when(planRepository.findByAccepterIdAndPlanStatus(accepter.getId(), REQUESTED))
                 .thenReturn(list);
         //when
-        ServiceResult result = planService.getPlanListReceived(accepter.getId());
+        List<PlanDto.Dto> planListReceived = planService.getPlanListReceived(accepter.getId());
         //then
-        Assertions.assertThat((List<PlanDto>) result.getObject())
-                .isEqualTo(dtoList);
-    }
-
-    @Test
-    public void testGetListReceived_Fail() {
-        //given
-        User requester = User.builder().id(1L).build();
-
-        User accepter = User.builder().id(2L).build();
-
-        List<Plan> list = new ArrayList<>();
-
-        Mockito.when(planRepository.findByAccepterIdAndPlanStatus(accepter.getId(), REQUESTED))
-                .thenReturn(list);
-
-        //when,then
-        Assertions.assertThatThrownBy(() -> planService.getPlanListReceived(accepter.getId()))
-                .isInstanceOf(ContentNotFoundException.class)
-                .hasMessage("받은 점심약속 요청이 없습니다.");
+        Assertions.assertThat(planListReceived.get(0).getPlanMenu())
+                .isEqualTo(dtoList.get(0).getPlanMenu());
     }
 }

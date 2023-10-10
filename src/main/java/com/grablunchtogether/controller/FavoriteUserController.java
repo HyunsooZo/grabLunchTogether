@@ -1,112 +1,79 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.common.results.responseResult.ResponseError;
-import com.grablunchtogether.common.results.responseResult.ResponseResult;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
-import com.grablunchtogether.dto.user.UserDto;
-import com.grablunchtogether.service.favoriteUser.FavoriteUserService;
-import com.grablunchtogether.service.user.UserService;
+import com.grablunchtogether.config.JwtTokenProvider;
+import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
+import com.grablunchtogether.service.FavoriteUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/favorite-users")
 @Api(tags = "Favorite User API", description = "즐겨찾는 유저 관련된 API")
 @RestController
 public class FavoriteUserController {
-    private final UserService userService;
     private final FavoriteUserService favoriteUserService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/user/{otherUserId}")
     @ApiOperation(value = "즐겨찾는 친구 추가하기", notes = "즐겨찾는 유저를 추가합니다.")
-    public ResponseEntity<?> addFavoriteUser(
+    public ResponseEntity<Void> addFavoriteUser(
             @PathVariable Long otherUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody FavoriteUserInput favoriteUserInput,
-            Errors errors) {
+            @Valid @RequestBody FavoriteUserDto.Request favoriteUserRequest) {
 
-        ResponseEntity<?> responseErrorList = errorValidation(errors);
-        if (responseErrorList != null) {
-            return responseErrorList;
-        }
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        UserDto user = userService.tokenValidation(token);
+        favoriteUserService.addFavoriteUser(favoriteUserRequest, userId, otherUserId);
 
-        ServiceResult result = favoriteUserService.addFavoriteUser(favoriteUserInput,
-                                                                    user.getId(),
-                                                                    otherUserId);
-
-        return ResponseResult.result(result);
+        return ResponseEntity.status(CREATED).build();
     }
+
     @PatchMapping("/{favoriteUserId}")
     @ApiOperation(value = "즐겨찾는 친구 닉네임 수정하기", notes = "즐겨찾는 유저 닉네임을 수정합니다.")
-    public ResponseEntity<?> editFavoriteUser(
+    public ResponseEntity<Void> editFavoriteUser(
             @PathVariable Long favoriteUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
-            @Valid @RequestBody FavoriteUserInput favoriteUserEditInput,
-            Errors errors) {
+            @Valid @RequestBody FavoriteUserDto.Request favoriteUserEditRequest) {
 
-        ResponseEntity<?> responseErrorList = errorValidation(errors);
-        if (responseErrorList != null) {
-            return responseErrorList;
-        }
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        UserDto user = userService.tokenValidation(token);
+        favoriteUserService.editFavoriteUser(favoriteUserEditRequest, userId, favoriteUserId);
 
-        ServiceResult result =
-                favoriteUserService.editFavoriteUser(favoriteUserEditInput,
-                                                    user.getId(),
-                                                    favoriteUserId);
-
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @DeleteMapping("/{favoriteUserId}")
     @ApiOperation(value = "즐겨찾는 친구 삭제하기", notes = "즐겨찾는 유저를 삭제합니다.")
-    public ResponseEntity<?> deleteFavoriteUser(
+    public ResponseEntity<Void> deleteFavoriteUser(
             @PathVariable Long favoriteUserId,
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto user = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result =
-                favoriteUserService.deleteFavoriteUser(user.getId(), favoriteUserId);
+        favoriteUserService.deleteFavoriteUser(userId, favoriteUserId);
 
-        return ResponseResult.result(result);
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @PostMapping
     @ApiOperation(value = "즐겨찾는 친구 조회하기", notes = "즐겨찾는 유저목록을 조회합니다.")
-    public ResponseEntity<?> listFavoriteUser(
+    public ResponseEntity<FavoriteUserDto.Response> listFavoriteUser(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
 
-        UserDto user = userService.tokenValidation(token);
+        Long userId = jwtTokenProvider.getIdFromToken(token);
 
-        ServiceResult result = favoriteUserService.listFavoriteUser(user.getId());
+        List<FavoriteUserDto.Dto> favoriteUsers =
+                favoriteUserService.listFavoriteUser(userId);
 
-        return ResponseResult.result(result);
-    }
-
-    private ResponseEntity<?> errorValidation(Errors errors) {
-        List<ResponseError> responseErrorList = new ArrayList<>();
-        if (errors.hasErrors()) {
-            errors.getAllErrors().forEach(error -> {
-                responseErrorList.add(ResponseError.of((FieldError) error));
-            });
-            return new ResponseEntity<>(responseErrorList, HttpStatus.BAD_REQUEST);
-        }
-        return null;
+        return ResponseEntity.status(OK).body(FavoriteUserDto.Response.of(favoriteUsers));
     }
 }

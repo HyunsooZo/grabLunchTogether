@@ -1,14 +1,14 @@
 package com.grablunchtogether.service.plan;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.PlanService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,9 +17,10 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.*;
+import static com.grablunchtogether.enums.PlanStatus.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@DisplayName("약속 승인")
 class PlanApprovalTest {
 
     @Mock
@@ -31,10 +32,11 @@ class PlanApprovalTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        planService = new PlanServiceImpl(userRepository, planRepository);
+        planService = new PlanService(userRepository, planRepository);
     }
 
     @Test
+    @DisplayName("성공")
     public void TestPlanApproval_Success() {
         //given
         User requester = User.builder().id(1L).build();
@@ -69,17 +71,16 @@ class PlanApprovalTest {
 
 
         //when
-        ServiceResult y = planService.approvePlan(accepter.getId(), plan1.getId(), 'Y');
-        ServiceResult n = planService.approvePlan(requester.getId(), plan2.getId(), 'N');
+        planService.approvePlan(accepter.getId(), plan1.getId(), 'Y');
+        planService.approvePlan(requester.getId(), plan2.getId(), 'N');
 
         //then
-        Assertions.assertThat(y.isResult()).isTrue();
-        Assertions.assertThat(n.isResult()).isTrue();
         assertThat(plan1.getPlanStatus()).isEqualTo(ACCEPTED);
         assertThat(plan2.getPlanStatus()).isEqualTo(REJECTED);
     }
 
     @Test
+    @DisplayName("실패(없는 약속)")
     public void TestPlanApproval_Fail_EmptyPlan() {
         //given
 
@@ -94,11 +95,12 @@ class PlanApprovalTest {
         //when,then
         Assertions
                 .assertThatThrownBy(() -> planService.approvePlan(accepter.getId(), plan.getId(), 'Y'))
-                .isInstanceOf(ContentNotFoundException.class)
-                .hasMessage("존재하지 않는 점심약속이거나 나에게 요청된 약속이 아닙니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage("존재하지 않는 약속정보입니다.");
     }
 
     @Test
+    @DisplayName("실패(이미승인됨)")
     public void TestPlanApproval_Fail_AlreadyDone() {
         //given
         User requester = User.builder().id(1L).build();
@@ -121,7 +123,7 @@ class PlanApprovalTest {
         //when,then
         Assertions
                 .assertThatThrownBy(() -> planService.approvePlan(accepter.getId(), plan1.getId(), 'Y'))
-                .isInstanceOf(AuthorityException.class)
-                .hasMessage("이미 수락 또는 거절/만료 된 약속입니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 }

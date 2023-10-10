@@ -1,17 +1,19 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.user.UserChangePasswordInput;
+import com.grablunchtogether.dto.user.UserDto.PasswordChangeRequest;
+import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.RefreshTokenRedisRepository;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
-import com.grablunchtogether.utility.PasswordUtility;
+import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 
@@ -19,87 +21,105 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
+@DisplayName("회원 비밀번호변경")
 class UserPasswordChangeTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    private UserServiceImpl userService;
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
+    @Mock
+    private RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, jwtTokenProvider);
+        userService =
+                new UserService(
+                        userRepository,
+                        jwtTokenProvider,
+                        passwordEncoder,
+                        userOtpRedisRepository,
+                        refreshTokenRedisRepository
+                );
     }
 
     @Test
+    @DisplayName("성공")
     void testChangeUserPassword_Success() {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword(PasswordUtility.getEncryptPassword("1111"))
+                .userPassword("1111")
                 .userEmail("test@email.com")
                 .build();
 
-        UserChangePasswordInput userChangePasswordInput =
-                UserChangePasswordInput.builder()
+        PasswordChangeRequest passwordChangeRequest =
+                PasswordChangeRequest.builder()
                         .userExistingPassword("1111")
                         .userNewPassword("2222")
                         .build();
 
-        when(jwtTokenProvider.getIssuer("token")).thenReturn(user.getUserEmail());
+        when(jwtTokenProvider.getIdFromToken("token")).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("1111","1111"))
+                .thenReturn(true);
+        when(passwordEncoder.encode("2222")).thenReturn("2222");
 
         //when
-        ServiceResult result =
-                userService.changeUserPassword(user.getId(), userChangePasswordInput);
+        userService.changeUserPassword(user.getId(), passwordChangeRequest);
 
         //then
-        assertThat(result).isEqualTo(ServiceResult.success("고객 정보 수정 완료"));
-        assertThat(PasswordUtility.isPasswordMatch("2222", user.getUserPassword()));
+        assertThat(user.getUserPassword()).isEqualTo("2222");
     }
 
     @Test
+    @DisplayName("실패(비밀번호불일치)")
     void testChangeUserPassword_Fail_PasswordNotMatch() {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword(PasswordUtility.getEncryptPassword("1111"))
+                .userPassword(passwordEncoder.encode("1111"))
                 .userEmail("test@email.com")
                 .build();
 
-        UserChangePasswordInput userChangePasswordInput =
-                UserChangePasswordInput.builder()
+        PasswordChangeRequest passwordChangeRequest =
+                PasswordChangeRequest.builder()
                         .userExistingPassword("3333")
                         .userNewPassword("2222")
                         .build();
 
-        when(jwtTokenProvider.getIssuer("token")).thenReturn(user.getUserEmail());
+        when(jwtTokenProvider.getIdFromToken("token")).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
 
         //when,then
-        assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), userChangePasswordInput))
-                .isInstanceOf(InvalidLoginException.class)
-                .hasMessage("기존 비밀번호가 일치하지 않습니다.");
+        assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), passwordChangeRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("아이디 또는 비밀번호가 일치하지않습니다.");
     }
 
     @Test
+    @DisplayName("실패(고객정보없음)")
     void testChangeUserPassword_Fail_UserNotFound() {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword(PasswordUtility.getEncryptPassword("1111"))
+                .userPassword(passwordEncoder.encode("1111"))
                 .userEmail("test@email.com")
                 .build();
 
-        UserChangePasswordInput userChangePasswordInput = new UserChangePasswordInput();
+        PasswordChangeRequest passwordChangeRequest = new PasswordChangeRequest();
 
-        when(jwtTokenProvider.getIssuer("token")).thenReturn(user.getUserEmail());
+        when(jwtTokenProvider.getIdFromToken("token")).thenReturn(user.getId());
         when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
 
         //when,then
-        assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), userChangePasswordInput))
-                .isInstanceOf(UserInfoNotFoundException.class)
-                .hasMessage("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
+        assertThatThrownBy(() -> userService.changeUserPassword(user.getId(), passwordChangeRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 }

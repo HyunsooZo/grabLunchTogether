@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class UserReview extends BaseEntity {
     @Column
     private Double rate;
 
-    public void edit(UserReviewInput userReviewEditInput) {
+    public void edit(UserReviewDto.UserReviewRequest userReviewEditInput) {
         this.reviewContent = userReviewEditInput.getReviewContent();
     }
 }

@@ -1,6 +1,7 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.domain.enums.PlanStatus;
+import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.enums.PlanStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static com.grablunchtogether.domain.enums.PlanStatus.*;
+import static com.grablunchtogether.enums.PlanStatus.*;
 
 @Getter
 @AllArgsConstructor
@@ -59,23 +60,16 @@ public class Plan extends BaseEntity {
         this.planStatus = CANCELED;
     }
 
-    public void update(String planMenu, String planRestaurant, LocalDateTime planTime,
-                       String requestMessage) {
-        this.planMenu = planMenu;
-        this.planRestaurant = planRestaurant;
-        this.planTime = planTime;
-        this.requestMessage = requestMessage;
+    public void update(PlanDto.Request planModificationRequest) {
+        this.planMenu = planModificationRequest.getPlanMenu();
+        this.planRestaurant = planModificationRequest.getPlanRestaurant();
+        this.planTime = planModificationRequest.getPlanTime();
+        this.requestMessage = planModificationRequest.getRequestMessage();
     }
 
     public void expired() {
         this.planStatus = EXPIRED;
     }
 
-    public void historyLoadComplete() {
-        this.planStatus = HISTORY_LOADED_COMPLETED;
-    }
-
-    public void historyLoadCancel() {
-        this.planStatus = HISTORY_LOADED_CANCELED;
-    }
+    public void complete() {this.planStatus = CANCELED;}
 }

@@ -1,16 +1,17 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.AuthorityException;
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.PlanHistory;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.userReview.UserReviewInput;
+import com.grablunchtogether.domain.UserReview;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
+import com.grablunchtogether.service.UserReviewService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -18,9 +19,10 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.times;
 
+@DisplayName("리뷰 등록")
 class AddUserReviewTest {
     @Mock
     private UserRepository userRepository;
@@ -36,16 +38,19 @@ class AddUserReviewTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, planHistoryRepository, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, planHistoryRepository, userReviewRepository);
     }
 
     @Test
+    @DisplayName("성공")
     public void addReview_Success() {
         // Given
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         User requester = User.builder().id(2L).userRate(4.0).build();
         User accepter = User.builder().id(3L).userRate(3.8).build();
@@ -65,38 +70,44 @@ class AddUserReviewTest {
         Mockito.when(userRepository.findById(requester.getId())).thenReturn(Optional.of(requester));
 
         // When
-        ServiceResult result = userReviewService.addReview(accepter.getId(), planHistoryId, userReviewInput);
+        userReviewService.addReview(accepter.getId(), planHistoryId, userReviewRequest);
 
         // Then
-        assertThat(result.isResult()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("리뷰등록이 완료되었습니다.");
+        Mockito.verify(userReviewRepository, times(1))
+                .save(Mockito.any(UserReview.class));
     }
 
     @Test
+    @DisplayName("실패(약속실행된적없음)")
     public void addReview_Fail_ContentNotFound() {
         // Given
         Long userId = 1L;
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         Mockito.when(planHistoryRepository.findById(planHistoryId)).thenReturn(Optional.empty());
 
         // When, Then
-        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
-                .isInstanceOf(ContentNotFoundException.class)
-                .hasMessage("히스토리가 존재하지 않습니다.");
+        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("존재하지 않는 약속 히스토리 입니다.");
     }
 
     @Test
+    @DisplayName("실패(권한없음)")
     public void addReview_Fail_AuthorityException() {
         // Given
         Long userId = 1L;
         Long planHistoryId = 1L;
-        UserReviewInput userReviewInput = new UserReviewInput();
-        userReviewInput.setRate(4.5);
-        userReviewInput.setReviewContent("Great experience!");
+        UserReviewDto.UserReviewRequest userReviewRequest =
+                UserReviewDto.UserReviewRequest.builder()
+                        .rate(4.5)
+                        .reviewContent("Great experience!")
+                        .build();
 
         User requester = User.builder().id(2L).userRate(4.0).build();
         User accepter = User.builder().id(3L).userRate(3.8).build();
@@ -111,8 +122,8 @@ class AddUserReviewTest {
         Mockito.when(planHistoryRepository.findById(planHistoryId)).thenReturn(Optional.of(planHistory));
 
         // When, Then
-        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewInput))
-                .isInstanceOf(AuthorityException.class)
-                .hasMessage("본인이 참석한 점심약속 대상에 대해서만 리뷰를 남길 수 있습니다.");
+        assertThatThrownBy(() -> userReviewService.addReview(userId, planHistoryId, userReviewRequest))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("해당 데이터에 대한 접근 권한이 없습니다.");
     }
 }

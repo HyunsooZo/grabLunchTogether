@@ -1,5 +1,6 @@
 package com.grablunchtogether.domain;
 
+import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +38,15 @@ public class BookmarkSpot extends BaseEntity {
 
     @Column
     private String rate;
+
+    public static BookmarkSpot of(BookmarkSpotDto.Request bookmarkSpotRequest, User user) {
+        return BookmarkSpot.builder()
+                .restaurant(bookmarkSpotRequest.getRestaurant())
+                .userId(user)
+                .menu(bookmarkSpotRequest.getMenu())
+                .rate(bookmarkSpotRequest.getRate())
+                .operationHour(bookmarkSpotRequest.getOperationHour())
+                .address(bookmarkSpotRequest.getAddress())
+                .build();
+    }
 }

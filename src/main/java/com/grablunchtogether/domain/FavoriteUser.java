@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserInput;
+import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,7 +31,7 @@ public class FavoriteUser extends BaseEntity {
     @Column
     private String nickName;
 
-    public void edit(FavoriteUserInput favoriteUserEditInput) {
-        this.nickName = favoriteUserEditInput.getNickName();
+    public void setNickname(FavoriteUserDto.Request favoriteUserEditRequest) {
+        this.nickName = favoriteUserEditRequest.getNickName();
     }
 }

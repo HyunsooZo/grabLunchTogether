@@ -1,14 +1,16 @@
 package com.grablunchtogether.service.userReview;
 
-import com.grablunchtogether.common.exception.ContentNotFoundException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
+import com.grablunchtogether.dto.userReview.UserReviewDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.repository.UserReviewRepository;
+import com.grablunchtogether.service.UserReviewService;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -17,10 +19,11 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+@DisplayName("리뷰 불러오기")
 class ListUserReviewTest {
 
     @Mock
@@ -34,10 +37,11 @@ class ListUserReviewTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        userReviewService = new UserReviewServiceImpl(userRepository, null, userReviewRepository);
+        userReviewService = new UserReviewService(userRepository, null, userReviewRepository);
     }
 
     @Test
+    @DisplayName("성공")
     public void listReviews_Success() {
         // Given
         Long targetUserId = 1L;
@@ -64,20 +68,23 @@ class ListUserReviewTest {
                         .reviewContent("Good")
                         .build());
 
+        List<UserReviewDto.Dto> collect = userReviews.stream()
+                .map(UserReviewDto.Dto::of)
+                .collect(Collectors.toList());
+
         Mockito.when(userRepository.findById(targetUserId)).thenReturn(Optional.of(targetUser));
         Mockito.when(userReviewRepository.findByTargetedId(targetUser)).thenReturn(userReviews);
 
         // When
-        ServiceResult result = userReviewService.listReviews(targetUserId);
+        List<UserReviewDto.Dto> reviews = userReviewService.listReviews(targetUserId);
 
         // Then
-        assertThat(result.isResult()).isTrue();
-        assertThat(result.getMessage()).isEqualTo("목록 조회 성공");
-        assertThat(result.getObject()).isInstanceOf(List.class);
-        assertThat(((List<?>) result.getObject()).size()).isEqualTo(userReviews.size());
+        Assertions.assertThat(reviews.get(0).getReviewContent())
+                .isEqualTo(collect.get(0).getReviewContent());
     }
 
     @Test
+    @DisplayName("실패(고객정보없음)")
     public void listReviews_Fail_UserInfoNotFound() {
         // Given
         Long targetUserId = 1L;
@@ -86,22 +93,7 @@ class ListUserReviewTest {
 
         // When, Then
         assertThatThrownBy(() -> userReviewService.listReviews(targetUserId))
-                .isInstanceOf(UserInfoNotFoundException.class)
-                .hasMessage("고객정보가 존재하지 않습니다.");
-    }
-
-    @Test
-    public void listReviews_Fail_ContentNotFound() {
-        // Given
-        Long targetUserId = 1L;
-        User targetUser = User.builder().id(targetUserId).build();
-
-        Mockito.when(userRepository.findById(targetUserId)).thenReturn(Optional.of(targetUser));
-        Mockito.when(userReviewRepository.findByTargetedId(targetUser)).thenReturn(new ArrayList<>());
-
-        // When, Then
-        assertThatThrownBy(() -> userReviewService.listReviews(targetUserId))
-                .isInstanceOf(ContentNotFoundException.class)
-                .hasMessage("해당 유저에 대해 작성된 리뷰가 존재하지 않습니다.");
+                .isInstanceOf(CustomException.class)
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 }

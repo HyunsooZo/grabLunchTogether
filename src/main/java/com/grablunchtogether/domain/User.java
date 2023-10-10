@@ -1,6 +1,8 @@
 package com.grablunchtogether.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.grablunchtogether.enums.UserRole;
+import com.grablunchtogether.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,25 +42,45 @@ public class User extends BaseEntity {
     private String company;
 
     @Column
+    public String profileUrl;
+
+    @Column
+    public String nameCardUrl;
+
+    @Column
     private Double latitude;
 
     @Column
     private Double longitude;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
+
     public void update(String userPhoneNumber, String company, Double latitude,
-                       Double longitude){
+                       Double longitude) {
         this.userPhoneNumber = userPhoneNumber;
         this.company = company;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public void changePassword(String newPassword){
+    public void setPassword(String newPassword) {
         this.userPassword = newPassword;
     }
 
-    public void rateUpdate(Double newAverageRate) {
+    public void setRate(Double newAverageRate) {
         this.userRate = newAverageRate;
+    }
+
+    public void setStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
+    }
+
+    public void setProfileUrl(String imageUrl) {
+        this.profileUrl = imageUrl;
     }
 }
 

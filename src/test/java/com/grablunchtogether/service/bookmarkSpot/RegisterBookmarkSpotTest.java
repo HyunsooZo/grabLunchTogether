@@ -1,21 +1,25 @@
 package com.grablunchtogether.service.bookmarkSpot;
 
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
+import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotInput;
+import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
+import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.BookmarkSpotRepository;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import com.grablunchtogether.repository.UserRepository;
+import com.grablunchtogether.service.BookmarkSpotService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
+import static org.mockito.Mockito.*;
+
+@DisplayName("북마크 맛집 추가")
 class RegisterBookmarkSpotTest {
     @Mock
     private UserRepository userRepository;
@@ -30,18 +34,19 @@ class RegisterBookmarkSpotTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        bookmarkSpotService = new BookmarkSpotServiceImpl(bookmarkSpotRepository,
-                userRepository , mustEatPlaceRepository);
+        bookmarkSpotService = new BookmarkSpotService(bookmarkSpotRepository,
+                userRepository, mustEatPlaceRepository);
     }
 
     @Test
+    @DisplayName(value = "성공")
     public void addBookmarkSpot_Success() {
         //given
         User user = User.builder()
                 .id(1L)
                 .build();
 
-        BookmarkSpotInput input = BookmarkSpotInput.builder()
+        BookmarkSpotDto.Request input = BookmarkSpotDto.Request.builder()
                 .restaurant("테스트 식당")
                 .menu("테스트메뉴")
                 .rate("5.0")
@@ -49,23 +54,23 @@ class RegisterBookmarkSpotTest {
                 .address("테스트주소")
                 .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.of(user));
         //when
-        ServiceResult result = bookmarkSpotService.registerBookmark(input, user.getId());
+        bookmarkSpotService.registerBookmark(input, user.getId());
         //then
-        Assertions.assertThat(result.isResult()).isTrue();
-        Assertions.assertThat(result.getMessage()).isEqualTo("맛집 즐겨찾기 등록 완료");
+        verify(bookmarkSpotRepository, times(1)).save(any(BookmarkSpot.class));
     }
 
     @Test
+    @DisplayName(value = "실패(고객정보없음)")
     public void addBookmarkSpot_Fail() {
         //given
         User user = User.builder()
                 .id(1L)
                 .build();
 
-        BookmarkSpotInput input = BookmarkSpotInput.builder()
+        BookmarkSpotDto.Request input = BookmarkSpotDto.Request.builder()
                 .restaurant("테스트 식당")
                 .menu("테스트메뉴")
                 .rate("5.0")
@@ -73,12 +78,12 @@ class RegisterBookmarkSpotTest {
                 .address("테스트주소")
                 .build();
 
-        Mockito.when(userRepository.findById(user.getId()))
+        when(userRepository.findById(user.getId()))
                 .thenReturn(Optional.empty());
         //when,then
         Assertions.assertThatThrownBy(
-                ()->bookmarkSpotService.registerBookmark(input, user.getId()))
-                .isInstanceOf(UserInfoNotFoundException.class)
-                .hasMessage("고객정보를 찾을 수 없습니다.");
+                        () -> bookmarkSpotService.registerBookmark(input, user.getId()))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("회원정보를 찾을 수 없습니다.");
     }
 }

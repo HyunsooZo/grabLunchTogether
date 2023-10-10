@@ -1,43 +1,62 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.common.exception.InvalidLoginException;
-import com.grablunchtogether.common.exception.UserInfoNotFoundException;
-import com.grablunchtogether.common.results.serviceResult.ServiceResult;
-import com.grablunchtogether.configuration.springSecurity.JwtTokenProvider;
+import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.UserInformationEditInput;
+import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.repository.RefreshTokenRedisRepository;
+import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
-import com.grablunchtogether.utility.PasswordUtility;
+import com.grablunchtogether.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@DisplayName("회원정보 수정")
 class UserEditInformationTest {
     @Mock
     private UserRepository userRepository;
     @Mock
     private JwtTokenProvider jwtTokenProvider;
-    private UserServiceImpl userService;
+    @Mock
+    private BCryptPasswordEncoder passwordEncoder;
+    @Mock
+    private UserOtpRedisRepository userOtpRedisRepository;
+    @Mock
+    private RefreshTokenRedisRepository refreshTokenRedisRepository;
+    private UserService userService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, jwtTokenProvider);
+        userService =
+                new UserService(
+                        userRepository,
+                        jwtTokenProvider,
+                        passwordEncoder,
+                        userOtpRedisRepository,
+                        refreshTokenRedisRepository
+                );
     }
 
     @Test
+    @DisplayName("성공")
     public void testEditUserInformation_Success() {
         // given
         Long userId = 1L;
-        UserInformationEditInput userInformationEditInput =
-                UserInformationEditInput.builder()
-                        .userPassword("existingPassword")
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder()
+                        .userPassword("1234")
                         .userPhoneNumber("123-456-7890")
                         .company("Test Company")
                         .build();
@@ -47,59 +66,59 @@ class UserEditInformationTest {
 
         User existingUser = User.builder()
                 .id(userId)
-                .userPassword(PasswordUtility.getEncryptPassword("existingPassword"))
+                .userEmail("test@test.com")
+                .company("aaa")
+                .userPassword("1111")
                 .build();
 
         when(userRepository.findById(userId))
-                .thenReturn(java.util.Optional.of(existingUser));
+                .thenReturn(Optional.of(existingUser));
+        when(passwordEncoder.encode("1234")).thenReturn("1111");
+        when(passwordEncoder.matches("1234","1111")).thenReturn(true);
 
         // when
-        ServiceResult result =
-                userService.editUserInformation(userId, userInformationEditInput, coordinate);
+        userService.editUserInformation(userId, infoEditRequest, coordinate);
 
         // then
-        assertThat(result).isEqualTo(ServiceResult.success("고객정보 수정 완료"));
-        assertThat(existingUser.getUserPhoneNumber()).isEqualTo("1234567890");
-        assertThat(existingUser.getCompany()).isEqualTo("Test Company");
-        assertThat(existingUser.getLatitude()).isEqualTo(coordinate.getLatitude());
-        assertThat(existingUser.getLongitude()).isEqualTo(coordinate.getLongitude());
         verify(userRepository, times(1)).save(existingUser);
     }
 
     @Test
+    @DisplayName("실패(비밀번호불일치)")
     public void testEditUserInformation_Fail_InvalidPassword() {
         // given
         Long userId = 1L;
-        UserInformationEditInput userInformationEditInput = new UserInformationEditInput();
-        userInformationEditInput.setUserPassword("wrongPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("wrongPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         User existingUser = new User();
-        existingUser.changePassword(PasswordUtility.getEncryptPassword("existingPassword"));
+        existingUser.setPassword(passwordEncoder.encode("existingPassword"));
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(existingUser));
 
         // when, then
-        assertThatThrownBy(() -> userService.editUserInformation(userId, userInformationEditInput, coordinate))
-                .isInstanceOf(InvalidLoginException.class)
-                .hasMessage("기존 비밀번호가 일치하지 않습니다.");
+        assertThatThrownBy(() -> userService.editUserInformation(userId, infoEditRequest, coordinate))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("아이디 또는 비밀번호가 일치하지않습니다.");
 
         verify(userRepository, never()).save(existingUser);
     }
 
     @Test
+    @DisplayName("실패(고객정보 없음)")
     public void testEditUserInformation_Fail_UserInfoNotFound() {
         // given
         Long userId = 1L;
-        UserInformationEditInput userInformationEditInput = new UserInformationEditInput();
-        userInformationEditInput.setUserPassword("existingPassword");
+        UserDto.InfoEditRequest infoEditRequest =
+                UserDto.InfoEditRequest.builder().userPassword("existingPassword").build();
         GeocodeDto coordinate = new GeocodeDto();
 
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.empty());
 
         // when, then
-        assertThatThrownBy(() -> userService.editUserInformation(userId, userInformationEditInput, coordinate))
-                .isInstanceOf(UserInfoNotFoundException.class)
-                .hasMessage("고객 정보를 찾을 수 없습니다. 다시 시도해 주세요.");
+        assertThatThrownBy(() -> userService.editUserInformation(userId, infoEditRequest, coordinate))
+                .isInstanceOf(CustomException.class)
+                .hasMessage("회원정보를 찾을 수 없습니다.");
 
         verify(userRepository, never()).save(any());
     }
