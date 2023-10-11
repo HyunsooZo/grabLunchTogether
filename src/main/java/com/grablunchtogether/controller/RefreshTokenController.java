@@ -1,6 +1,6 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.dto.token.RefreshTokenDto;
+import com.grablunchtogether.dto.RefreshTokenDto;
 import com.grablunchtogether.service.RefreshTokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.grablunchtogether.dto.token.RefreshTokenDto.*;
+import static com.grablunchtogether.dto.RefreshTokenDto.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor

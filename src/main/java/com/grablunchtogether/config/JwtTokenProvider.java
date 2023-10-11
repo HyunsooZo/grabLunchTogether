@@ -1,6 +1,6 @@
 package com.grablunchtogether.config;
 
-import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.TokenDto;
 import com.grablunchtogether.enums.UserRole;
 import com.grablunchtogether.service.UserTokenDetailService;
 import io.jsonwebtoken.Claims;

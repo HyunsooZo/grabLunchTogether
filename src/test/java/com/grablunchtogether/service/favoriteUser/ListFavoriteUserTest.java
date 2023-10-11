@@ -2,8 +2,7 @@ package com.grablunchtogether.service.favoriteUser;
 
 import com.grablunchtogether.domain.FavoriteUser;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
-import com.grablunchtogether.exception.CustomException;
+import com.grablunchtogether.dto.FavoriteUserDto;
 import com.grablunchtogether.repository.FavoriteUserRepository;
 import com.grablunchtogether.repository.UserRepository;
 import com.grablunchtogether.service.FavoriteUserService;

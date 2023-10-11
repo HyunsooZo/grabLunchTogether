@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.mustEatPlace;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.MustEatPlace;
 import io.swagger.annotations.ApiModel;

@@ -1,9 +1,9 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.plan.PlanDto;
-import com.grablunchtogether.dto.user.UserDistanceDto;
-import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.dto.PlanDto;
+import com.grablunchtogether.dto.UserDistanceDto;
+import com.grablunchtogether.dto.UserDto;
 import com.grablunchtogether.service.PlanHistoryService;
 import com.grablunchtogether.service.PlanService;
 import com.grablunchtogether.service.SMSApiService;

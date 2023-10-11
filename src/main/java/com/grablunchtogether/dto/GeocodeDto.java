@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.geocode;
+package com.grablunchtogether.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

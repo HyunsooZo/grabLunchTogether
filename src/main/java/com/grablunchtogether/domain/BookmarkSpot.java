@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
+import com.grablunchtogether.dto.BookmarkSpotDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

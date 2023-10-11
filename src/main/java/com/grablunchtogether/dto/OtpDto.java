@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.user;
+package com.grablunchtogether.dto;
 
 
 import io.swagger.annotations.ApiModel;

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.grablunchtogether.dto.userReview.UserReviewDto.*;
+import static com.grablunchtogether.dto.UserReviewDto.*;
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor

@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.userReview;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.UserReview;
 import io.swagger.annotations.ApiModel;

@@ -2,7 +2,7 @@ package com.grablunchtogether.service.bookmarkSpot;
 
 import com.grablunchtogether.domain.BookmarkSpot;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
+import com.grablunchtogether.dto.BookmarkSpotDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.BookmarkSpotRepository;
 import com.grablunchtogether.repository.MustEatPlaceRepository;

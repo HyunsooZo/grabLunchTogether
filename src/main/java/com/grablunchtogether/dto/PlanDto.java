@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.plan;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.enums.PlanStatus;

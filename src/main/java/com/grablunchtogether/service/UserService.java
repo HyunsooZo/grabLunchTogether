@@ -2,12 +2,12 @@ package com.grablunchtogether.service;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.naverSms.NaverSmsDto;
-import com.grablunchtogether.dto.token.TokenDto;
-import com.grablunchtogether.dto.user.OtpDto;
-import com.grablunchtogether.dto.user.UserDistanceDto;
-import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.dto.GeocodeDto;
+import com.grablunchtogether.dto.NaverSmsDto;
+import com.grablunchtogether.dto.TokenDto;
+import com.grablunchtogether.dto.OtpDto;
+import com.grablunchtogether.dto.UserDistanceDto;
+import com.grablunchtogether.dto.UserDto;
 import com.grablunchtogether.enums.UserRole;
 import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;

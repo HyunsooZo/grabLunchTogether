@@ -3,15 +3,15 @@ package com.grablunchtogether.service;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.TokenDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static com.grablunchtogether.dto.token.RefreshTokenDto.AccessToken;
-import static com.grablunchtogether.dto.token.RefreshTokenDto.Dto;
+import static com.grablunchtogether.dto.RefreshTokenDto.AccessToken;
+import static com.grablunchtogether.dto.RefreshTokenDto.Dto;
 import static com.grablunchtogether.exception.ErrorCode.REFRESH_CODE_EXPIRED;
 import static com.grablunchtogether.exception.ErrorCode.USER_INFO_NOT_FOUND;
 

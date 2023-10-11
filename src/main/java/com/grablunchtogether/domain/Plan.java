@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.dto.PlanDto;
 import com.grablunchtogether.enums.PlanStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

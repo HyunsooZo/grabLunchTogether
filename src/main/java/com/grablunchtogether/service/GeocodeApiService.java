@@ -2,7 +2,7 @@ package com.grablunchtogether.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grablunchtogether.dto.geocode.GeocodeDto;
+import com.grablunchtogether.dto.GeocodeDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

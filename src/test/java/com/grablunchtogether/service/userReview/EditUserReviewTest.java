@@ -3,7 +3,7 @@ package com.grablunchtogether.service.userReview;
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.domain.UserReview;
-import com.grablunchtogether.dto.userReview.UserReviewDto;
+import com.grablunchtogether.dto.UserReviewDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanHistoryRepository;
 import com.grablunchtogether.repository.UserRepository;

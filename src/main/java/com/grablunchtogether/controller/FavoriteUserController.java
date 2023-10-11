@@ -1,7 +1,7 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
+import com.grablunchtogether.dto.FavoriteUserDto;
 import com.grablunchtogether.service.FavoriteUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

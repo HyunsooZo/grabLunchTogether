@@ -1,6 +1,6 @@
 package com.grablunchtogether.controller;
 
-import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
+import com.grablunchtogether.dto.MustEatPlaceDto;
 import com.grablunchtogether.service.MustEatPlaceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
