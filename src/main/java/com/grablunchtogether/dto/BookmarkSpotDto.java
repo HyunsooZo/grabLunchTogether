@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.bookmarkSpot;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.BookmarkSpot;
 import io.swagger.annotations.ApiModel;

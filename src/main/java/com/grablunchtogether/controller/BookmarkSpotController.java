@@ -1,7 +1,7 @@
 package com.grablunchtogether.controller;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.bookmarkSpot.BookmarkSpotDto;
+import com.grablunchtogether.dto.BookmarkSpotDto;
 import com.grablunchtogether.service.BookmarkSpotService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

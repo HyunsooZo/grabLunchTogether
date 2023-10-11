@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.image;
+package com.grablunchtogether.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

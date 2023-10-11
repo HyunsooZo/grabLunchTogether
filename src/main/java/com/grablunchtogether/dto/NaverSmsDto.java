@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.naverSms;
+package com.grablunchtogether.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.AllArgsConstructor;

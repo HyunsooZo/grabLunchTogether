@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.favoriteUser;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.FavoriteUser;
 import io.swagger.annotations.ApiModel;

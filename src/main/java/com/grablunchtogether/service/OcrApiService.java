@@ -3,7 +3,7 @@ package com.grablunchtogether.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grablunchtogether.dto.clovaOcr.ClovaOcr;
+import com.grablunchtogether.dto.ClovaOcr;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -17,7 +17,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
-import static com.grablunchtogether.dto.clovaOcr.ClovaOcr.*;
+import static com.grablunchtogether.dto.ClovaOcr.*;
 
 @Service
 public class OcrApiService {

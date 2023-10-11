@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.favoriteUser.FavoriteUserDto;
+import com.grablunchtogether.dto.FavoriteUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

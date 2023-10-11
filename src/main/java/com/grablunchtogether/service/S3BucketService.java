@@ -2,7 +2,7 @@ package com.grablunchtogether.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.grablunchtogether.dto.image.ImageDto;
+import com.grablunchtogether.dto.ImageDto;
 import com.grablunchtogether.enums.ImageDirectory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

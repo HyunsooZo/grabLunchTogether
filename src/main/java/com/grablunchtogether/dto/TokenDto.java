@@ -1,4 +1,4 @@
-package com.grablunchtogether.dto.token;
+package com.grablunchtogether.dto;
 
 import com.grablunchtogether.domain.User;
 import com.grablunchtogether.enums.UserRole;

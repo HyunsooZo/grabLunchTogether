@@ -1,6 +1,6 @@
 package com.grablunchtogether.repository;
 
-import com.grablunchtogether.dto.token.RefreshTokenDto;
+import com.grablunchtogether.dto.RefreshTokenDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;

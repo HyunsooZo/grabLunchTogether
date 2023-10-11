@@ -1,6 +1,6 @@
 package com.grablunchtogether.domain;
 
-import com.grablunchtogether.dto.userReview.UserReviewDto;
+import com.grablunchtogether.dto.UserReviewDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

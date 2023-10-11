@@ -1,7 +1,7 @@
 package com.grablunchtogether.service;
 
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.dto.UserDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserRepository;
