@@ -1,7 +1,7 @@
 package com.grablunchtogether.service.mustEatPlace;
 
 import com.grablunchtogether.domain.MustEatPlace;
-import com.grablunchtogether.dto.mustEatPlace.MustEatPlaceDto;
+import com.grablunchtogether.dto.MustEatPlaceDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.MustEatPlaceRepository;
 import com.grablunchtogether.service.MustEatPlaceService;

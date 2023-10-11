@@ -1,7 +1,7 @@
 package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.user.UserDistanceDto;
+import com.grablunchtogether.dto.UserDistanceDto;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;
 import com.grablunchtogether.repository.UserRepository;

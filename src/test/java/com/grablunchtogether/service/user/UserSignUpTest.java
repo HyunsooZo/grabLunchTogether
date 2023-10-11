@@ -2,8 +2,8 @@ package com.grablunchtogether.service.user;
 
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.geocode.GeocodeDto;
-import com.grablunchtogether.dto.user.UserDto;
+import com.grablunchtogether.dto.GeocodeDto;
+import com.grablunchtogether.dto.UserDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.RefreshTokenRedisRepository;
 import com.grablunchtogether.repository.UserOtpRedisRepository;

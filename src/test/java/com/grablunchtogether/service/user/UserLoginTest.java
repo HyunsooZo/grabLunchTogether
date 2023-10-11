@@ -1,9 +1,9 @@
 package com.grablunchtogether.service.user;
 
-import com.grablunchtogether.dto.user.UserDto.*;
+import com.grablunchtogether.dto.UserDto.*;
 import com.grablunchtogether.config.JwtTokenProvider;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.token.TokenDto;
+import com.grablunchtogether.dto.TokenDto;
 import com.grablunchtogether.enums.UserRole;
 import com.grablunchtogether.enums.UserStatus;
 import com.grablunchtogether.exception.CustomException;

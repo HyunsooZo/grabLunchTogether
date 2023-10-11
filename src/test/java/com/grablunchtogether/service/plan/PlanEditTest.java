@@ -2,7 +2,7 @@ package com.grablunchtogether.service.plan;
 
 import com.grablunchtogether.domain.Plan;
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.plan.PlanDto;
+import com.grablunchtogether.dto.PlanDto;
 import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.repository.PlanRepository;
 import com.grablunchtogether.repository.UserRepository;
