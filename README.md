@@ -112,10 +112,6 @@
       데이터를 즐겨찾기맛집 테이블에 저장)
 - 즐겨찾는 맛집 삭제 : 본인이 등록한 맛집 목록을 삭제합니다.
 
----
-
-### [Schedule]
-
 **점심약속 상태 업데이트 및 히스토리 저장**
 
 - 1분 단위로 스케쥴링 하여 일정이 지난 `REQUESTED`요청 상태의 점심약속 상태 `EXPIRED`로 업데이트.
@@ -128,6 +124,10 @@
 - 매주 별점/영업여부 등을 업데이트 하기 위해 크롤링 시마다 모든컬럼을 삭제 후 조회된내용 새로등록
 
 ---
+
+### [System Architecture]
+
+![Sys Arch](https://drive.google.com/uc?id=1cutVqTWFACyKN_na-b42oW7Ha7BiNvDq)
 
 ### [ERD]
 
