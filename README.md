@@ -38,6 +38,8 @@
 
 ### Restful Api 설계
 
+[스웨거 API 문서](http://13.209.169.74:8080/swagger-ui/index.html#/)
+
 | URL                                     | Http Method | description          |
 |-----------------------------------------|-------------|----------------------|
 | /api/users/signup                       | `POST`      | 사용자 회원가입             |
