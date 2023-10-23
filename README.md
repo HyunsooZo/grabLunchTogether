@@ -60,16 +60,21 @@
 | /api/favorite-users/{favoriteUserId}    | `DELETE`    | 즐겨찾는 친구 정보 삭제        |
 
 ### 주요 기능
-
-**User(사용자) 관련 api**
+<details>
+<summary><strong>User(사용자) 관련 api</strong></summary>
+  
 - 일반회원가입 : 사용자 일반가입은 회원정보 직접입력을 통해서 가능합니다.
 - 간편회원가입 : 사용자 간편가입은 명함사진(OCR진행)과 비밀번호입력을 통해서 가능합니다.
 - 로그인 : 비밀번호는 `BCryptPasswordEncoder`를 통해 암호화하여 저장하고 로그인 시 복호화하여 비교 후 사용자정보와 일치 시 토큰을 발행합니다.
 - 회원정보 수정 : 입력된 수정정보로 사용자정보를 업데이트 합니다.
 - 비밀번호 변경 : 입력된 비밀번호를 암호화 하여 비밀번호를 업데이트합니다.
 - 비밀번호 초기화 : 임시비밀번호를 암호화하여 저장 하고 사용자 Email 로 임시비밀번호를 전송합니다.
+  
+</details>
 
-**Plan(점심약속) 관련 api** 
+<details>
+<summary><Strong>Plan(점심약속) 관련 api</Strong></summary>
+
 - 주변회원 탐색 : 사용자는 본인이 설정한 거리 내 회원목록을 조회할 수 있습니다. 
 - 점심약속 신청 : 
     - 조회된 사용자에게 일정(시간/장소/메뉴/요청메세지)을 적어 점심약속 신청을 생성할 수 있습니다. 
@@ -79,30 +84,44 @@
     - 점심약속 응답 : 피신청인은 해당 점심약속을 수락 또는 거절할 수 있습니다.
     - 점심약속 취소 : 수락 상태의 점심약속 시간 전 신청인/피신청인은 약속을 취소할 수 있습니다. 
 - 점심약속 삭제 : 신청인은 점심약속 시간이 1시간 이상 남은 미응답 상태인 약속을 삭제 할 수 있습니다.
+</details>
 
-**Plan History(약속 히스토리) 관련 api**
+<details>
+<summary><Strong>Plan History(약속 히스토리) 관련 api</Strong></summary>
+  
 - 점심약속 히스토리 조회 : 사용자가 신청하거나 수락한 점심약속 히스토리 목록을 조회할 수 있습니다.
 - (매 분 스케줄링을 통해 `COMPLETED` ,`CANCEL`상태이면서 일정이 지난 점심약속을 히스토리에 등록)
+</details>
 
-**User Review(사용자 리뷰) 관련 api**
+<details>
+<summary><Strong>User Review(사용자 리뷰) 관련 api</Strong></summary>
+  
 - 리뷰 작성 : 점심약속이 완료된 상대방의 프로필에 서로 별점과 리뷰를 작성할 수 있습니다.
 - 리뷰 조회 : 다른사용자의 id로 사용자에게 등록 된 리뷰리스트를 조회할 수 있습니다.
 - 리뷰 수정 : 본인이 작성한 리뷰를 수정할 수 있습니다.
 - 리뷰 삭제 : 본인이 작성한 리뷰를 삭제할 수 있습니다.
+</details>
 
-**Favorite User(즐겨찾는 사용자) 관련 api**
+<details>
+<summary><Strong>Favorite User(즐겨찾는 사용자) 관련 api</Strong></summary>
+  
 - 즐겨찾는 사용자 등록 : 조회한 사용자목록에서 사용자를 선택하여 내 즐겨찾기 목록에 닉네임과 함께 등록합니다.
 - 즐겨찾는 사용자 조회 : 내가 등록한 즐겨찾는 사용자 목록을 조회합니다.
 - 즐겨찾는 사용자 닉네임 수정 : 내가 등록한 즐겨찾는 사용자의 닉네임을 수정할 수 있습니다.
 - 즐겨찾는 사용자 삭제 : 내가 등록한 즐겨찾는 사용자를 목록에서 삭제할 수 있습니다.
+</details>
 
-**Must-Eat-Spot(맛집) 관련 api**
+<details>
+<summary><Strong>Must-Eat-Spot(맛집) 관련 api</Strong></summary>
 
 - 조회 : 크롤링을 통해 저장된 지역주변 대표맛집 목록을 파라미터(지역이름)를 이용하여 조회 합니다.
     - `synchronized`를 사용하여 동기화 -> 크롤링이 진행되는 시점에는 맛집목록 조회 불가합니다.
-    - 동시성 문제 방지, 원자성 보장, 데이터 일관성 유지
+    - 동시성 문제 방지, 원자성 보장, 데이터 일관성 
 
-**BookMark Spot(즐겨찾는 맛집) 관련 api**
+</details>
+
+<details>
+<summary><Strong>BookMark Spot(즐겨찾는 맛집) 관련 api</Strong></summary>
 
 - 즐겨찾는 맛집 등록 : 
   - 직접입력 등록 : 조회된 맛집 목록 중 식당을 선택하여 내가 즐겨찾는 맛집으로 등록합니다.
@@ -112,22 +131,29 @@
       데이터를 즐겨찾기맛집 테이블에 저장)
 - 즐겨찾는 맛집 삭제 : 본인이 등록한 맛집 목록을 삭제합니다.
 
-**점심약속 상태 업데이트 및 히스토리 저장**
+</details>
+
+<details>
+<summary><Strong>점심약속 상태 업데이트 및 히스토리 저장</Strong></summary>
 
 - 1분 단위로 스케쥴링 하여 일정이 지난 `REQUESTED`요청 상태의 점심약속 상태 `EXPIRED`로 업데이트.
 - 1분 단위로 스케줄링 하여 일정이 지난 `ACCEPTED`수락 상태의 점심약속 상태 `COMPLETED`로 업데이트 후 히스토리 등록
 
-**지역주변 대표맛집 저장**
+</details>
+<details>
+<summary><Strong>지역주변 대표맛집 저장</Strong></summary>
 
 - 주 1회(매 주 월요일 00:00) [kakao map]에서 주요 도시별 맛집 크롤링하여 저장.
 - 맛집 정보(식당이름/평점/대표메뉴/영업시간) 조회 기능 제공.
 - 매주 별점/영업여부 등을 업데이트 하기 위해 크롤링 시마다 모든컬럼을 삭제 후 조회된내용 새로등록
 
+</details>
+
 ---
 
 ### [System Architecture]
 
-![Sys Arch](https://drive.google.com/uc?id=1cutVqTWFACyKN_na-b42oW7Ha7BiNvDq)
+![Sys Arch](https://drive.google.com/uc?id=14Fn6K9WmpmH3E4G_6KT3klRR6hRZUOlS)
 
 ### [ERD]
 
