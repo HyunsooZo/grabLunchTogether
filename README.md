@@ -169,5 +169,5 @@
 
 ### [ERD]
 
-![ERD](https://drive.google.com/uc?id=1ygug3YzOmOSk4R3MUAgpUQ_ecEPSPXap)
+![ERD](https://drive.google.com/uc?id=1jxn3J1ZP1WE9K9ChXXeIBMiM_Bl7MAk8)
 
