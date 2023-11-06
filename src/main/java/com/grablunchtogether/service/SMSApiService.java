@@ -67,7 +67,7 @@ public class SMSApiService {
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
         NaverSmsDto.MessageContent messageContent = NaverSmsDto.MessageContent.builder()
-                .requesterName(requester.getUserName())
+                .requesterName(requester.getName())
                 .requesterCompany(requester.getCompany())
                 .planRestaurant(planCreationRequest.getPlanRestaurant())
                 .planMenu(planCreationRequest.getPlanMenu())
@@ -76,7 +76,7 @@ public class SMSApiService {
 
         try {
             sendSMS(NaverSmsDto.SmsContent.builder()
-                    .to(accepter.getUserPhoneNumber())
+                    .to(accepter.getPhoneNumber())
                     .content(messageContent.getMessageContent())
                     .build());
         } catch (Exception e) {

@@ -127,7 +127,7 @@ public class UserReviewService {
             return newRate;
         }
 
-        Double previousAverageRate = targetUser.getUserRate();
+        Double previousAverageRate = targetUser.getRate();
 
         return ((previousAverageRate * userReview.size()) + newRate) / (userReview.size() + 1);
     }

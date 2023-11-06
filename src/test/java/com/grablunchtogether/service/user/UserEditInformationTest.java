@@ -66,9 +66,9 @@ class UserEditInformationTest {
 
         User existingUser = User.builder()
                 .id(userId)
-                .userEmail("test@test.com")
+                .email("test@test.com")
                 .company("aaa")
-                .userPassword("1111")
+                .password("1111")
                 .build();
 
         when(userRepository.findById(userId))

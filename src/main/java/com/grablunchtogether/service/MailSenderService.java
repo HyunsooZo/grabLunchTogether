@@ -25,7 +25,7 @@ public class MailSenderService {
     @Transactional
     public void resetPassword(UserDto.PasswordResetRequest passwordResetRequest) {
 
-        User user = userRepository.findByUserEmail(passwordResetRequest.getEmail())
+        User user = userRepository.findByEmail(passwordResetRequest.getEmail())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
         String randomPassword = UUID.randomUUID().toString().substring(0, 10);
@@ -36,7 +36,7 @@ public class MailSenderService {
         user.setPassword(encryptedPassword);
 
         sendEmail(
-                user.getUserEmail(),
+                user.getEmail(),
                 "비밀번호 초기화 완료",
                 "새로운 비밀번호 : " + randomPassword + "를 입력해 로그인 해주세요."
         );

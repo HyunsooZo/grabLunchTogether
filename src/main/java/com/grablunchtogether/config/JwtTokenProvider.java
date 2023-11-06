@@ -119,7 +119,7 @@ public class JwtTokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
         List<GrantedAuthority> authorities = new ArrayList<>(userDetails.getAuthorities());
-        authorities.addAll(userRole.getAuthorities()); // 추가된 역할 권한
+        authorities.addAll(userRole.getAuthorities());
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails, "", authorities

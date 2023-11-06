@@ -45,7 +45,7 @@ class MailSenderServiceTest {
         UserDto.PasswordResetRequest resetInput = new UserDto.PasswordResetRequest(email);
 
         User existingUser = new User();
-        when(userRepository.findByUserEmail(email)).thenReturn(java.util.Optional.of(existingUser));
+        when(userRepository.findByEmail(email)).thenReturn(java.util.Optional.of(existingUser));
 
         // when
         mailSenderService.resetPassword(resetInput);
@@ -61,7 +61,7 @@ class MailSenderServiceTest {
         String email = "nonexistent@example.com";
         UserDto.PasswordResetRequest resetInput = new UserDto.PasswordResetRequest(email);
 
-        when(userRepository.findByUserEmail(email)).thenReturn(java.util.Optional.empty());
+        when(userRepository.findByEmail(email)).thenReturn(java.util.Optional.empty());
 
         // when, then
         assertThatThrownBy(() -> mailSenderService.resetPassword(resetInput))

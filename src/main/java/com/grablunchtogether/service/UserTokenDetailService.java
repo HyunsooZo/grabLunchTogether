@@ -24,15 +24,15 @@ public class UserTokenDetailService implements UserDetailsService {
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        com.grablunchtogether.domain.User userEntity = userRepository.findByUserEmail(email)
+        com.grablunchtogether.domain.User userEntity = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
 
         List<GrantedAuthority> authorities =
                 new ArrayList<>(userEntity.getUserRole().getAuthorities());
 
         return User.builder()
-                .username(userEntity.getUserEmail())
-                .password(userEntity.getUserPassword())
+                .username(userEntity.getEmail())
+                .password(userEntity.getPassword())
                 .authorities(authorities)
                 .build();
     }

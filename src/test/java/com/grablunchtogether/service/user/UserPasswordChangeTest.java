@@ -54,8 +54,8 @@ class UserPasswordChangeTest {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword("1111")
-                .userEmail("test@email.com")
+                .password("1111")
+                .email("test@email.com")
                 .build();
 
         PasswordChangeRequest passwordChangeRequest =
@@ -74,7 +74,7 @@ class UserPasswordChangeTest {
         userService.changeUserPassword(user.getId(), passwordChangeRequest);
 
         //then
-        assertThat(user.getUserPassword()).isEqualTo("2222");
+        assertThat(user.getPassword()).isEqualTo("2222");
     }
 
     @Test
@@ -83,8 +83,8 @@ class UserPasswordChangeTest {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword(passwordEncoder.encode("1111"))
-                .userEmail("test@email.com")
+                .password(passwordEncoder.encode("1111"))
+                .email("test@email.com")
                 .build();
 
         PasswordChangeRequest passwordChangeRequest =
@@ -108,8 +108,8 @@ class UserPasswordChangeTest {
         //given
         User user = User.builder()
                 .id(1L)
-                .userPassword(passwordEncoder.encode("1111"))
-                .userEmail("test@email.com")
+                .password(passwordEncoder.encode("1111"))
+                .email("test@email.com")
                 .build();
 
         PasswordChangeRequest passwordChangeRequest = new PasswordChangeRequest();

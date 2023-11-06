@@ -51,7 +51,7 @@ public class UserReviewDto {
                     .id(userReview.getId())
                     .reviewerId(userReview.getReviewerId().getId())
                     .targetedId(userReview.getTargetedId().getId())
-                    .reviewerEmail(userReview.getReviewerId().getUserEmail())
+                    .reviewerEmail(userReview.getReviewerId().getEmail())
                     .planId(userReview.getPlanId().getId())
                     .reviewContent(userReview.getReviewContent())
                     .rate(userReview.getRate())

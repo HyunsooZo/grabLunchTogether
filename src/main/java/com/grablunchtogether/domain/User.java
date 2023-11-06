@@ -23,20 +23,20 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column
-    private String userEmail;
+    private String email;
 
     @Column
-    private String userName;
+    private String name;
 
     @JsonIgnore
     @Column
-    private String userPassword;
+    private String password;
 
     @Column
-    private String userPhoneNumber;
+    private String phoneNumber;
 
     @Column
-    private Double userRate;
+    private Double rate;
 
     @Column
     private String company;
@@ -61,18 +61,18 @@ public class User extends BaseEntity {
 
     public void update(String userPhoneNumber, String company, Double latitude,
                        Double longitude) {
-        this.userPhoneNumber = userPhoneNumber;
+        this.phoneNumber = userPhoneNumber;
         this.company = company;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     public void setPassword(String newPassword) {
-        this.userPassword = newPassword;
+        this.password = newPassword;
     }
 
     public void setRate(Double newAverageRate) {
-        this.userRate = newAverageRate;
+        this.rate = newAverageRate;
     }
 
     public void setStatus(UserStatus userStatus) {

@@ -25,19 +25,20 @@ public class RefreshTokenService {
     // 신규 AccessToken 발급
     public AccessToken issueNewAccessToken(String accessToken, String refreshToken) {
 
+
         validateRefreshToken(refreshToken);
         String userEmail = jwtTokenProvider.getEmailFromToken(refreshToken);
-        User targetUser = userRepository.findByUserEmail(userEmail)
+        User targetUser = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
         Dto tokenSubject =
-                refreshTokenRedisRepository.findByKey(targetUser.getUserEmail());
+                refreshTokenRedisRepository.findByKey(targetUser.getEmail());
 
         if (tokenSubject == null) {
             throw new CustomException(REFRESH_CODE_EXPIRED);
         }
 
-        User user = findUser(targetUser.getUserEmail());
+        User user = findUser(targetUser.getEmail());
 
         String newAccessToken = jwtTokenProvider.issuingAccessToken(
                 TokenDto.TokenIssuanceDto.from(user)
@@ -61,7 +62,7 @@ public class RefreshTokenService {
 
     // User 찾기
     private User findUser(String userEmail) {
-        return userRepository.findByUserEmail(userEmail)
+        return userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
     }
 }

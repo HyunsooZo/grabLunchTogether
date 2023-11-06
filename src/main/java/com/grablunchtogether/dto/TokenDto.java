@@ -23,7 +23,7 @@ public class TokenDto {
         public static TokenIssuanceDto from(User user) {
             return TokenIssuanceDto.builder()
                     .id(user.getId())
-                    .email(user.getUserEmail())
+                    .email(user.getEmail())
                     .userRole(user.getUserRole())
                     .build();
         }
@@ -49,10 +49,10 @@ public class TokenDto {
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .id(user.getId())
-                    .userEmail(user.getUserEmail())
-                    .userName(user.getUserName())
-                    .userRate(user.getUserRate())
-                    .userPhoneNumber(user.getUserPhoneNumber())
+                    .userEmail(user.getEmail())
+                    .userName(user.getName())
+                    .userRate(user.getRate())
+                    .userPhoneNumber(user.getPhoneNumber())
                     .company(user.getCompany())
                     .build();
         }
