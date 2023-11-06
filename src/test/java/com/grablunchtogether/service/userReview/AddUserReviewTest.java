@@ -52,8 +52,8 @@ class AddUserReviewTest {
                         .reviewContent("Great experience!")
                         .build();
 
-        User requester = User.builder().id(2L).userRate(4.0).build();
-        User accepter = User.builder().id(3L).userRate(3.8).build();
+        User requester = User.builder().id(2L).rate(4.0).build();
+        User accepter = User.builder().id(3L).rate(3.8).build();
 
         PlanHistory planHistory = PlanHistory.builder()
                 .id(planHistoryId)
@@ -109,8 +109,8 @@ class AddUserReviewTest {
                         .reviewContent("Great experience!")
                         .build();
 
-        User requester = User.builder().id(2L).userRate(4.0).build();
-        User accepter = User.builder().id(3L).userRate(3.8).build();
+        User requester = User.builder().id(2L).rate(4.0).build();
+        User accepter = User.builder().id(3L).rate(3.8).build();
 
         PlanHistory planHistory = PlanHistory.builder()
                 .id(planHistoryId)

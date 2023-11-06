@@ -61,13 +61,13 @@ class UserLoginTest {
 
         User existingUser = User.builder()
                 .id(2L)
-                .userName("Test User")
-                .userEmail("test@example.com")
+                .name("Test User")
+                .email("test@example.com")
                 .userStatus(UserStatus.NORMAL)
-                .userPassword(passwordEncoder.encode("2222"))
+                .password(passwordEncoder.encode("2222"))
                 .build();
 
-        when(userRepository.findByUserEmail("test@example.com"))
+        when(userRepository.findByEmail("test@example.com"))
                 .thenReturn(Optional.of(existingUser));
         when(jwtTokenProvider.issuingAccessToken(any(TokenDto.TokenIssuanceDto.class)))
                 .thenReturn("sampleToken");
@@ -85,7 +85,7 @@ class UserLoginTest {
         LoginRequest loginRequest =
                 new LoginRequest("test@example.com", "1111");
 
-        when(userRepository.findByUserEmail("test@example.com"))
+        when(userRepository.findByEmail("test@example.com"))
                 .thenReturn(Optional.empty());
         when(jwtTokenProvider.issuingAccessToken(any(TokenDto.TokenIssuanceDto.class)))
                 .thenReturn("sampleToken");
@@ -105,20 +105,20 @@ class UserLoginTest {
 
         User existingUser = User.builder()
                 .id(2L)
-                .userName("Test User")
-                .userEmail("test@example.com")
-                .userPassword("1111")
-                .userPhoneNumber("00000000000")
+                .name("Test User")
+                .email("test@example.com")
+                .password("1111")
+                .phoneNumber("00000000000")
                 .userRole(UserRole.ROLE_USER)
                 .userStatus(UserStatus.NORMAL)
                 .latitude(0.0)
                 .latitude(0.0)
-                .userRate(0.0)
+                .rate(0.0)
                 .build();
 
         when(passwordEncoder.matches("1111","1111"))
                 .thenReturn(true);
-        when(userRepository.findByUserEmail("test@example.com"))
+        when(userRepository.findByEmail("test@example.com"))
                 .thenReturn(Optional.of(existingUser));
         when(jwtTokenProvider.issuingAccessToken(any(TokenDto.TokenIssuanceDto.class)))
                 .thenReturn("sampleToken");
@@ -126,6 +126,6 @@ class UserLoginTest {
         TokenDto.Dto login = userService.login(loginRequest);
 
         //then
-        assertThat(login.getUserName()).isEqualTo(existingUser.getUserName());
+        assertThat(login.getUserName()).isEqualTo(existingUser.getName());
     }
 }

@@ -59,7 +59,7 @@ class UserSignUpTest {
         GeocodeDto userCoordinate = new GeocodeDto();
 
         User existingUser = new User();
-        when(userRepository.findByUserEmail(signUpRequest.getUserEmail()))
+        when(userRepository.findByEmail(signUpRequest.getUserEmail()))
                 .thenReturn(Optional.of(existingUser));
 
         // When,Then
@@ -69,7 +69,7 @@ class UserSignUpTest {
                 .hasMessage("이미 존재하는 회원입니다.");
 
         verify(userRepository, times(1))
-                .findByUserEmail(signUpRequest.getUserEmail());
+                .findByEmail(signUpRequest.getUserEmail());
         verify(userRepository, never()).save(any(User.class));
     }
 
@@ -94,7 +94,7 @@ class UserSignUpTest {
                         .longitude(789.012)
                         .build();
 
-        when(userRepository.findByUserEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         // when
         userService.userSignUp(
@@ -107,11 +107,11 @@ class UserSignUpTest {
                         .build(), userCoordinate);
 
         // then
-        verify(userRepository).findByUserEmail(eq("test@example.com"));
+        verify(userRepository).findByEmail(eq("test@example.com"));
         verify(userRepository).save(argThat(user ->
-                user.getUserEmail().equals("test@example.com") &&
-                        user.getUserName().equals("Test User") &&
-                        user.getUserPhoneNumber().equals(phoneNumber) &&
+                user.getEmail().equals("test@example.com") &&
+                        user.getName().equals("Test User") &&
+                        user.getPhoneNumber().equals(phoneNumber) &&
                         user.getCompany().equals("Test Company") &&
                         user.getLatitude() == 123.456 &&
                         user.getLongitude() == 789.012

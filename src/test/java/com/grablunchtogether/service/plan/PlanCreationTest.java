@@ -43,7 +43,7 @@ class PlanCreationTest {
         //given
         User requester = User.builder().id(1L).build();
 
-        User accepter = User.builder().id(1L).userPhoneNumber("01084983484").build();
+        User accepter = User.builder().id(1L).phoneNumber("01084983484").build();
 
         PlanDto.Request planCreationInput = PlanDto.Request.builder()
                 .planMenu("test")
@@ -70,9 +70,9 @@ class PlanCreationTest {
     @DisplayName("실패(이미 신청한 약속 존재)")
     public void testPlanCreation_Fail_Exists() {
         //given
-        User requester = User.builder().id(1L).userPhoneNumber("123333222").build();
+        User requester = User.builder().id(1L).phoneNumber("123333222").build();
 
-        User accepter = User.builder().id(2L).userPhoneNumber("01084983484").build();
+        User accepter = User.builder().id(2L).phoneNumber("01084983484").build();
 
         PlanDto.Request planCreationInput = PlanDto.Request.builder()
                 .planMenu("test")
@@ -102,7 +102,7 @@ class PlanCreationTest {
     public void testPlanCreation_Fail_NoUser() {
         //given
         User requester = User.builder().id(1L).build();
-        User accepter = User.builder().id(2L).userPhoneNumber("01084983484").build();
+        User accepter = User.builder().id(2L).phoneNumber("01084983484").build();
 
         PlanDto.Request planCreationInput = new PlanDto.Request();
 
