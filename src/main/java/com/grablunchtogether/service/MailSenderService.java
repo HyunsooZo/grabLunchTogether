@@ -6,15 +6,18 @@ import com.grablunchtogether.exception.CustomException;
 import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MailSenderService {
@@ -40,10 +43,10 @@ public class MailSenderService {
                 "비밀번호 초기화 완료",
                 "새로운 비밀번호 : " + randomPassword + "를 입력해 로그인 해주세요."
         );
-
         userRepository.save(user);
     }
 
+    @Async
     public void sendEmail(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
@@ -51,8 +54,9 @@ public class MailSenderService {
         message.setText(text);
         try {
             javaMailSender.send(message);
+            log.info("이메일 전송 성공! 수신자 : " + to);
         } catch (MailException e) {
-            throw new RuntimeException(e);
+            log.error("이메일 전송 실패 {}", e.getMessage());
         }
     }
 }
