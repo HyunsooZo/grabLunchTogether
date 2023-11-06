@@ -1,9 +1,17 @@
 ## Grab Lunch Together 프로젝트
 
+### 목차
+- [프로젝트 소개](#프로젝트-소개)
+- [기술 스택](#기술-스택)
+- [API 명세서](#API-명세서)
+- [주요 기능](#주요-기능)
+- [프로젝트 구조](#프로젝트-구조)
+- [ERD](#ERD)
+
 ### 프로젝트 소개
 
-회사 근처 사람들끼리 점심 약속을 잡고 리뷰할 수 있는 기능들을 구현하고</br>
-각 기능에 대한 테스트 코드를 작성해 보았습니다.
+사용자들의 위치기반으로 회사 근처 사람들끼리 점심 약속을 잡고 <br>
+상대방에 대해 리뷰할 수 있는 기능들을 구현하고 각 기능에 대한 테스트 코드를 작성했습니다.
 
 ---
 
@@ -36,7 +44,9 @@
 
 ---
 
-### Restful Api 설계
+### API 명세서
+
+[스웨거 API 문서](http://13.209.169.74:8080/swagger-ui/index.html#/)
 
 [스웨거 API 문서](http://13.209.169.74:8080/swagger-ui/index.html#/)
 
@@ -163,11 +173,11 @@
 
 ---
 
-### [System Architecture]
+### 프로젝트 구조
 
-![Sys Arch](https://drive.google.com/uc?id=14Fn6K9WmpmH3E4G_6KT3klRR6hRZUOlS)
+![Sys Arch](https://drive.google.com/uc?id=17XC_OfKZTq4ziU13OvhDruV5MW83rTTP)
 
-### [ERD]
+### ERD
 
 ![ERD](https://drive.google.com/uc?id=1jxn3J1ZP1WE9K9ChXXeIBMiM_Bl7MAk8)
 
