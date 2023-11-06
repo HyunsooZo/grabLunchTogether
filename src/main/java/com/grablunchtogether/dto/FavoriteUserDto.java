@@ -40,8 +40,8 @@ public class FavoriteUserDto {
                     .id(favoriteUser.getId())
                     .userId(favoriteUser.getUserId().getId())
                     .favoriteUserId(favoriteUser.getFavoriteUserId().getId())
-                    .userEmail(favoriteUser.getUserId().getUserEmail())
-                    .favoriteUserEmail(favoriteUser.getFavoriteUserId().getUserEmail())
+                    .userEmail(favoriteUser.getUserId().getEmail())
+                    .favoriteUserEmail(favoriteUser.getFavoriteUserId().getEmail())
                     .nickName(favoriteUser.getNickName())
                     .registeredAt(favoriteUser.getRegisteredAt())
                     .build();

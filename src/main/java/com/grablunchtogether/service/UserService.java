@@ -43,7 +43,7 @@ public class UserService {
                                              GeocodeDto userCoordinate) {
 
         //기존회원 조회
-        userRepository.findByUserEmail(signUpRequest.getUserEmail())
+        userRepository.findByEmail(signUpRequest.getUserEmail())
                 .ifPresent(user -> {
                     throw new CustomException(USER_REVIEW_ALREADY_EXISTS);
                 });
@@ -58,11 +58,11 @@ public class UserService {
 
         //회원정보 저장
         userRepository.save(User.builder()
-                .userEmail(signUpRequest.getUserEmail())
-                .userName(signUpRequest.getUserName())
-                .userPassword(encryptedPassword)
-                .userPhoneNumber(userPhoneNumber)
-                .userRate(0.0)
+                .email(signUpRequest.getUserEmail())
+                .name(signUpRequest.getUserName())
+                .password(encryptedPassword)
+                .phoneNumber(userPhoneNumber)
+                .rate(0.0)
                 .company(signUpRequest.getCompany())
                 .nameCardUrl(signUpRequest.getNameCardUrl())
                 .profileUrl(signUpRequest.getProfileUrl())
@@ -80,21 +80,21 @@ public class UserService {
         String email = loginRequest.getUserEmail();
         String password = loginRequest.getUserPassword();
 
-        User user = userRepository.findByUserEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(USER_SIGN_IN_FAIL));
 
         if (user.getUserStatus().equals(DELETED)) {
             throw new CustomException(LEFT_USER);
         }
 
-        if (!passwordEncoder.matches(password, user.getUserPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new CustomException(USER_SIGN_IN_FAIL);
         }
 
         String accessToken = jwtTokenProvider.issuingAccessToken(TokenDto.TokenIssuanceDto.from(user));
-        String refreshToken = jwtTokenProvider.issuingRefreshToken(user.getUserEmail());
+        String refreshToken = jwtTokenProvider.issuingRefreshToken(user.getEmail());
 
-        refreshTokenRedisRepository.save(user.getUserEmail(), refreshToken);
+        refreshTokenRedisRepository.save(user.getEmail(), refreshToken);
 
         return TokenDto.Dto.from(user, accessToken, refreshToken);
     }
@@ -109,7 +109,7 @@ public class UserService {
 
         String existingPassword = infoEditRequest.getUserPassword();
 
-        if (!passwordEncoder.matches(existingPassword, user.getUserPassword())) {
+        if (!passwordEncoder.matches(existingPassword, user.getPassword())) {
             throw new CustomException(USER_SIGN_IN_FAIL);
         }
 
@@ -132,7 +132,7 @@ public class UserService {
 
         String existingPassword = passwordChangeRequest.getUserExistingPassword();
 
-        if (!passwordEncoder.matches(existingPassword, user.getUserPassword())) {
+        if (!passwordEncoder.matches(existingPassword, user.getPassword())) {
             throw new CustomException(USER_SIGN_IN_FAIL);
         }
 
@@ -198,7 +198,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
 
-        if (!passwordEncoder.matches(withdrawalRequest.getUserPassword(), user.getUserPassword())) {
+        if (!passwordEncoder.matches(withdrawalRequest.getUserPassword(), user.getPassword())) {
             throw new CustomException(PASSWORD_NOT_MATCH);
         }
 
