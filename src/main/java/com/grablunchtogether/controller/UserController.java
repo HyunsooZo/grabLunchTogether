@@ -2,13 +2,7 @@ package com.grablunchtogether.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.grablunchtogether.config.JwtTokenProvider;
-import com.grablunchtogether.dto.ClovaOcr;
-import com.grablunchtogether.dto.GeocodeDto;
-import com.grablunchtogether.dto.ImageDto;
-import com.grablunchtogether.dto.NaverSmsDto;
-import com.grablunchtogether.dto.TokenDto;
-import com.grablunchtogether.dto.OtpDto;
-import com.grablunchtogether.dto.UserDto;
+import com.grablunchtogether.dto.*;
 import com.grablunchtogether.enums.ImageDirectory;
 import com.grablunchtogether.service.*;
 import io.swagger.annotations.Api;
@@ -26,6 +20,8 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import static com.grablunchtogether.enums.MailComponents.PASSWORD_RESET_SUBJECT;
+import static com.grablunchtogether.enums.MailComponents.PASSWORD_RESET_TEXT;
 import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
@@ -138,7 +134,10 @@ public class UserController {
     public ResponseEntity<Void> ocrSignUp(
             @RequestBody UserDto.PasswordResetRequest passwordResetRequest) {
 
-        mailSenderService.resetPassword(passwordResetRequest);
+        mailSenderService.sendEmail(
+                passwordResetRequest.getEmail(), PASSWORD_RESET_SUBJECT, PASSWORD_RESET_TEXT
+        );
+
         return ResponseEntity.status(NO_CONTENT).build();
     }
 

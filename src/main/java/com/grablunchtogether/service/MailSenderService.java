@@ -1,9 +1,7 @@
 package com.grablunchtogether.service;
 
 import com.grablunchtogether.domain.User;
-import com.grablunchtogether.dto.UserDto;
 import com.grablunchtogether.exception.CustomException;
-import com.grablunchtogether.exception.ErrorCode;
 import com.grablunchtogether.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +11,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+
+import static com.grablunchtogether.enums.MailComponents.PASSWORD_RESET_SUBJECT;
+import static com.grablunchtogether.exception.ErrorCode.USER_INFO_NOT_FOUND;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,29 +25,15 @@ public class MailSenderService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    @Transactional
-    public void resetPassword(UserDto.PasswordResetRequest passwordResetRequest) {
-
-        User user = userRepository.findByEmail(passwordResetRequest.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
-
-        String randomPassword = UUID.randomUUID().toString().substring(0, 10);
-
-        String encryptedPassword =
-                passwordEncoder.encode(randomPassword);
-
-        user.setPassword(encryptedPassword);
-
-        sendEmail(
-                user.getEmail(),
-                "비밀번호 초기화 완료",
-                "새로운 비밀번호 : " + randomPassword + "를 입력해 로그인 해주세요."
-        );
-        userRepository.save(user);
+    @Async
+    public void sendEmail(String email, String subject, String text) {
+        if (subject.equals(PASSWORD_RESET_SUBJECT)) {
+            text = String.format(text, setRandomPassword(findUserByEmail(email)));
+        }
+        send(email, subject, text);
     }
 
-    @Async
-    public void sendEmail(String to, String subject, String text) {
+    private void send(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
         message.setSubject(subject);
@@ -58,5 +44,25 @@ public class MailSenderService {
         } catch (MailException e) {
             log.error("이메일 전송 실패 {}", e.getMessage());
         }
+    }
+
+    private String setRandomPassword(User user) {
+        String randomPassword = UUID.randomUUID().toString()
+                .replace("-", "")
+                .substring(0, 10);
+
+        String encryptedPassword =
+                passwordEncoder.encode(randomPassword);
+
+        user.setPassword(encryptedPassword);
+
+        userRepository.save(user);
+
+        return randomPassword;
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(USER_INFO_NOT_FOUND));
     }
 }
