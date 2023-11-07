@@ -15,7 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.mail.internet.MimeMessage;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.grablunchtogether.enums.MailComponents.PASSWORD_RESET_SUBJECT;
+import static com.grablunchtogether.enums.MailComponents.PASSWORD_RESET_TEXT;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
@@ -34,7 +35,7 @@ class MailSenderServiceTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mailSenderService = new MailSenderService(javaMailSender, userRepository,passwordEncoder);
+        mailSenderService = new MailSenderService(javaMailSender, userRepository, passwordEncoder);
     }
 
     @Test
@@ -48,7 +49,7 @@ class MailSenderServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(java.util.Optional.of(existingUser));
 
         // when
-        mailSenderService.resetPassword(resetInput);
+        mailSenderService.sendEmail(resetInput.getEmail(), PASSWORD_RESET_SUBJECT, PASSWORD_RESET_TEXT);
 
         // then
         verify(userRepository, times(1)).save(existingUser);
@@ -64,7 +65,11 @@ class MailSenderServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(java.util.Optional.empty());
 
         // when, then
-        assertThatThrownBy(() -> mailSenderService.resetPassword(resetInput))
+        assertThatThrownBy(() -> mailSenderService.sendEmail(
+                resetInput.getEmail(),
+                PASSWORD_RESET_SUBJECT,
+                PASSWORD_RESET_TEXT)
+        )
                 .isInstanceOf(CustomException.class)
                 .hasMessage("회원정보를 찾을 수 없습니다.");
         verify(javaMailSender, never()).send((MimeMessage) any());
